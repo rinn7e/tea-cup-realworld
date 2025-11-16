@@ -76,9 +76,8 @@ export const View = (props: Props) => {
     </div>
   )
 
+  // prettier-ignore
   return pipe(view(), (c) => (
-    <SetGlobalMsgContext.Provider value={memoDispatch}>
-      {c}
-    </SetGlobalMsgContext.Provider>
+    <SetGlobalMsgContext.Provider value={memoDispatch}>{c}</SetGlobalMsgContext.Provider>
   ))
 }
