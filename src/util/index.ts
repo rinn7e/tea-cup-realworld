@@ -29,3 +29,20 @@ export const error = (err: string): any => {
     throw new Error(err)
   }
 }
+
+// Converts any error value into a readable string.
+// Handles Error objects, plain strings, objects, and other types.
+// Falls back to String() if nothing else works.
+export const errorToString = (err: unknown): string => {
+  if (err instanceof Error) {
+    return err.stack || err.message
+  }
+  if (typeof err === 'string') {
+    return err
+  }
+  try {
+    return JSON.stringify(err)
+  } catch {
+    return String(err)
+  }
+}

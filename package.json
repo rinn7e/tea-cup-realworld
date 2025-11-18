@@ -15,6 +15,7 @@
     "clean": "npm run fix-style && npm run check && npm run lint && npm run bundle"
   },
   "dependencies": {
+    "@devexperts/remote-data-ts": "^2.1.1",
     "@tailwindcss/vite": "^4.1.17",
     "fp-ts": "^2.16.11",
     "react": "^19.2.0",

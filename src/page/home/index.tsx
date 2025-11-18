@@ -23,13 +23,27 @@
  *
  */
 
-export const HomePage = () => {
+import * as A from 'fp-ts/lib/Array'
+import { pipe } from 'fp-ts/lib/function'
+
+import type { Article } from '@/api/type'
+import type { Model } from '@/type'
+
+export const HomePage = ({ model }: { model: Model }) => {
   return (
     <div className='home-page'>
       <div className='banner'>
         <div className='container'>
           <h1 className='logo-font'>conduit</h1>
-          <p><a className='logo-font j:text-white!' href="https://github.com/vankeisb/react-tea-cup" target="_blank">(react-tea-cup)</a></p>
+          <p>
+            <a
+              className='logo-font j:text-white!'
+              href='https://github.com/vankeisb/react-tea-cup'
+              target='_blank'
+            >
+              (react-tea-cup)
+            </a>
+          </p>
           <p>A place to share your knowledge.</p>
         </div>
       </div>
@@ -52,7 +66,7 @@ export const HomePage = () => {
               </ul>
             </div>
 
-            <div className='article-preview'>
+            {/* <div className='article-preview'>
               <div className='article-meta'>
                 <a href='/profile/eric-simons'>
                   <img src='http://i.imgur.com/Qr71crq.jpg' />
@@ -116,7 +130,11 @@ export const HomePage = () => {
                   </li>
                 </ul>
               </a>
-            </div>
+            </div> */}
+
+            {model.articleGroup._tag === 'RemoteSuccess'
+              ? pipe(model.articleGroup.value.articles, A.map(articleView))
+              : null}
 
             <ul className='pagination'>
               <li className='page-item active'>
@@ -167,5 +185,46 @@ export const HomePage = () => {
         </div>
       </div>
     </div>
+  )
+}
+
+const articleView = (article: Article) => {
+  return (
+    <div key={article.slug} className='article-preview'>
+      {articleTopPanelView(article)}
+      <a href='/article/the-song-you' className='preview-link'>
+        <h1>{article.title}</h1>
+        <p>{article.description}</p>
+        <span>Read more...</span>
+        <ul className='tag-list'>{pipe(article.tagList, A.map(tagView))}</ul>
+      </a>
+    </div>
+  )
+}
+
+const articleTopPanelView = (article: Article) => {
+  return (
+    <div className='article-meta'>
+      <a href={`/profile/{article.author.username}`}>
+        <img src={article.author.image} />
+      </a>
+      <div className='info'>
+        <a href='/profile/albert-pai' className='author'>
+          {article.author.username}
+        </a>
+        <span className='date'>{article.createdAt}</span>
+      </div>
+      <button className='btn btn-outline-primary btn-sm pull-xs-right'>
+        <i className='ion-heart'></i> {article.favoritesCount}
+      </button>
+    </div>
+  )
+}
+
+const tagView = (tag: string) => {
+  return (
+    <li key={tag} className='tag-default tag-pill tag-outline'>
+      {tag}
+    </li>
   )
 }

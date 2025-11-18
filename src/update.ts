@@ -23,9 +23,12 @@
  *
  */
 
-import { Cmd } from 'tea-cup-fp'
+import * as RD from '@devexperts/remote-data-ts'
+import { Cmd, Task } from 'tea-cup-fp'
 
+import { callArticleGroupEndpoint } from '@/api/handler'
 import type { AppRoute } from '@/data/route'
+import { errorToString } from '@/util'
 import type { Model, Msg } from './type'
 
 export const init = (_l: Location): [Model, Cmd<Msg>] => {
@@ -38,8 +41,14 @@ export const init = (_l: Location): [Model, Cmd<Msg>] => {
       title: 'abc',
       isInternal: false,
       route: initRoute,
+      articleGroup: RD.pending,
     },
-    Cmd.none(),
+    Cmd.batch([
+      Task.attempt(
+        callArticleGroupEndpoint(),
+        (result) => ({ _tag: 'GetArticleGroupResponse', result }) satisfies Msg,
+      ),
+    ]),
   ]
 }
 
@@ -60,6 +69,24 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
     case 'ChangePage': {
       const newRoute = { ...model.route, page: msg.page }
       return changeRouteHandler(newRoute)(model)
+    }
+    case 'GetArticleGroup':
+      // TODO
+      return [model, Cmd.none()]
+    case 'GetArticleGroupResponse': {
+      if (msg.result.tag === 'Ok') {
+        console.log('success', msg.result.value)
+        return [
+          { ...model, articleGroup: RD.success(msg.result.value) },
+          Cmd.none(),
+        ]
+      } else {
+        console.log('failure', msg.result.err)
+        return [
+          { ...model, articleGroup: RD.failure(errorToString(msg.result.err)) },
+          Cmd.none(),
+        ]
+      }
     }
   }
 }

@@ -27,8 +27,8 @@ import { Link } from '@/component/link'
 import { homePage, loginPage, registerPage, route } from '@/data/route'
 import type { Props } from '@/type'
 
-export const nav = (props: Props) => {
-  const { dispatch } = props
+export const nav = (_props: Props) => {
+  // const { dispatch } = props
   return (
     <nav className='navbar navbar-light'>
       <div className='container'>
@@ -41,10 +41,7 @@ export const nav = (props: Props) => {
             {/* <a className='nav-link active' href='/'>
               Home
             </a> */}
-            <Link
-              className='nav-link active'
-              route={route(homePage())}
-            >
+            <Link className='nav-link active' route={route(homePage())}>
               Home
             </Link>
           </li>
@@ -56,10 +53,7 @@ export const nav = (props: Props) => {
             >
               Sign in
             </a> */}
-            <Link
-              className='nav-link'
-              route={route(loginPage())}
-            >
+            <Link className='nav-link' route={route(loginPage())}>
               Sign in
             </Link>
           </li>
@@ -71,10 +65,7 @@ export const nav = (props: Props) => {
             >
               Sign up
             </a> */}
-            <Link
-              className='nav-link'
-              route={route(registerPage())}
-            >
+            <Link className='nav-link' route={route(registerPage())}>
               Sign up
             </Link>
           </li>
@@ -140,16 +131,20 @@ export const footer = () => {
         <div className='j:grow'></div>
 
         <div className='j:flex shrink-0 j:gap-[12px] j:text-gray-500'>
-           <div className='j:text-[12px]'>
-              Created by <a href="https://github.com/rinn7e" target="_blank">rinn7e</a>
-            </div>
-            <div className='j:text-[12px]'>
-              Using <a href="https://github.com/vankeisb/react-tea-cup" target="_blank">react-tea-cup</a>
-            </div>
-
+          <div className='j:text-[12px]'>
+            Created by{' '}
+            <a href='https://github.com/rinn7e' target='_blank'>
+              rinn7e
+            </a>
+          </div>
+          <div className='j:text-[12px]'>
+            Using{' '}
+            <a href='https://github.com/vankeisb/react-tea-cup' target='_blank'>
+              react-tea-cup
+            </a>
+          </div>
         </div>
       </div>
-
     </footer>
   )
 }

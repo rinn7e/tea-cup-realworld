@@ -40,7 +40,7 @@ import type { Model, Msg, Props } from './type'
 const pageView = (model: Model) => {
   switch (model.route.page._tag) {
     case 'HomePage':
-      return <HomePage />
+      return <HomePage model={model} />
     case 'LoginPage':
       return <LoginPage />
     case 'RegisterPage':
