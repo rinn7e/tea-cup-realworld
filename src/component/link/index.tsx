@@ -23,21 +23,20 @@
  *
  */
 
-import type { AnchorHTMLAttributes } from 'react'
-import type { Dispatcher } from 'tea-cup-fp'
+import { useContext, type AnchorHTMLAttributes } from 'react'
 
+import { SetGlobalMsgContext } from '@/component/global-context'
 import type { AppRoute } from '@/data/route'
-import type { Msg } from '@/type'
 
 // Trigger on click, if the user left click normally
 // If the user right click, or do other operation, use the href value
 export const Link = (
   props: AnchorHTMLAttributes<HTMLAnchorElement> & {
-    dispatch: Dispatcher<Msg>
     route?: AppRoute
   },
 ) => {
-  const { dispatch, route } = props
+  const setGlobalMsg = useContext(SetGlobalMsgContext)
+  const { route } = props
   const href = '/testabc'
   return (
     <a
@@ -50,7 +49,7 @@ export const Link = (
         if (!isModifiedClick && route) {
           // left-click in the same tab
           e.preventDefault()
-          dispatch({ _tag: 'ChangeRoute', route })
+          setGlobalMsg({ _tag: 'ChangeRoute', route })
         }
       }}
     ></a>

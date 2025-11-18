@@ -24,7 +24,7 @@
  */
 
 import { Link } from '@/component/link'
-import { loginPage, registerPage, route } from '@/data/route'
+import { homePage, loginPage, registerPage, route } from '@/data/route'
 import type { Props } from '@/type'
 
 export const nav = (props: Props) => {
@@ -38,9 +38,15 @@ export const nav = (props: Props) => {
         <ul className='nav navbar-nav pull-xs-right'>
           <li className='nav-item'>
             {/* <!-- Add "active" className when you're on that page" --> */}
-            <a className='nav-link active' href='/'>
+            {/* <a className='nav-link active' href='/'>
               Home
-            </a>
+            </a> */}
+            <Link
+              className='nav-link active'
+              route={route(homePage())}
+            >
+              Home
+            </Link>
           </li>
           <li className='nav-item'>
             {/* <a
@@ -52,7 +58,6 @@ export const nav = (props: Props) => {
             </a> */}
             <Link
               className='nav-link'
-              dispatch={dispatch}
               route={route(loginPage())}
             >
               Sign in
@@ -68,7 +73,6 @@ export const nav = (props: Props) => {
             </a> */}
             <Link
               className='nav-link'
-              dispatch={dispatch}
               route={route(registerPage())}
             >
               Sign up
@@ -121,16 +125,31 @@ export const navAuth = () => {
 export const footer = () => {
   return (
     <footer>
-      <div className='container'>
-        <a href='/' className='logo-font'>
-          conduit
-        </a>
-        <span className='attribution'>
-          An interactive learning project from{' '}
-          <a href='https://thinkster.io'>Thinkster</a>. Code &amp; design
-          licensed under MIT.
-        </span>
+      <div className='container j:flex j:items-center'>
+        <div>
+          <a href='/' className='logo-font'>
+            conduit
+          </a>
+          <span className='attribution'>
+            An interactive learning project from{' '}
+            <a href='https://thinkster.io'>Thinkster</a>. Code &amp; design
+            licensed under MIT.
+          </span>
+        </div>
+
+        <div className='j:grow'></div>
+
+        <div className='j:flex shrink-0 j:gap-[12px] j:text-gray-500'>
+           <div className='j:text-[12px]'>
+              Created by <a href="https://github.com/rinn7e" target="_blank">rinn7e</a>
+            </div>
+            <div className='j:text-[12px]'>
+              Using <a href="https://github.com/vankeisb/react-tea-cup" target="_blank">react-tea-cup</a>
+            </div>
+
+        </div>
       </div>
+
     </footer>
   )
 }
