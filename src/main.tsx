@@ -26,10 +26,10 @@
 import { ProgramWithNav } from 'react-tea-cup'
 import { Sub, type Dispatcher } from 'tea-cup-fp'
 
-import type { Model, Msg } from '@/type'
-import { init, update } from '@/update'
-import { devTools } from '@/util/tea'
-import { View } from '@/view'
+import { devTools } from '@/util'
+import type { Model, Msg } from './type'
+import { init, update } from './update'
+import { View } from './view'
 
 const subscriptions = (_model: Model): Sub<Msg> => {
   return Sub.batch<Msg>([])

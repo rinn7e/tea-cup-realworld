@@ -23,6 +23,8 @@
  *
  */
 
+import * as E from 'fp-ts/lib/Either'
+
 // The same as haskell's error.
 export const error = (err: string): any => {
   return () => {
@@ -46,3 +48,15 @@ export const errorToString = (err: unknown): string => {
     return String(err)
   }
 }
+
+// Convert result from `openapi-ts` to Either
+export const fromApi = <R, L>(result: {
+  data: R | undefined
+  error: L
+}): E.Either<L, R> => {
+  if (result.data) return E.right(result.data)
+  else return E.left(result.error)
+}
+
+export * from './api'
+export * from './tea'

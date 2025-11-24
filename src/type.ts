@@ -23,17 +23,18 @@
  *
  */
 
-import type { Dispatcher, Result } from 'tea-cup-fp'
+import type { RemoteData } from '@devexperts/remote-data-ts'
+import type { Either } from 'fp-ts/lib/Either'
+import type { Dispatcher } from 'tea-cup-fp'
 
 import type { AppPage, AppRoute } from '@/data/route'
-import type { ArticleGroup } from './api/type'
-import type { RemoteData } from '@devexperts/remote-data-ts'
+import * as Api from '@/generated/api'
 
 export type Model = {
   title: string
   isInternal: boolean
   route: AppRoute
-  articleGroup: RemoteData<string, ArticleGroup>
+  articlesResponse: RemoteData<Api.GetArticlesError, Api.GetArticlesResponse>
 }
 
 export type Props = {
@@ -49,5 +50,8 @@ export type Msg =
   | { _tag: 'ChangeRoute'; route: AppRoute }
   | { _tag: 'ModifyRoute'; func: (r: AppRoute) => AppRoute }
   | { _tag: 'ChangePage'; page: AppPage }
-  | { _tag: 'GetArticleGroup'; page: AppPage }
-  | { _tag: 'GetArticleGroupResponse'; result: Result<Error, ArticleGroup> }
+  | { _tag: 'GetArticles'; page: AppPage }
+  | {
+      _tag: 'GetArticlesResponse'
+      result: Either<Api.GetArticlesError, Api.GetArticlesResponse>
+    }

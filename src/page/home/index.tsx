@@ -26,7 +26,7 @@
 import * as A from 'fp-ts/lib/Array'
 import { pipe } from 'fp-ts/lib/function'
 
-import type { Article } from '@/api/type'
+import * as Api from '@/generated/api'
 import type { Model } from '@/type'
 
 export const HomePage = ({ model }: { model: Model }) => {
@@ -132,8 +132,9 @@ export const HomePage = ({ model }: { model: Model }) => {
               </a>
             </div> */}
 
-            {model.articleGroup._tag === 'RemoteSuccess'
-              ? pipe(model.articleGroup.value.articles, A.map(articleView))
+            {model.articlesResponse._tag === 'RemoteSuccess' &&
+            model.articlesResponse.value
+              ? pipe(model.articlesResponse.value.articles, A.map(articleView))
               : null}
 
             <ul className='pagination'>
@@ -188,7 +189,7 @@ export const HomePage = ({ model }: { model: Model }) => {
   )
 }
 
-const articleView = (article: Article) => {
+const articleView = (article: Api.GetArticlesResponse['articles'][0]) => {
   return (
     <div key={article.slug} className='article-preview'>
       {articleTopPanelView(article)}
@@ -202,7 +203,9 @@ const articleView = (article: Article) => {
   )
 }
 
-const articleTopPanelView = (article: Article) => {
+const articleTopPanelView = (
+  article: Api.GetArticlesResponse['articles'][0],
+) => {
   return (
     <div className='article-meta'>
       <a href={`/profile/{article.author.username}`}>

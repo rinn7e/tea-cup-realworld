@@ -3,3 +3,5 @@ dist-auth
 node_modules/
 size-plugin.json
 package-lock.json
+src/generated/
+openapi.yml

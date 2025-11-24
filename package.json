@@ -12,7 +12,8 @@
     "check-style": "prettier --check .",
     "fix-style": "prettier --write .",
     "lint": "eslint src",
-    "clean": "npm run fix-style && npm run check && npm run lint && npm run bundle"
+    "clean": "npm run fix-style && npm run check && npm run lint && npm run bundle",
+    "generate-api": "openapi-ts"
   },
   "dependencies": {
     "@devexperts/remote-data-ts": "^2.1.1",
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
+    "@hey-api/openapi-ts": "^0.88.0",
     "@types/node": "^24.10.0",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
