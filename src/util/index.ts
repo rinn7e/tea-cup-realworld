@@ -24,6 +24,8 @@
  */
 
 import * as E from 'fp-ts/lib/Either'
+import { clsx, type ClassValue } from 'clsx'
+import { twMerge } from 'tailwind-merge'
 
 // The same as haskell's error.
 export const error = (err: string): any => {
@@ -56,6 +58,15 @@ export const fromApi = <R, L>(result: {
 }): E.Either<L, R> => {
   if (result.data) return E.right(result.data)
   else return E.left(result.error)
+}
+
+export function cl(...args: ClassValue[]): string {
+  return twMerge(clsx(args))
+}
+
+// TODO fix this
+export const tooltip = (props: any) => {
+  return props.children()
 }
 
 export * from './api'

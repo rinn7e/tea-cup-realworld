@@ -23,43 +23,113 @@
  *
  */
 
+import { useState } from 'react'
+import { FormItemMemo } from '@rinn7e/tea-cup-form'
+import * as Form from '@rinn7e/tea-cup-form'
+import {
+  currentPassword,
+  defaultChangePasswordFormConfig,
+  newPassword,
+  repeatNewPassword,
+} from './type'
+
+// export const LoginPage = () => {
+//   return (
+//     <div className='auth-page'>
+//       <div className='container page'>
+//         <div className='row'>
+//           <div className='col-md-6 offset-md-3 col-xs-12'>
+//             <h1 className='text-xs-center'>Sign in</h1>
+//             <p className='text-xs-center'>
+//               <a href='/register'>Need an account?</a>
+//             </p>
+
+//             <ul className='error-messages'>
+//               <li>That email is already taken</li>
+//             </ul>
+
+//             <form>
+//               <fieldset className='form-group'>
+//                 <input
+//                   className='form-control form-control-lg'
+//                   type='text'
+//                   placeholder='Email'
+//                 />
+//               </fieldset>
+//               <fieldset className='form-group'>
+//                 <input
+//                   className='form-control form-control-lg'
+//                   type='password'
+//                   placeholder='Password'
+//                 />
+//               </fieldset>
+//               <button className='btn btn-lg btn-primary pull-xs-right'>
+//                 Sign in
+//               </button>
+//             </form>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   )
+// }
+
 export const LoginPage = () => {
+  const [currentPasswordError, setCurrentPasswordError] =
+    useState<boolean>(false)
+  const [passwordDontMatch, setPasswordDontMatch] = useState<boolean>(false)
+  const formDispatch = () => {}
+  const model = {
+    form: Form.init(new Map(defaultChangePasswordFormConfig)),
+  }
+  const isTablet = false
+
   return (
-    <div className='auth-page'>
-      <div className='container page'>
-        <div className='row'>
-          <div className='col-md-6 offset-md-3 col-xs-12'>
-            <h1 className='text-xs-center'>Sign in</h1>
-            <p className='text-xs-center'>
-              <a href='/register'>Need an account?</a>
-            </p>
-
-            <ul className='error-messages'>
-              <li>That email is already taken</li>
-            </ul>
-
-            <form>
-              <fieldset className='form-group'>
-                <input
-                  className='form-control form-control-lg'
-                  type='text'
-                  placeholder='Email'
-                />
-              </fieldset>
-              <fieldset className='form-group'>
-                <input
-                  className='form-control form-control-lg'
-                  type='password'
-                  placeholder='Password'
-                />
-              </fieldset>
-              <button className='btn btn-lg btn-primary pull-xs-right'>
-                Sign in
-              </button>
-            </form>
-          </div>
-        </div>
+    <form
+      onSubmit={() => {}}
+      className='flex flex-col gap-y-[12px] lg:max-w-[440px] lg:mx-auto w-full h-full lg:mt-[16px]'
+    >
+      <div
+        data-tooltip-id='jj-current-password-error'
+        aria-invalid={Boolean(currentPasswordError)}
+        className='group'
+      >
+        <FormItemMemo
+          field={currentPassword}
+          dispatch={formDispatch}
+          model={model.form}
+        />
       </div>
-    </div>
+
+      <FormItemMemo
+        field={newPassword}
+        dispatch={formDispatch}
+        model={model.form}
+      />
+
+      <div
+        data-tooltip-id='jj-repeat-new-password-error'
+        aria-invalid={passwordDontMatch}
+        className='group'
+      >
+        <FormItemMemo
+          field={repeatNewPassword}
+          dispatch={formDispatch}
+          model={model.form}
+        />
+      </div>
+
+      <div className='flex justify-center gap-[12px] mt-auto lg:mt-[32px]'>
+        {!isTablet && (
+          <button className='flex-1' type='button' onClick={() => {}}>
+            Cancel
+          </button>
+        )}
+
+        <button className='flex-1' type='button' onClick={() => {}}>
+          Submit
+        </button>
+      </div>
+    </form>
   )
 }

@@ -17,11 +17,13 @@
   },
   "dependencies": {
     "@devexperts/remote-data-ts": "^2.1.1",
+    "@rinn7e/tea-cup-form": "github:rinn7e/tea-cup-form#570d54f4114864dce64b95dc106bf539e94a1544",
     "@tailwindcss/vite": "^4.1.17",
     "fp-ts": "^2.16.11",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-tea-cup": "^5.1.1",
+    "tailwind-merge": "^3.4.0",
     "tailwindcss": "^4.1.17",
     "tea-cup-fp": "^1.1.0"
   },
