@@ -25,66 +25,31 @@
 
 import * as Form from '@rinn7e/tea-cup-form'
 import { FormItemMemo } from '@rinn7e/tea-cup-form'
-import { pipe } from 'fp-ts/lib/function'
-import * as O from 'fp-ts/lib/Option'
+import { map } from 'tea-cup-fp'
 
 import { buttonView } from '@/component/button'
 import { errorTextView } from '@/component/error-text'
 import { headerSubTextView } from '@/component/header-sub-text'
 import { headerTextView } from '@/component/header-text'
-import { textInputView } from '@/component/text-input'
+import type { Msg, Props } from './type'
+import { emailField, passwordField, usernameField } from './update'
 
-// -----------------------------------------------------------------
-// Config
-// -----------------------------------------------------------------
-
-const usernameField = 'username'
-const emailField = 'email'
-const passwordField = 'password'
-
-const defaultFormConfig: [string, Form.FormType][] = [
-  [
-    usernameField,
-    {
-      ...Form.defaultTextType(textInputView),
-      label: 'Username',
-      placeholder: 'Username',
-      validation: (input: string) =>
-        pipe(Form.nonEmptyValidator(input, usernameField)),
-    },
-  ],
-  [
-    emailField,
-    {
-      ...Form.defaultTextType(textInputView),
-      label: 'Email',
-      placeholder: 'Email',
-      validation: (input: string) =>
-        pipe(Form.nonEmptyValidator(input, emailField)),
-    },
-  ],
-  [
-    passwordField,
-    {
-      ...Form.defaultTextType(textInputView),
-      label: 'Password',
-      placeholder: 'Password',
-      isPassword: O.some({ revealPassword: false, disableAutocomplete: true }),
-      validation: (input: string) =>
-        pipe(Form.nonEmptyValidator(input, passwordField)),
-    },
-  ],
-]
 
 // -----------------------------------------------------------------
 // View
 // -----------------------------------------------------------------
 
-export const RegisterPage = () => {
-  const formDispatch = () => {}
-  const model = {
-    form: Form.init(new Map(defaultFormConfig)),
-  }
+export const RegisterPageView = (props: Props) => {
+  const {dispatch, model} = props
+
+  const formDispatch = map(
+    dispatch,
+    (subMsg: Form.Msg) =>
+      ({
+        _tag: 'FormMsg',
+        subMsg,
+      } satisfies Msg),
+  )
 
   return (
     <div className='auth-page'>

@@ -50,6 +50,9 @@ export type ArticlePage = {
 export type ProfilePage = {
   _tag: 'ProfilePage'
 }
+export type NotFoundPage = {
+  _tag: 'NotFoundPage'
+}
 
 export type AppPage =
   | HomePage
@@ -59,6 +62,7 @@ export type AppPage =
   | CreateArticlePage
   | ArticlePage
   | ProfilePage
+  | NotFoundPage
 
 export const homePage = () => ({ _tag: 'HomePage' }) satisfies HomePage
 export const loginPage = () => ({ _tag: 'LoginPage' }) satisfies LoginPage
@@ -69,6 +73,8 @@ export const createArticlePage = () =>
   ({ _tag: 'CreateArticlePage' }) satisfies CreateArticlePage
 export const articlePage = () => ({ _tag: 'ArticlePage' }) satisfies ArticlePage
 export const profilePage = () => ({ _tag: 'ProfilePage' }) satisfies ProfilePage
+export const notFoundPage = () =>
+  ({ _tag: 'NotFoundPage' }) satisfies NotFoundPage
 
 export const route = (page: AppPage): AppRoute => ({ page })
 
@@ -79,3 +85,50 @@ export type AppRoute = {
 }
 
 export type AppRouteUpdater = ((current: AppRoute) => AppRoute) | null
+
+export const parseAppRoute = (url: string, _href: string): AppRoute => {
+  if (url === '/' || url === '') {
+    return route(homePage())
+  } else if (url.split('/')[1] === 'article') {
+    return route(articlePage())
+  } else if (url === '/login') {
+    return route(loginPage())
+  } else if (url === '/register') {
+    return route(registerPage())
+  } else {
+    return route(notFoundPage())
+  }
+}
+
+export const toUrlString = (r: AppRoute): string => {
+  const route = (() => {
+    switch (r.page._tag) {
+      case 'HomePage': {
+        return '/'
+      }
+      case 'LoginPage': {
+        return '/login'
+      }
+      case 'RegisterPage': {
+        return '/register'
+      }
+      case 'SettingPage': {
+        return '/setting'
+      }
+      case 'CreateArticlePage': {
+        return '/create-article'
+      }
+      case 'ArticlePage': {
+        return '/article'
+      }
+      case 'ProfilePage': {
+        return '/profile'
+      }
+      case 'NotFoundPage': {
+        return ''
+      }
+    }
+  })()
+
+  return route
+}

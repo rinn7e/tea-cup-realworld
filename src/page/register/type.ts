@@ -1,3 +1,4 @@
+
 /*
  * MIT License
  *
@@ -23,41 +24,28 @@
  *
  */
 
-import type { RemoteData } from '@devexperts/remote-data-ts'
-import type { Either } from 'fp-ts/lib/Either'
-import type { Option } from 'fp-ts/lib/Option'
+import * as Form from '@rinn7e/tea-cup-form'
+import * as EqClass from 'fp-ts/lib/Eq'
 import type { Dispatcher } from 'tea-cup-fp'
 
-import type { AppPage, AppRoute } from '@/data/route'
-import * as Api from '@/generated/api'
-import type * as RegisterPage from '@/page/register/update'
 
 export type Model = {
-  title: string
-  isInternal: boolean
-  route: AppRoute
-  articlesResponse: RemoteData<Api.GetArticlesError, Api.GetArticlesResponse>
-
-  registerPage: Option<RegisterPage.Model>
+  form: Form.Model
 }
+
+export const ModelEq = EqClass.struct<Model>({
+  form: Form.ModelEq,
+})
 
 export type Props = {
   dispatch: Dispatcher<Msg>
   model: Model
 }
 
+// -----------------------------------------------------------------
+// Msg
+// -----------------------------------------------------------------
+
 export type Msg =
   | { _tag: 'None' }
-  | { _tag: 'UrlChange'; location: Location }
-  | { _tag: 'Navigate'; route: AppRoute }
-  // The same as 'Navigate', but changing route pre-condition lives here
-  | { _tag: 'ChangeRoute'; route: AppRoute }
-  | { _tag: 'ModifyRoute'; func: (r: AppRoute) => AppRoute }
-  | { _tag: 'ChangePage'; page: AppPage }
-  | { _tag: 'GetArticles'; page: AppPage }
-  | {
-      _tag: 'GetArticlesResponse'
-      result: Either<Api.GetArticlesError, Api.GetArticlesResponse>
-    }
-    // pges
-  | {_tag: 'RegisterPageMsg', subMsg: RegisterPage.Msg}
+  | { _tag: 'FormMsg'; subMsg: Form.Msg }

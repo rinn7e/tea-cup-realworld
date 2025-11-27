@@ -24,18 +24,34 @@
  */
 
 import * as RD from '@devexperts/remote-data-ts'
-import { Cmd } from 'tea-cup-fp'
+import { pipe } from 'fp-ts/lib/function'
+import * as O from 'fp-ts/lib/Option'
+import * as Tuple from 'fp-ts/lib/Tuple'
+import { newUrl } from 'react-tea-cup'
+import { Cmd, Task } from 'tea-cup-fp'
 
-import type { AppRoute } from '@/data/route'
+import { parseAppRoute, toUrlString, type AppRoute } from '@/data/route'
 import * as Api from '@/generated/api'
+import * as RegisterPage from '@/page/register/update'
 import { client, cmdFromPromise, fromApi } from '@/util'
 import type { Model, Msg } from './type'
 
-export const init = (_l: Location): [Model, Cmd<Msg>] => {
-  const initRoute = {
-    // page: { _tag: 'LoginPage' },
-    page: { _tag: 'HomePage' },
-  } satisfies AppRoute
+
+export const init = (l: Location): [Model, Cmd<Msg>] => {
+  // const initRoute = {
+  //   // page: { _tag: 'LoginPage' },
+  //   page: { _tag: 'HomePage' },
+  // } satisfies AppRoute
+
+  const initRoute = parseAppRoute(l.pathname, l.href)
+
+  const [registerPage, registerPageCmd] =
+    initRoute.page._tag === 'RegisterPage'
+      ? pipe(
+        RegisterPage.init(),
+        Tuple.mapFst(O.some),
+      )
+      : [O.none, Cmd.none<RegisterPage.Msg>()]
 
   return [
     {
@@ -43,14 +59,21 @@ export const init = (_l: Location): [Model, Cmd<Msg>] => {
       isInternal: false,
       route: initRoute,
       articlesResponse: RD.pending,
+      // page
+      registerPage,
     },
-    Cmd.batch([getArticlesCmd()]),
+    Cmd.batch([
+      getArticlesCmd(),
+
+      //page
+      registerPageCmd.map((subMsg) => ({ _tag: 'RegisterPageMsg', subMsg })),
+    ]),
   ]
 }
 
 export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
   switch (msg._tag) {
-    case 'NoOp':
+    case 'None':
       return [model, Cmd.none()]
     case 'UrlChange':
       return urlChangeHandler(location, model)
@@ -77,6 +100,21 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
         Cmd.none(),
       ]
     }
+
+    case 'RegisterPageMsg': {
+      if (model.registerPage._tag === 'Some') {
+        const [registerPageModel, registerPageCmd] = RegisterPage.update(msg.subMsg, model.registerPage.value)
+        return pipe(
+          [
+            { ...model, registerPage: O.some(registerPageModel) },
+            registerPageCmd.map((subMsg) => ({ _tag: 'RegisterPageMsg', subMsg })),
+          ] satisfies [Model, Cmd<Msg>],
+          // globalMsg
+          //   ? updateAndCmd((m) => update(resource)(globalMsg, m))
+          //   : identity,
+        )
+      } else return [model, Cmd.none()]
+    }
   }
 }
 
@@ -98,32 +136,31 @@ const urlChangeHandler = (
     //   model,
     // )
     // TODO
-    return [model, Cmd.none()]
+    const newRoute = parseAppRoute(location.pathname, location.href)
+    return [{ ...model, route: newRoute }, Cmd.none()]
   }
 }
 
 const navigate =
   (newRoute: AppRoute) =>
-  (model: Model): [Model, Cmd<Msg>] => {
-    return [
-      {
-        ...model,
-        route: newRoute,
-        isInternal: true,
-      },
-      Cmd.batch([
-        // TODO
-        // Task.perform(newUrl(url), () => ({ _tag: 'None' }))
-      ]),
-    ]
-  }
+    (model: Model): [Model, Cmd<Msg>] => {
+      const url = toUrlString(newRoute)
+      return [
+        {
+          ...model,
+          route: newRoute,
+          isInternal: true,
+        },
+        Cmd.batch([Task.perform(newUrl(url), () => ({ _tag: 'None' }))]),
+      ]
+    }
 
 const changeRouteHandler =
   (newRoute: AppRoute) =>
-  (model: Model): [Model, Cmd<Msg>] => {
-    // Run pre condition here
-    return navigate(newRoute)(model)
-  }
+    (model: Model): [Model, Cmd<Msg>] => {
+      // Run pre condition here
+      return navigate(newRoute)(model)
+    }
 
 const getArticlesCmd = (): Cmd<Msg> => {
   return cmdFromPromise(
@@ -134,7 +171,7 @@ const getArticlesCmd = (): Cmd<Msg> => {
     (r) => {
       if (r.tag === 'Ok')
         return { _tag: 'GetArticlesResponse', result: r.value }
-      else return { _tag: 'NoOp' }
+      else return { _tag: 'None' }
     },
   )
 }

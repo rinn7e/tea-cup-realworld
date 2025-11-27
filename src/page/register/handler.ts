@@ -1,3 +1,4 @@
+
 /*
  * MIT License
  *
@@ -23,35 +24,37 @@
  *
  */
 
-import { useContext, type AnchorHTMLAttributes } from 'react'
+import * as Form from '@rinn7e/tea-cup-form'
+import { pipe } from 'fp-ts/lib/function'
 
-import { SetGlobalMsgContext } from '@/component/global-context'
-import { toUrlString, type AppRoute } from '@/data/route'
+import type { Model } from './type'
 
-// Trigger on click, if the user left click normally
-// If the user right click, or do other operation, use the href value
-export const Link = (
-  props: AnchorHTMLAttributes<HTMLAnchorElement> & {
-    route?: AppRoute
-  },
-) => {
-  const setGlobalMsg = useContext(SetGlobalMsgContext)
-  const { route, ...aProps } = props
-  const hrefProps = route ? { href: toUrlString(route) } : undefined
-  return (
-    <a
-      {...aProps}
-      {...hrefProps}
-      onClick={(e) => {
-        const isModifiedClick =
-          e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey
 
-        if (!isModifiedClick && route) {
-          // left-click in the same tab
-          e.preventDefault()
-          setGlobalMsg({ _tag: 'ChangeRoute', route })
-        }
-      }}
-    ></a>
-  )
-}
+const preprocessFormMsgHandler =
+  (newForm: Form.Model) =>
+  (model: Model): Model => {
+    const _validationResult = Form.runValidationForAll(
+      newForm.forms,
+      Form.noExtraValidation,
+    )
+    return {
+      ...model,
+      // currentPasswordError: '',
+      form: newForm,
+      // passwordDontMatch:
+      //   validationResult._tag === 'Right' ? false : model.passwordDontMatch,
+      // buttonState:
+      //   validationResult._tag === 'Right'
+      //     ? { _tag: 'Enabled', onClick: () => null }
+      //     : { _tag: 'Disabled' },
+    }
+  }
+
+// Given a Form.Msg, update the form model, and run preprocessing
+export const formMsgHandler =
+  (subMsg: Form.Msg) =>
+  (model: Model): Model => {
+    return pipe(model.form, Form.update(subMsg), (newForm) =>
+      preprocessFormMsgHandler(newForm)(model),
+    )
+  }

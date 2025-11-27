@@ -25,26 +25,45 @@
 
 import { pipe } from 'fp-ts/lib/function'
 import { useCallback } from 'react'
+import { map } from 'tea-cup-fp'
 
-import { footer, nav } from '@/component/common'
+import { footerView } from '@/component/footer'
 import { SetGlobalMsgContext } from '@/component/global-context'
+import { navbarView } from '@/component/navbar'
 import { ArticlePage } from '@/page/article'
 import { CreateArticlePage } from '@/page/create-article'
 import { HomePage } from '@/page/home'
 import { LoginPage } from '@/page/login'
 import { ProfilePage } from '@/page/profile'
-import { RegisterPage } from '@/page/register'
+import { RegisterPageView } from '@/page/register'
+import * as RegisterPage from '@/page/register/update'
 import { SettingPage } from '@/page/setting'
-import type { Model, Msg, Props } from './type'
+import type { Msg, Props } from './type'
 
-const pageView = (model: Model) => {
+const pageView = (props: Props) => {
+  const { dispatch, model } = props
+
   switch (model.route.page._tag) {
     case 'HomePage':
       return <HomePage model={model} />
     case 'LoginPage':
       return <LoginPage />
-    case 'RegisterPage':
-      return <RegisterPage />
+    case 'RegisterPage': {
+      if (model.registerPage._tag === 'Some') {
+        return <RegisterPageView
+          dispatch={map(
+            dispatch,
+            (subMsg: RegisterPage.Msg) =>
+            ({
+              _tag: 'RegisterPageMsg',
+              subMsg,
+            } satisfies Msg),
+          )}
+          model={model.registerPage.value}
+        />
+      } else return null
+    }
+
     case 'ProfilePage':
       return <ProfilePage />
     case 'SettingPage':
@@ -70,9 +89,9 @@ export const View = (props: Props) => {
 
   const view = () => (
     <div className='w-full h-full flex flex-col'>
-      {nav(props)}
-      {pageView(model)}
-      {footer()}
+      {navbarView(props)}
+      {pageView(props)}
+      {footerView()}
     </div>
   )
 

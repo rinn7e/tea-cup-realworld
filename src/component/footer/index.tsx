@@ -23,35 +23,39 @@
  *
  */
 
-import { useContext, type AnchorHTMLAttributes } from 'react'
 
-import { SetGlobalMsgContext } from '@/component/global-context'
-import { toUrlString, type AppRoute } from '@/data/route'
-
-// Trigger on click, if the user left click normally
-// If the user right click, or do other operation, use the href value
-export const Link = (
-  props: AnchorHTMLAttributes<HTMLAnchorElement> & {
-    route?: AppRoute
-  },
-) => {
-  const setGlobalMsg = useContext(SetGlobalMsgContext)
-  const { route, ...aProps } = props
-  const hrefProps = route ? { href: toUrlString(route) } : undefined
+export const footerView = () => {
   return (
-    <a
-      {...aProps}
-      {...hrefProps}
-      onClick={(e) => {
-        const isModifiedClick =
-          e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey
+    <footer>
+      <div className='container j:flex j:items-center'>
+        <div>
+          <a href='/' className='logo-font'>
+            conduit
+          </a>
+          <span className='attribution'>
+            An interactive learning project from{' '}
+            <a href='https://thinkster.io'>Thinkster</a>. Code &amp; design
+            licensed under MIT.
+          </span>
+        </div>
 
-        if (!isModifiedClick && route) {
-          // left-click in the same tab
-          e.preventDefault()
-          setGlobalMsg({ _tag: 'ChangeRoute', route })
-        }
-      }}
-    ></a>
+        <div className='j:grow'></div>
+
+        <div className='j:flex shrink-0 j:gap-[12px] j:text-gray-500'>
+          <div className='j:text-[12px]'>
+            Created by{' '}
+            <a href='https://github.com/rinn7e' target='_blank'>
+              rinn7e
+            </a>
+          </div>
+          <div className='j:text-[12px]'>
+            Using{' '}
+            <a href='https://github.com/vankeisb/react-tea-cup' target='_blank'>
+              react-tea-cup
+            </a>
+          </div>
+        </div>
+      </div>
+    </footer>
   )
 }
