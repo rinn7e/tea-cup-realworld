@@ -30,7 +30,7 @@ import * as O from 'fp-ts/lib/Option'
 
 import { textInputView } from '@/component/text-input'
 import { Cmd } from 'tea-cup-fp'
-import { formMsgHandler } from './handler'
+import { formMsgHandler, submitHandler } from './handler'
 import type { Model, Msg } from './type'
 
 
@@ -99,6 +99,8 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
       return [model, Cmd.none()]
     case 'FormMsg':
       return pipe([formMsgHandler(msg.subMsg)(model), Cmd.none()])
+    case 'Submit':
+      return submitHandler(model)
   }
 }
 

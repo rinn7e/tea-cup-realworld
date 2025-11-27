@@ -71,7 +71,7 @@ export const textInputView = (
             isFocus: false,
           })
         }
-        autoComplete={'false'}
+        autoComplete={'off'}
         className='form-control form-control-lg'
       />
     </fieldset>

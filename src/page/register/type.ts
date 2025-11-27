@@ -49,3 +49,4 @@ export type Props = {
 export type Msg =
   | { _tag: 'None' }
   | { _tag: 'FormMsg'; subMsg: Form.Msg }
+  | { _tag: 'Submit'}
