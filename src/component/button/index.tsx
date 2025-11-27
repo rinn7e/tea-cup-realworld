@@ -23,40 +23,8 @@
  *
  */
 
-import * as A from 'fp-ts/lib/Array'
-import { pipe } from 'fp-ts/lib/function'
-
-import { bannerView } from '@/component/banner'
-import { feedArticleView } from '@/component/feed-article'
-import { feedTabListView } from '@/component/feed-tab-list'
-import { paginButtonListView } from '@/component/pagin-button-list'
-import { popularTagPanelView } from '@/component/popular-tag-panel'
-import type { Model } from '@/type'
-
-export const HomePage = ({ model }: { model: Model }) => {
+export const buttonView = ({ label }: { label: string }) => {
   return (
-    <div className='home-page'>
-      {bannerView()}
-
-      <div className='container page'>
-        <div className='row'>
-          <div className='col-md-9'>
-            {feedTabListView()}
-
-            {model.articlesResponse._tag === 'RemoteSuccess' &&
-            model.articlesResponse.value
-              ? pipe(
-                  model.articlesResponse.value.articles,
-                  A.map(feedArticleView),
-                )
-              : null}
-
-            {paginButtonListView()}
-          </div>
-
-          <div className='col-md-3'>{popularTagPanelView()}</div>
-        </div>
-      </div>
-    </div>
+    <button className='btn btn-lg btn-primary pull-xs-right'>{label}</button>
   )
 }

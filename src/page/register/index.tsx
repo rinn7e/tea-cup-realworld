@@ -23,46 +23,96 @@
  *
  */
 
+import * as Form from '@rinn7e/tea-cup-form'
+import { FormItemMemo } from '@rinn7e/tea-cup-form'
+import { pipe } from 'fp-ts/lib/function'
+import * as O from 'fp-ts/lib/Option'
+
+import { buttonView } from '@/component/button'
+import { errorTextView } from '@/component/error-text'
+import { headerSubTextView } from '@/component/header-sub-text'
+import { headerTextView } from '@/component/header-text'
+import { textInputView } from '@/component/text-input'
+
+// -----------------------------------------------------------------
+// Config
+// -----------------------------------------------------------------
+
+const usernameField = 'username'
+const emailField = 'email'
+const passwordField = 'password'
+
+const defaultFormConfig: [string, Form.FormType][] = [
+  [
+    usernameField,
+    {
+      ...Form.defaultTextType(textInputView),
+      label: 'Username',
+      placeholder: 'Username',
+      validation: (input: string) =>
+        pipe(Form.nonEmptyValidator(input, usernameField)),
+    },
+  ],
+  [
+    emailField,
+    {
+      ...Form.defaultTextType(textInputView),
+      label: 'Email',
+      placeholder: 'Email',
+      validation: (input: string) =>
+        pipe(Form.nonEmptyValidator(input, emailField)),
+    },
+  ],
+  [
+    passwordField,
+    {
+      ...Form.defaultTextType(textInputView),
+      label: 'Password',
+      placeholder: 'Password',
+      isPassword: O.some({ revealPassword: false, disableAutocomplete: true }),
+      validation: (input: string) =>
+        pipe(Form.nonEmptyValidator(input, passwordField)),
+    },
+  ],
+]
+
+// -----------------------------------------------------------------
+// View
+// -----------------------------------------------------------------
+
 export const RegisterPage = () => {
+  const formDispatch = () => {}
+  const model = {
+    form: Form.init(new Map(defaultFormConfig)),
+  }
+
   return (
     <div className='auth-page'>
       <div className='container page'>
         <div className='row'>
           <div className='col-md-6 offset-md-3 col-xs-12'>
-            <h1 className='text-xs-center'>Sign up</h1>
-            <p className='text-xs-center'>
-              <a href='/login'>Have an account?</a>
-            </p>
-
-            <ul className='error-messages'>
-              <li>That email is already taken</li>
-            </ul>
+            {headerTextView({ label: 'Sign up' })}
+            {headerSubTextView({ label: 'Have an account?', href: '/login' })}
+            {errorTextView({ label: 'That email is already taken' })}
 
             <form>
-              <fieldset className='form-group'>
-                <input
-                  className='form-control form-control-lg'
-                  type='text'
-                  placeholder='Username'
-                />
-              </fieldset>
-              <fieldset className='form-group'>
-                <input
-                  className='form-control form-control-lg'
-                  type='text'
-                  placeholder='Email'
-                />
-              </fieldset>
-              <fieldset className='form-group'>
-                <input
-                  className='form-control form-control-lg'
-                  type='password'
-                  placeholder='Password'
-                />
-              </fieldset>
-              <button className='btn btn-lg btn-primary pull-xs-right'>
-                Sign up
-              </button>
+              <FormItemMemo
+                field={usernameField}
+                dispatch={formDispatch}
+                model={model.form}
+              />
+              <FormItemMemo
+                field={emailField}
+                dispatch={formDispatch}
+                model={model.form}
+              />
+              <FormItemMemo
+                field={passwordField}
+                dispatch={formDispatch}
+                model={model.form}
+              />
+
+              {buttonView({ label: 'Sign up' })}
             </form>
           </div>
         </div>

@@ -23,113 +23,92 @@
  *
  */
 
-import { useState } from 'react'
-import { FormItemMemo } from '@rinn7e/tea-cup-form'
 import * as Form from '@rinn7e/tea-cup-form'
-import {
-  currentPassword,
-  defaultChangePasswordFormConfig,
-  newPassword,
-  repeatNewPassword,
-} from './type'
+import { FormItemMemo } from '@rinn7e/tea-cup-form'
+import * as O from 'fp-ts/lib/Option'
+import { pipe } from 'fp-ts/lib/function'
 
-// export const LoginPage = () => {
-//   return (
-//     <div className='auth-page'>
-//       <div className='container page'>
-//         <div className='row'>
-//           <div className='col-md-6 offset-md-3 col-xs-12'>
-//             <h1 className='text-xs-center'>Sign in</h1>
-//             <p className='text-xs-center'>
-//               <a href='/register'>Need an account?</a>
-//             </p>
+import { buttonView } from '@/component/button'
+import { errorTextView } from '@/component/error-text'
+import { headerSubTextView } from '@/component/header-sub-text'
+import { headerTextView } from '@/component/header-text'
+import { textInputView } from '@/component/text-input'
 
-//             <ul className='error-messages'>
-//               <li>That email is already taken</li>
-//             </ul>
+// -----------------------------------------------------------------
+// Config
+// -----------------------------------------------------------------
 
-//             <form>
-//               <fieldset className='form-group'>
-//                 <input
-//                   className='form-control form-control-lg'
-//                   type='text'
-//                   placeholder='Email'
-//                 />
-//               </fieldset>
-//               <fieldset className='form-group'>
-//                 <input
-//                   className='form-control form-control-lg'
-//                   type='password'
-//                   placeholder='Password'
-//                 />
-//               </fieldset>
-//               <button className='btn btn-lg btn-primary pull-xs-right'>
-//                 Sign in
-//               </button>
-//             </form>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   )
-// }
+const emailField = 'email'
+const passwordField = 'password'
+
+const defaultFormConfig: [string, Form.FormType][] = [
+  [
+    emailField,
+    {
+      ...Form.defaultTextType(textInputView),
+      label: 'Email',
+      placeholder: 'Email',
+      validation: (input: string) =>
+        pipe(Form.nonEmptyValidator(input, emailField)),
+    },
+  ],
+  [
+    passwordField,
+    {
+      ...Form.defaultTextType(textInputView),
+      label: 'Password',
+      placeholder: 'Password',
+      isPassword: O.some({ revealPassword: false, disableAutocomplete: true }),
+      validation: (input: string) =>
+        pipe(Form.nonEmptyValidator(input, passwordField)),
+    },
+  ],
+]
+
+// -----------------------------------------------------------------
+// View
+// -----------------------------------------------------------------
 
 export const LoginPage = () => {
-  const [currentPasswordError, setCurrentPasswordError] =
-    useState<boolean>(false)
-  const [passwordDontMatch, setPasswordDontMatch] = useState<boolean>(false)
+  // const [currentPasswordError, setCurrentPasswordError] =
+  //   useState<boolean>(false)
+  // const [passwordDontMatch, setPasswordDontMatch] = useState<boolean>(false)
   const formDispatch = () => {}
   const model = {
-    form: Form.init(new Map(defaultChangePasswordFormConfig)),
+    form: Form.init(new Map(defaultFormConfig)),
   }
-  const isTablet = false
+  // const isTablet = false
 
   return (
-    <form
-      onSubmit={() => {}}
-      className='flex flex-col gap-y-[12px] lg:max-w-[440px] lg:mx-auto w-full h-full lg:mt-[16px]'
-    >
-      <div
-        data-tooltip-id='jj-current-password-error'
-        aria-invalid={Boolean(currentPasswordError)}
-        className='group'
-      >
-        <FormItemMemo
-          field={currentPassword}
-          dispatch={formDispatch}
-          model={model.form}
-        />
+    <div className='auth-page'>
+      <div className='container page'>
+        <div className='row'>
+          <div className='col-md-6 offset-md-3 col-xs-12'>
+            {headerTextView({ label: 'Sign in' })}
+            {headerSubTextView({
+              label: 'Need an account?',
+              href: '/register',
+            })}
+
+            {errorTextView({ label: 'That email is already taken' })}
+
+            <form>
+              <FormItemMemo
+                field={emailField}
+                dispatch={formDispatch}
+                model={model.form}
+              />
+              <FormItemMemo
+                field={passwordField}
+                dispatch={formDispatch}
+                model={model.form}
+              />
+
+              {buttonView({ label: 'Sign in' })}
+            </form>
+          </div>
+        </div>
       </div>
-
-      <FormItemMemo
-        field={newPassword}
-        dispatch={formDispatch}
-        model={model.form}
-      />
-
-      <div
-        data-tooltip-id='jj-repeat-new-password-error'
-        aria-invalid={passwordDontMatch}
-        className='group'
-      >
-        <FormItemMemo
-          field={repeatNewPassword}
-          dispatch={formDispatch}
-          model={model.form}
-        />
-      </div>
-
-      <div className='flex justify-center gap-[12px] mt-auto lg:mt-[32px]'>
-        {!isTablet && (
-          <button className='flex-1' type='button' onClick={() => {}}>
-            Cancel
-          </button>
-        )}
-
-        <button className='flex-1' type='button' onClick={() => {}}>
-          Submit
-        </button>
-      </div>
-    </form>
+    </div>
   )
 }

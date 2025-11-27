@@ -33,7 +33,8 @@ import type { Model, Msg } from './type'
 
 export const init = (_l: Location): [Model, Cmd<Msg>] => {
   const initRoute = {
-    page: { _tag: 'LoginPage' },
+    // page: { _tag: 'LoginPage' },
+    page: { _tag: 'HomePage' },
   } satisfies AppRoute
 
   return [

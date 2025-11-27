@@ -26,37 +26,49 @@
 import * as A from 'fp-ts/lib/Array'
 import { pipe } from 'fp-ts/lib/function'
 
-import { bannerView } from '@/component/banner'
-import { feedArticleView } from '@/component/feed-article'
-import { feedTabListView } from '@/component/feed-tab-list'
-import { paginButtonListView } from '@/component/pagin-button-list'
-import { popularTagPanelView } from '@/component/popular-tag-panel'
-import type { Model } from '@/type'
+import * as Api from '@/generated/api'
 
-export const HomePage = ({ model }: { model: Model }) => {
+export const feedArticleView = (
+  article: Api.GetArticlesResponse['articles'][0],
+) => {
   return (
-    <div className='home-page'>
-      {bannerView()}
-
-      <div className='container page'>
-        <div className='row'>
-          <div className='col-md-9'>
-            {feedTabListView()}
-
-            {model.articlesResponse._tag === 'RemoteSuccess' &&
-            model.articlesResponse.value
-              ? pipe(
-                  model.articlesResponse.value.articles,
-                  A.map(feedArticleView),
-                )
-              : null}
-
-            {paginButtonListView()}
-          </div>
-
-          <div className='col-md-3'>{popularTagPanelView()}</div>
-        </div>
-      </div>
+    <div key={article.slug} className='article-preview'>
+      {articleTopPanelView(article)}
+      <a href='/article/the-song-you' className='preview-link'>
+        <h1>{article.title}</h1>
+        <p>{article.description}</p>
+        <span>Read more...</span>
+        <ul className='tag-list'>{pipe(article.tagList, A.map(tagView))}</ul>
+      </a>
     </div>
+  )
+}
+
+const articleTopPanelView = (
+  article: Api.GetArticlesResponse['articles'][0],
+) => {
+  return (
+    <div className='article-meta'>
+      <a href={`/profile/{article.author.username}`}>
+        <img src={article.author.image} />
+      </a>
+      <div className='info'>
+        <a href='/profile/albert-pai' className='author'>
+          {article.author.username}
+        </a>
+        <span className='date'>{article.createdAt}</span>
+      </div>
+      <button className='btn btn-outline-primary btn-sm pull-xs-right'>
+        <i className='ion-heart'></i> {article.favoritesCount}
+      </button>
+    </div>
+  )
+}
+
+const tagView = (tag: string) => {
+  return (
+    <li key={tag} className='tag-default tag-pill tag-outline'>
+      {tag}
+    </li>
   )
 }
