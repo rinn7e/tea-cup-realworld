@@ -31,8 +31,8 @@ export type LoginPage = {
   _tag: 'LoginPage'
 }
 
-export type RegisterPage = {
-  _tag: 'RegisterPage'
+export type SignupPage = {
+  _tag: 'SignupPage'
 }
 
 export type SettingPage = {
@@ -57,7 +57,7 @@ export type NotFoundPage = {
 export type AppPage =
   | HomePage
   | LoginPage
-  | RegisterPage
+  | SignupPage
   | SettingPage
   | CreateArticlePage
   | ArticlePage
@@ -66,8 +66,7 @@ export type AppPage =
 
 export const homePage = () => ({ _tag: 'HomePage' }) satisfies HomePage
 export const loginPage = () => ({ _tag: 'LoginPage' }) satisfies LoginPage
-export const registerPage = () =>
-  ({ _tag: 'RegisterPage' }) satisfies RegisterPage
+export const signupPage = () => ({ _tag: 'SignupPage' }) satisfies SignupPage
 export const settingPage = () => ({ _tag: 'SettingPage' }) satisfies SettingPage
 export const createArticlePage = () =>
   ({ _tag: 'CreateArticlePage' }) satisfies CreateArticlePage
@@ -93,8 +92,8 @@ export const parseAppRoute = (url: string, _href: string): AppRoute => {
     return route(articlePage())
   } else if (url === '/login') {
     return route(loginPage())
-  } else if (url === '/register') {
-    return route(registerPage())
+  } else if (url === '/signup') {
+    return route(signupPage())
   } else {
     return route(notFoundPage())
   }
@@ -109,8 +108,8 @@ export const toUrlString = (r: AppRoute): string => {
       case 'LoginPage': {
         return '/login'
       }
-      case 'RegisterPage': {
-        return '/register'
+      case 'SignupPage': {
+        return '/signup'
       }
       case 'SettingPage': {
         return '/setting'

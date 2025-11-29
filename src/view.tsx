@@ -33,11 +33,12 @@ import { navbarView } from '@/component/navbar'
 import { ArticlePage } from '@/page/article'
 import { CreateArticlePage } from '@/page/create-article'
 import { HomePage } from '@/page/home'
-import { LoginPage } from '@/page/login'
+import { LoginPageView } from '@/page/login'
+import * as LoginPage from '@/page/login/update'
 import { ProfilePage } from '@/page/profile'
-import { RegisterPageView } from '@/page/register'
-import * as RegisterPage from '@/page/register/update'
 import { SettingPage } from '@/page/setting'
+import { SignupPageView } from '@/page/signup'
+import * as SignupPage from '@/page/signup/update'
 import type { Msg, Props } from './type'
 
 const pageView = (props: Props) => {
@@ -47,20 +48,36 @@ const pageView = (props: Props) => {
     case 'HomePage':
       return <HomePage model={model} />
     case 'LoginPage':
-      return <LoginPage />
-    case 'RegisterPage': {
-      if (model.registerPage._tag === 'Some') {
-        return <RegisterPageView
-          dispatch={map(
-            dispatch,
-            (subMsg: RegisterPage.Msg) =>
-            ({
-              _tag: 'RegisterPageMsg',
-              subMsg,
-            } satisfies Msg),
-          )}
-          model={model.registerPage.value}
-        />
+      if (model.loginPage._tag === 'Some') {
+        return (
+          <LoginPageView
+            dispatch={map(
+              dispatch,
+              (subMsg: LoginPage.Msg) =>
+                ({
+                  _tag: 'LoginPageMsg',
+                  subMsg,
+                }) satisfies Msg,
+            )}
+            model={model.loginPage.value}
+          />
+        )
+      } else return null
+    case 'SignupPage': {
+      if (model.signupPage._tag === 'Some') {
+        return (
+          <SignupPageView
+            dispatch={map(
+              dispatch,
+              (subMsg: SignupPage.Msg) =>
+                ({
+                  _tag: 'SignupPageMsg',
+                  subMsg,
+                }) satisfies Msg,
+            )}
+            model={model.signupPage.value}
+          />
+        )
       } else return null
     }
 
@@ -76,7 +93,7 @@ const pageView = (props: Props) => {
 }
 
 export const View = (props: Props) => {
-  const { dispatch, model } = props
+  const { dispatch } = props
 
   // Handlers
   // ----------------------------------

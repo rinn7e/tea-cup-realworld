@@ -1,4 +1,3 @@
-
 /*
  * MIT License
  *
@@ -32,8 +31,6 @@ import { textInputView } from '@/component/text-input'
 import { Cmd } from 'tea-cup-fp'
 import { formMsgHandler, submitHandler } from './handler'
 import type { Model, Msg } from './type'
-
-
 
 // -----------------------------------------------------------------
 // Config
@@ -83,10 +80,16 @@ const defaultFormConfig: [string, Form.FormType][] = [
 
 export const init = (): [Model, Cmd<Msg>] => {
   return [
-    ({
+    {
+      title: 'signup',
       form: Form.init(new Map(defaultFormConfig)),
-    }), Cmd.none()
+    },
+    Cmd.none(),
   ]
+}
+
+export const reInit = (): [Model, Cmd<Msg>] => {
+  return init()
 }
 
 // -----------------------------------------------------------------
@@ -106,4 +109,3 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
 
 export * from './handler'
 export * from './type'
-

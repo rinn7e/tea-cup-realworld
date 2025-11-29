@@ -22,3 +22,32 @@
  * SOFTWARE.
  *
  */
+
+import * as Form from '@rinn7e/tea-cup-form'
+import * as EqClass from 'fp-ts/lib/Eq'
+import * as S from 'fp-ts/lib/string'
+import type { Dispatcher } from 'tea-cup-fp'
+
+export type Model = {
+  title: 'login'
+  form: Form.Model
+}
+
+export const ModelEq = EqClass.struct<Model>({
+  title: S.Eq,
+  form: Form.ModelEq,
+})
+
+export type Props = {
+  dispatch: Dispatcher<Msg>
+  model: Model
+}
+
+// -----------------------------------------------------------------
+// Msg
+// -----------------------------------------------------------------
+
+export type Msg =
+  | { _tag: 'None' }
+  | { _tag: 'FormMsg'; subMsg: Form.Msg }
+  | { _tag: 'Submit' }

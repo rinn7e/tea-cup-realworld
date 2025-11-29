@@ -1,4 +1,3 @@
-
 /*
  * MIT License
  *
@@ -26,14 +25,16 @@
 
 import * as Form from '@rinn7e/tea-cup-form'
 import * as EqClass from 'fp-ts/lib/Eq'
+import * as S from 'fp-ts/lib/string'
 import type { Dispatcher } from 'tea-cup-fp'
 
-
 export type Model = {
+  title: 'signup'
   form: Form.Model
 }
 
 export const ModelEq = EqClass.struct<Model>({
+  title: S.Eq,
   form: Form.ModelEq,
 })
 
@@ -49,4 +50,4 @@ export type Props = {
 export type Msg =
   | { _tag: 'None' }
   | { _tag: 'FormMsg'; subMsg: Form.Msg }
-  | { _tag: 'Submit'}
+  | { _tag: 'Submit' }

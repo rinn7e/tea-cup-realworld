@@ -23,8 +23,22 @@
  *
  */
 
-export const buttonView = ({ label }: { label: string }) => {
+export const buttonView = ({
+  label,
+  onClick,
+  type,
+}: {
+  label: string
+  onClick?: () => void
+  type?: 'button' | 'submit' | 'reset'
+}) => {
   return (
-    <button className='btn btn-lg btn-primary pull-xs-right'>{label}</button>
+    <button
+      type={type ? type : 'button'}
+      className='btn btn-lg btn-primary pull-xs-right'
+      onClick={onClick}
+    >
+      {label}
+    </button>
   )
 }

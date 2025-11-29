@@ -25,59 +25,31 @@
 
 import * as Form from '@rinn7e/tea-cup-form'
 import { FormItemMemo } from '@rinn7e/tea-cup-form'
-import * as O from 'fp-ts/lib/Option'
-import { pipe } from 'fp-ts/lib/function'
+import type { FormEvent } from 'react'
+import { map } from 'tea-cup-fp'
 
 import { buttonView } from '@/component/button'
 import { errorTextView } from '@/component/error-text'
 import { headerSubTextView } from '@/component/header-sub-text'
 import { headerTextView } from '@/component/header-text'
-import { textInputView } from '@/component/text-input'
-
-// -----------------------------------------------------------------
-// Config
-// -----------------------------------------------------------------
-
-const emailField = 'email'
-const passwordField = 'password'
-
-const defaultFormConfig: [string, Form.FormType][] = [
-  [
-    emailField,
-    {
-      ...Form.defaultTextType(textInputView),
-      label: 'Email',
-      placeholder: 'Email',
-      validation: (input: string) =>
-        pipe(Form.nonEmptyValidator(input, emailField)),
-    },
-  ],
-  [
-    passwordField,
-    {
-      ...Form.defaultTextType(textInputView),
-      label: 'Password',
-      placeholder: 'Password',
-      isPassword: O.some({ revealPassword: false, disableAutocomplete: true }),
-      validation: (input: string) =>
-        pipe(Form.nonEmptyValidator(input, passwordField)),
-    },
-  ],
-]
+import type { Msg, Props } from './type'
+import { emailField, passwordField } from './update'
 
 // -----------------------------------------------------------------
 // View
 // -----------------------------------------------------------------
 
-export const LoginPage = () => {
-  // const [currentPasswordError, setCurrentPasswordError] =
-  //   useState<boolean>(false)
-  // const [passwordDontMatch, setPasswordDontMatch] = useState<boolean>(false)
-  const formDispatch = () => {}
-  const model = {
-    form: Form.init(new Map(defaultFormConfig)),
-  }
-  // const isTablet = false
+export const LoginPageView = (props: Props) => {
+  const { dispatch, model } = props
+
+  const formDispatch = map(
+    dispatch,
+    (subMsg: Form.Msg) =>
+      ({
+        _tag: 'FormMsg',
+        subMsg,
+      }) satisfies Msg,
+  )
 
   return (
     <div className='auth-page'>
@@ -87,12 +59,17 @@ export const LoginPage = () => {
             {headerTextView({ label: 'Sign in' })}
             {headerSubTextView({
               label: 'Need an account?',
-              href: '/register',
+              href: '/signup',
             })}
 
             {errorTextView({ label: 'That email is already taken' })}
 
-            <form>
+            <form
+              onSubmit={(e: FormEvent<HTMLFormElement>) => {
+                e.preventDefault()
+                dispatch({ _tag: 'Submit' })
+              }}
+            >
               <FormItemMemo
                 field={emailField}
                 dispatch={formDispatch}
@@ -104,7 +81,7 @@ export const LoginPage = () => {
                 model={model.form}
               />
 
-              {buttonView({ label: 'Sign in' })}
+              {buttonView({ label: 'Sign in', type: 'submit' })}
             </form>
           </div>
         </div>

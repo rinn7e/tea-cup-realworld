@@ -30,7 +30,8 @@ import type { Dispatcher } from 'tea-cup-fp'
 
 import type { AppPage, AppRoute } from '@/data/route'
 import * as Api from '@/generated/api'
-import type * as RegisterPage from '@/page/register/update'
+import type * as SignupPage from '@/page/signup/update'
+import type * as LoginPage from '@/page/login/update'
 
 export type Model = {
   title: string
@@ -38,7 +39,8 @@ export type Model = {
   route: AppRoute
   articlesResponse: RemoteData<Api.GetArticlesError, Api.GetArticlesResponse>
 
-  registerPage: Option<RegisterPage.Model>
+  signupPage: Option<SignupPage.Model>
+  loginPage: Option<LoginPage.Model>
 }
 
 export type Props = {
@@ -59,5 +61,6 @@ export type Msg =
       _tag: 'GetArticlesResponse'
       result: Either<Api.GetArticlesError, Api.GetArticlesResponse>
     }
-    // pges
-  | {_tag: 'RegisterPageMsg', subMsg: RegisterPage.Msg}
+  // pges
+  | { _tag: 'SignupPageMsg'; subMsg: SignupPage.Msg }
+  | { _tag: 'LoginPageMsg'; subMsg: LoginPage.Msg }

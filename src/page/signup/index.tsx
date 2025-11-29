@@ -25,6 +25,7 @@
 
 import * as Form from '@rinn7e/tea-cup-form'
 import { FormItemMemo } from '@rinn7e/tea-cup-form'
+import type { FormEvent } from 'react'
 import { map } from 'tea-cup-fp'
 
 import { buttonView } from '@/component/button'
@@ -34,13 +35,12 @@ import { headerTextView } from '@/component/header-text'
 import type { Msg, Props } from './type'
 import { emailField, passwordField, usernameField } from './update'
 
-
 // -----------------------------------------------------------------
 // View
 // -----------------------------------------------------------------
 
-export const RegisterPageView = (props: Props) => {
-  const {dispatch, model} = props
+export const SignupPageView = (props: Props) => {
+  const { dispatch, model } = props
 
   const formDispatch = map(
     dispatch,
@@ -48,7 +48,7 @@ export const RegisterPageView = (props: Props) => {
       ({
         _tag: 'FormMsg',
         subMsg,
-      } satisfies Msg),
+      }) satisfies Msg,
   )
 
   return (
@@ -60,7 +60,12 @@ export const RegisterPageView = (props: Props) => {
             {headerSubTextView({ label: 'Have an account?', href: '/login' })}
             {errorTextView({ label: 'That email is already taken' })}
 
-            <form>
+            <form
+              onSubmit={(e: FormEvent<HTMLFormElement>) => {
+                e.preventDefault()
+                dispatch({ _tag: 'Submit' })
+              }}
+            >
               <FormItemMemo
                 field={usernameField}
                 dispatch={formDispatch}
@@ -77,7 +82,7 @@ export const RegisterPageView = (props: Props) => {
                 model={model.form}
               />
 
-              {buttonView({ label: 'Sign up' })}
+              {buttonView({ label: 'Sign up', type: 'submit' })}
             </form>
           </div>
         </div>

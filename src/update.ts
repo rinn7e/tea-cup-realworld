@@ -32,10 +32,10 @@ import { Cmd, Task } from 'tea-cup-fp'
 
 import { parseAppRoute, toUrlString, type AppRoute } from '@/data/route'
 import * as Api from '@/generated/api'
-import * as RegisterPage from '@/page/register/update'
+import * as SignupPage from '@/page/signup/update'
+import * as LoginPage from '@/page/login/update'
 import { client, cmdFromPromise, fromApi } from '@/util'
 import type { Model, Msg } from './type'
-
 
 export const init = (l: Location): [Model, Cmd<Msg>] => {
   // const initRoute = {
@@ -45,13 +45,15 @@ export const init = (l: Location): [Model, Cmd<Msg>] => {
 
   const initRoute = parseAppRoute(l.pathname, l.href)
 
-  const [registerPage, registerPageCmd] =
-    initRoute.page._tag === 'RegisterPage'
-      ? pipe(
-        RegisterPage.init(),
-        Tuple.mapFst(O.some),
-      )
-      : [O.none, Cmd.none<RegisterPage.Msg>()]
+  const [signupPage, signupPageCmd] =
+    initRoute.page._tag === 'SignupPage'
+      ? pipe(SignupPage.init(), Tuple.mapFst(O.some))
+      : [O.none, Cmd.none<SignupPage.Msg>()]
+
+  const [loginPage, loginPageCmd] =
+    initRoute.page._tag === 'LoginPage'
+      ? pipe(LoginPage.init(), Tuple.mapFst(O.some))
+      : [O.none, Cmd.none<LoginPage.Msg>()]
 
   return [
     {
@@ -60,13 +62,15 @@ export const init = (l: Location): [Model, Cmd<Msg>] => {
       route: initRoute,
       articlesResponse: RD.pending,
       // page
-      registerPage,
+      signupPage,
+      loginPage,
     },
     Cmd.batch([
       getArticlesCmd(),
 
       //page
-      registerPageCmd.map((subMsg) => ({ _tag: 'RegisterPageMsg', subMsg })),
+      signupPageCmd.map((subMsg) => ({ _tag: 'SignupPageMsg', subMsg })),
+      loginPageCmd.map((subMsg) => ({ _tag: 'LoginPageMsg', subMsg })),
     ]),
   ]
 }
@@ -101,18 +105,33 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
       ]
     }
 
-    case 'RegisterPageMsg': {
-      if (model.registerPage._tag === 'Some') {
-        const [registerPageModel, registerPageCmd] = RegisterPage.update(msg.subMsg, model.registerPage.value)
+    case 'SignupPageMsg': {
+      if (model.signupPage._tag === 'Some') {
+        const [signupPageModel, signupPageCmd] = SignupPage.update(
+          msg.subMsg,
+          model.signupPage.value,
+        )
         return pipe(
           [
-            { ...model, registerPage: O.some(registerPageModel) },
-            registerPageCmd.map((subMsg) => ({ _tag: 'RegisterPageMsg', subMsg })),
+            { ...model, signupPage: O.some(signupPageModel) },
+            signupPageCmd.map((subMsg) => ({ _tag: 'SignupPageMsg', subMsg })),
           ] satisfies [Model, Cmd<Msg>],
           // globalMsg
           //   ? updateAndCmd((m) => update(resource)(globalMsg, m))
           //   : identity,
         )
+      } else return [model, Cmd.none()]
+    }
+    case 'LoginPageMsg': {
+      if (model.loginPage._tag === 'Some') {
+        const [loginPageModel, loginPageCmd] = LoginPage.update(
+          msg.subMsg,
+          model.loginPage.value,
+        )
+        return pipe([
+          { ...model, loginPage: O.some(loginPageModel) },
+          loginPageCmd.map((subMsg) => ({ _tag: 'LoginPageMsg', subMsg })),
+        ] satisfies [Model, Cmd<Msg>])
       } else return [model, Cmd.none()]
     }
   }
@@ -143,24 +162,55 @@ const urlChangeHandler = (
 
 const navigate =
   (newRoute: AppRoute) =>
-    (model: Model): [Model, Cmd<Msg>] => {
-      const url = toUrlString(newRoute)
-      return [
-        {
-          ...model,
-          route: newRoute,
-          isInternal: true,
-        },
-        Cmd.batch([Task.perform(newUrl(url), () => ({ _tag: 'None' }))]),
-      ]
-    }
+  (model: Model): [Model, Cmd<Msg>] => {
+    const [newModel, cmd] = reInitBaseOnNewRoute(newRoute, model)
+    const url = toUrlString(newRoute)
+    return [
+      {
+        ...newModel,
+        route: newRoute,
+        isInternal: true,
+      },
+      Cmd.batch([Task.perform(newUrl(url), () => ({ _tag: 'None' })), cmd]),
+    ]
+  }
+
+export const reInitBaseOnNewRoute = (
+  route: AppRoute,
+  model: Model,
+): [Model, Cmd<Msg>] => {
+  const [loginPage, loginPageCmd] =
+    route.page._tag === 'LoginPage'
+      ? pipe(LoginPage.reInit(), Tuple.mapFst(O.some))
+      : [O.none, Cmd.none<LoginPage.Msg>()]
+
+  const [signupPage, signupPageCmd] =
+    route.page._tag === 'SignupPage'
+      ? pipe(SignupPage.reInit(), Tuple.mapFst(O.some))
+      : [O.none, Cmd.none<SignupPage.Msg>()]
+
+  return [
+    {
+      ...model,
+      route: route,
+      // update component state base on route
+      loginPage,
+      signupPage,
+    },
+    Cmd.batch([
+      // sub-components
+      loginPageCmd.map<Msg>((subMsg) => ({ _tag: 'LoginPageMsg', subMsg })),
+      signupPageCmd.map<Msg>((subMsg) => ({ _tag: 'SignupPageMsg', subMsg })),
+    ]),
+  ]
+}
 
 const changeRouteHandler =
   (newRoute: AppRoute) =>
-    (model: Model): [Model, Cmd<Msg>] => {
-      // Run pre condition here
-      return navigate(newRoute)(model)
-    }
+  (model: Model): [Model, Cmd<Msg>] => {
+    // Run pre condition here
+    return navigate(newRoute)(model)
+  }
 
 const getArticlesCmd = (): Cmd<Msg> => {
   return cmdFromPromise(

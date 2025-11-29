@@ -27,7 +27,7 @@ import { Link } from '@/component/link'
 import {
   homePage,
   loginPage,
-  registerPage,
+  signupPage,
   route,
   type AppPage,
 } from '@/data/route'
@@ -73,7 +73,7 @@ export const navbarView = (props: Props) => {
           })}
           {navbarItemView({
             label: 'Sign up',
-            page: registerPage(),
+            page: signupPage(),
             currentPage: model.route.page,
           })}
         </ul>
