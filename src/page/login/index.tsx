@@ -67,7 +67,7 @@ export const LoginPageView = (props: Props) => {
             <form
               onSubmit={(e: FormEvent<HTMLFormElement>) => {
                 e.preventDefault()
-                dispatch({ _tag: 'Submit' })
+                dispatch({ _tag: 'Login' })
               }}
             >
               <FormItemMemo

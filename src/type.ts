@@ -39,6 +39,9 @@ export type Model = {
   route: AppRoute
   articlesResponse: RemoteData<Api.GetArticlesError, Api.GetArticlesResponse>
 
+  // auth: Option<Api.User>
+  auth: RemoteData<Api.GetCurrentUserError, Api.GetCurrentUserResponse>
+
   signupPage: Option<SignupPage.Model>
   loginPage: Option<LoginPage.Model>
 }
@@ -58,9 +61,15 @@ export type Msg =
   | { _tag: 'ChangePage'; page: AppPage }
   | { _tag: 'GetArticles'; page: AppPage }
   | {
-      _tag: 'GetArticlesResponse'
-      result: Either<Api.GetArticlesError, Api.GetArticlesResponse>
-    }
+    _tag: 'GetArticlesResponse'
+    result: Either<Api.GetArticlesError, Api.GetArticlesResponse>
+  }
+  | { _tag: 'SetAuth'; value: Api.GetCurrentUserResponse }
+  | { _tag: 'GetAuth' }
+  | {
+    _tag: 'GetAuthResponse'
+    result: Either<Api.GetCurrentUserError, Api.GetCurrentUserResponse>
+  }
   // pges
   | { _tag: 'SignupPageMsg'; subMsg: SignupPage.Msg }
   | { _tag: 'LoginPageMsg'; subMsg: LoginPage.Msg }

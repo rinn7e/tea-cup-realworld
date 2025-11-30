@@ -24,17 +24,17 @@
  */
 
 import * as RD from '@devexperts/remote-data-ts'
-import { pipe } from 'fp-ts/lib/function'
+import { identity, pipe } from 'fp-ts/lib/function'
 import * as O from 'fp-ts/lib/Option'
 import * as Tuple from 'fp-ts/lib/Tuple'
 import { newUrl } from 'react-tea-cup'
 import { Cmd, Task } from 'tea-cup-fp'
 
-import { parseAppRoute, toUrlString, type AppRoute } from '@/data/route'
+import { homePage, parseAppRoute, route, toUrlString, type AppRoute } from '@/data/route'
 import * as Api from '@/generated/api'
 import * as SignupPage from '@/page/signup/update'
 import * as LoginPage from '@/page/login/update'
-import { client, cmdFromPromise, fromApi } from '@/util'
+import { client, cmdFromPromise, fromApi, updateAndCmd } from '@/util'
 import type { Model, Msg } from './type'
 
 export const init = (l: Location): [Model, Cmd<Msg>] => {
@@ -55,24 +55,29 @@ export const init = (l: Location): [Model, Cmd<Msg>] => {
       ? pipe(LoginPage.init(), Tuple.mapFst(O.some))
       : [O.none, Cmd.none<LoginPage.Msg>()]
 
-  return [
-    {
-      title: 'abc',
-      isInternal: false,
-      route: initRoute,
-      articlesResponse: RD.pending,
-      // page
-      signupPage,
-      loginPage,
-    },
-    Cmd.batch([
-      getArticlesCmd(),
+  return pipe(
+    [
+      {
+        title: 'abc',
+        isInternal: false,
+        route: initRoute,
+        articlesResponse: RD.pending,
+        // authentication,
+        auth: RD.initial,
 
-      //page
-      signupPageCmd.map((subMsg) => ({ _tag: 'SignupPageMsg', subMsg })),
-      loginPageCmd.map((subMsg) => ({ _tag: 'LoginPageMsg', subMsg })),
-    ]),
-  ]
+        // page
+        signupPage,
+        loginPage,
+      },
+      Cmd.batch([
+        getArticlesCmd(),
+        //page
+        signupPageCmd.map((subMsg) => ({ _tag: 'SignupPageMsg', subMsg })),
+        loginPageCmd.map((subMsg) => ({ _tag: 'LoginPageMsg', subMsg })),
+      ]) satisfies Cmd<Msg>,
+    ],
+    updateAndCmd(getAuthHandler)
+  )
 }
 
 export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
@@ -105,16 +110,33 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
       ]
     }
 
+    case 'SetAuth': {
+      return [{ ...model, auth: RD.success(msg.value) }, Cmd.none()]
+    }
+    case 'GetAuth':
+      return getAuthHandler(model)
+    case 'GetAuthResponse': {
+      return [
+        {
+          ...model,
+          auth: RD.fromEither(msg.result),
+        },
+        Cmd.none(),
+      ]
+    }
+
     case 'SignupPageMsg': {
       if (model.signupPage._tag === 'Some') {
-        const [signupPageModel, signupPageCmd] = SignupPage.update(
+        const { model: signupPageModel, cmd: signupPageCmd } = SignupPage.update(
           msg.subMsg,
           model.signupPage.value,
         )
         return pipe(
           [
             { ...model, signupPage: O.some(signupPageModel) },
-            signupPageCmd.map((subMsg) => ({ _tag: 'SignupPageMsg', subMsg })),
+            signupPageCmd
+              ? signupPageCmd.map((subMsg) => ({ _tag: 'SignupPageMsg', subMsg }))
+              : Cmd.none()
           ] satisfies [Model, Cmd<Msg>],
           // globalMsg
           //   ? updateAndCmd((m) => update(resource)(globalMsg, m))
@@ -124,17 +146,35 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
     }
     case 'LoginPageMsg': {
       if (model.loginPage._tag === 'Some') {
-        const [loginPageModel, loginPageCmd] = LoginPage.update(
+        const [loginPageModel, loginPageCmd, auth] = LoginPage.update(
           msg.subMsg,
           model.loginPage.value,
         )
         return pipe([
-          { ...model, loginPage: O.some(loginPageModel) },
-          loginPageCmd.map((subMsg) => ({ _tag: 'LoginPageMsg', subMsg })),
-        ] satisfies [Model, Cmd<Msg>])
+          {
+            ...model,
+            loginPage: O.some(loginPageModel),
+          },
+          loginPageCmd.map((subMsg) => ({ _tag: 'LoginPageMsg', subMsg }))
+        ] satisfies [Model, Cmd<Msg>],
+          // Update auth and write token to localStorage
+          updateAndCmd(updateAuthHandler(auth)),
+          // Navigate to home page if auth is completed
+          auth
+            ? updateAndCmd(changeRouteHandler(route(homePage())))
+            : identity,
+        )
       } else return [model, Cmd.none()]
     }
   }
+}
+
+const updateAuthHandler = (auth: Api.GetCurrentUserResponse | null) => (model: Model): [Model, Cmd<Msg>] => {
+  if (auth) {
+    localStorage.setItem("jwtToken", auth.user.token);
+    return [{ ...model, auth: RD.success(auth) }, Cmd.none()]
+  } else return [model, Cmd.none()]
+
 }
 
 const urlChangeHandler = (
@@ -162,18 +202,18 @@ const urlChangeHandler = (
 
 const navigate =
   (newRoute: AppRoute) =>
-  (model: Model): [Model, Cmd<Msg>] => {
-    const [newModel, cmd] = reInitBaseOnNewRoute(newRoute, model)
-    const url = toUrlString(newRoute)
-    return [
-      {
-        ...newModel,
-        route: newRoute,
-        isInternal: true,
-      },
-      Cmd.batch([Task.perform(newUrl(url), () => ({ _tag: 'None' })), cmd]),
-    ]
-  }
+    (model: Model): [Model, Cmd<Msg>] => {
+      const [newModel, cmd] = reInitBaseOnNewRoute(newRoute, model)
+      const url = toUrlString(newRoute)
+      return [
+        {
+          ...newModel,
+          route: newRoute,
+          isInternal: true,
+        },
+        Cmd.batch([Task.perform(newUrl(url), () => ({ _tag: 'None' })), cmd]),
+      ]
+    }
 
 export const reInitBaseOnNewRoute = (
   route: AppRoute,
@@ -207,15 +247,15 @@ export const reInitBaseOnNewRoute = (
 
 const changeRouteHandler =
   (newRoute: AppRoute) =>
-  (model: Model): [Model, Cmd<Msg>] => {
-    // Run pre condition here
-    return navigate(newRoute)(model)
-  }
+    (model: Model): [Model, Cmd<Msg>] => {
+      // Run pre condition here
+      return navigate(newRoute)(model)
+    }
 
 const getArticlesCmd = (): Cmd<Msg> => {
   return cmdFromPromise(
     async () => {
-      const result = await Api.getArticles({ client })
+      const result = await Api.getArticles({ client: client() })
       return fromApi(result)
     },
     (r) => {
@@ -224,4 +264,24 @@ const getArticlesCmd = (): Cmd<Msg> => {
       else return { _tag: 'None' }
     },
   )
+}
+
+const getAuthHandler = (model: Model): [Model, Cmd<Msg>] => {
+  const token = localStorage.getItem("jwtToken");
+  if (token)
+    return [
+      model,
+      cmdFromPromise(
+        async () => {
+          const result = await Api.getCurrentUser({ client: client(token) })
+          return fromApi(result)
+        },
+        (r) => {
+          if (r.tag === 'Ok')
+            return { _tag: 'GetAuthResponse', result: r.value }
+          else return { _tag: 'None' }
+        },
+      )
+    ]
+  else return [model, Cmd.none()]
 }

@@ -28,6 +28,9 @@ import * as EqClass from 'fp-ts/lib/Eq'
 import * as S from 'fp-ts/lib/string'
 import type { Dispatcher } from 'tea-cup-fp'
 
+import * as Api from '@/generated/api'
+import type { Either } from 'fp-ts/lib/Either'
+
 export type Model = {
   title: 'login'
   form: Form.Model
@@ -50,4 +53,5 @@ export type Props = {
 export type Msg =
   | { _tag: 'None' }
   | { _tag: 'FormMsg'; subMsg: Form.Msg }
-  | { _tag: 'Submit' }
+  | { _tag: 'Login' }
+  | { _tag: 'LoginResponse', result: Either<Api.LoginError, Api.LoginResponse>}

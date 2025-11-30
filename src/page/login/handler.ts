@@ -28,38 +28,38 @@ import { pipe } from 'fp-ts/lib/function'
 import { Cmd } from 'tea-cup-fp'
 
 import * as Api from '@/generated/api'
-import { client, cmdFromPromise } from '@/util'
+import { client, cmdFromPromise, fromApi } from '@/util'
 import type { Model, Msg } from './type'
 import { emailField, passwordField } from './update'
 
 const preprocessFormMsgHandler =
   (newForm: Form.Model) =>
-  (model: Model): Model => {
-    const _validationResult = Form.runValidationForAll(
-      newForm.forms,
-      Form.noExtraValidation,
-    )
-    return {
-      ...model,
-      // currentPasswordError: '',
-      form: newForm,
-      // passwordDontMatch:
-      //   validationResult._tag === 'Right' ? false : model.passwordDontMatch,
-      // buttonState:
-      //   validationResult._tag === 'Right'
-      //     ? { _tag: 'Enabled', onClick: () => null }
-      //     : { _tag: 'Disabled' },
+    (model: Model): Model => {
+      const _validationResult = Form.runValidationForAll(
+        newForm.forms,
+        Form.noExtraValidation,
+      )
+      return {
+        ...model,
+        // currentPasswordError: '',
+        form: newForm,
+        // passwordDontMatch:
+        //   validationResult._tag === 'Right' ? false : model.passwordDontMatch,
+        // buttonState:
+        //   validationResult._tag === 'Right'
+        //     ? { _tag: 'Enabled', onClick: () => null }
+        //     : { _tag: 'Disabled' },
+      }
     }
-  }
 
 // Given a Form.Msg, update the form model, and run preprocessing
 export const formMsgHandler =
   (subMsg: Form.Msg) =>
-  (model: Model): Model => {
-    return pipe(model.form, Form.update(subMsg), (newForm) =>
-      preprocessFormMsgHandler(newForm)(model),
-    )
-  }
+    (model: Model): Model => {
+      return pipe(model.form, Form.update(subMsg), (newForm) =>
+        preprocessFormMsgHandler(newForm)(model),
+      )
+    }
 
 const formToEndpointBody = (forms: Form.Forms): Api.LoginUserRequest => {
   return {
@@ -70,7 +70,7 @@ const formToEndpointBody = (forms: Form.Forms): Api.LoginUserRequest => {
   }
 }
 
-export const submitHandler = (model: Model): [Model, Cmd<Msg>] => {
+export const loginHandler = (model: Model): [Model, Cmd<Msg>] => {
   // convert form data to data type accepts by the api call
 
   // call the api
@@ -84,20 +84,14 @@ export const submitHandler = (model: Model): [Model, Cmd<Msg>] => {
     cmdFromPromise(
       async () => {
         const body = formToEndpointBody(model.form.forms)
-        const result = await Api.login({ client, body })
-        //       {
-        //   "user": {
-        //     "username": "test123",
-        //     "email": "test123@test.com",
-        //     "bio": "",
-        //     "image": "https://raw.githubusercontent.com/gothinkster/node-express-realworld-example-app/refs/heads/master/src/assets/images/smiley-cyrus.jpeg",
-        //     "token": "token_1fda2ac10e65a6c7c95c51fc93f5e11a"
-        //   }
-        // }
-        console.log('what login', result)
-        return null
+        const result = await Api.login({ client: client(), body })
+        return fromApi(result)
       },
-      () => ({ _tag: 'None' }),
+      (r) => {
+        if (r.tag === 'Ok')
+          return { _tag: 'LoginResponse', result: r.value }
+        else return { _tag: 'None' }
+      },
     ),
   ]
 }

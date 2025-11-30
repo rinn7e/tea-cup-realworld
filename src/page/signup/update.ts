@@ -28,6 +28,7 @@ import { pipe } from 'fp-ts/lib/function'
 import * as O from 'fp-ts/lib/Option'
 
 import { textInputView } from '@/component/text-input'
+import * as Api from '@/generated/api'
 import { Cmd } from 'tea-cup-fp'
 import { formMsgHandler, submitHandler } from './handler'
 import type { Model, Msg } from './type'
@@ -96,14 +97,16 @@ export const reInit = (): [Model, Cmd<Msg>] => {
 // Update
 // -----------------------------------------------------------------
 
-export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
+export const update = (msg: Msg, model: Model): { model: Model, cmd?: Cmd<Msg>, auth?: Api.User } => {
   switch (msg._tag) {
     case 'None':
-      return [model, Cmd.none()]
+      return { model }
     case 'FormMsg':
-      return pipe([formMsgHandler(msg.subMsg)(model), Cmd.none()])
-    case 'Submit':
-      return submitHandler(model)
+      return { model: formMsgHandler(msg.subMsg)(model) }
+    case 'Submit': {
+      const [updatedModel, cmd] = submitHandler(model)
+      return { model: updatedModel, cmd }
+    }
   }
 }
 

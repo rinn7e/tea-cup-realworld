@@ -87,7 +87,7 @@ export const submitHandler = (model: Model): [Model, Cmd<Msg>] => {
       async () => {
         const body: Api.NewUserRequest = formToEndpointBody(model.form.forms)
         // TOOD: somehow the api doesn't throw error if the name already exist.
-        const result = await Api.createUser({ client, body })
+        const result = await Api.createUser({ client: client(), body })
         //       {
         //   "user": {
         //     "username": "test",

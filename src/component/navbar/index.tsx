@@ -60,62 +60,64 @@ export const navbarView = (props: Props) => {
         <Link className='navbar-brand' route={route(homePage())}>
           conduit
         </Link>
-        <ul className='nav navbar-nav pull-xs-right'>
-          {navbarItemView({
-            label: 'Home',
-            page: homePage(),
-            currentPage: model.route.page,
-          })}
-          {navbarItemView({
-            label: 'Sign in',
-            page: loginPage(),
-            currentPage: model.route.page,
-          })}
-          {navbarItemView({
-            label: 'Sign up',
-            page: signupPage(),
-            currentPage: model.route.page,
-          })}
-        </ul>
+        {model.auth._tag === 'RemoteSuccess'
+          ? authUl(props)
+          : unauthUl(props)
+        }
       </div>
     </nav>
   )
 }
 
-// export const navAuth = () => {
-//   return (
-//     <nav className='navbar navbar-light'>
-//       <div className='container'>
-//         <a className='navbar-brand' href='/'>
-//           conduit
-//         </a>
-//         <ul className='nav navbar-nav pull-xs-right'>
-//           <li className='nav-item'>
-//             {/* <!-- Add "active" className when you're on that page" --> */}
-//             <a className='nav-link active' href='/'>
-//               Home
-//             </a>
-//           </li>
-//           <li className='nav-item'>
-//             <a className='nav-link' href='/editor'>
-//               {' '}
-//               <i className='ion-compose'></i>&nbsp;New Article{' '}
-//             </a>
-//           </li>
-//           <li className='nav-item'>
-//             <a className='nav-link' href='/settings'>
-//               {' '}
-//               <i className='ion-gear-a'></i>&nbsp;Settings{' '}
-//             </a>
-//           </li>
-//           <li className='nav-item'>
-//             <a className='nav-link' href='/profile/eric-simons'>
-//               <img src='' className='user-pic' />
-//               Eric Simons
-//             </a>
-//           </li>
-//         </ul>
-//       </div>
-//     </nav>
-//   )
-// }
+const unauthUl = (props: Props) => {
+  const { model } = props
+  return <ul className='nav navbar-nav pull-xs-right'>
+    {navbarItemView({
+      label: 'Home',
+      page: homePage(),
+      currentPage: model.route.page,
+    })}
+    {navbarItemView({
+      label: 'Sign in',
+      page: loginPage(),
+      currentPage: model.route.page,
+    })}
+    {navbarItemView({
+      label: 'Sign up',
+      page: signupPage(),
+      currentPage: model.route.page,
+    })}
+  </ul>
+}
+
+const authUl = (props: Props) => {
+  const { model } = props
+  return (
+    <ul className='nav navbar-nav pull-xs-right'>
+      <li className='nav-item'>
+        {/* <!-- Add "active" className when you're on that page" --> */}
+        <a className='nav-link active' href='/'>
+          Home
+        </a>
+      </li>
+      <li className='nav-item'>
+        <a className='nav-link' href='/editor'>
+          {' '}
+          <i className='ion-compose'></i>&nbsp;New Article{' '}
+        </a>
+      </li>
+      <li className='nav-item'>
+        <a className='nav-link' href='/settings'>
+          {' '}
+          <i className='ion-gear-a'></i>&nbsp;Settings{' '}
+        </a>
+      </li>
+      <li className='nav-item'>
+        <a className='nav-link' href='/profile/eric-simons'>
+          <img src='' className='user-pic' />
+          Eric Simons
+        </a>
+      </li>
+    </ul>
+  )
+}
