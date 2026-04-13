@@ -1,18 +1,96 @@
-import { Cmd } from 'tea-cup-fp';
-import type { Model, Msg } from './type';
-import { updateUser } from '../../api/service';
-import { attemptTE } from '../../tea/util';
-import type { User } from '../../api/type';
-import * as TE from 'fp-ts/lib/TaskEither';
+import { Cmd } from "tea-cup-fp";
+import * as O from "fp-ts/lib/Option";
+import * as Map from "fp-ts/lib/Map";
+import * as S from "fp-ts/lib/string";
+import type { Model, Msg } from "./type";
+import { updateUser } from "../../api/service";
+import { attemptTE } from "@rinn7e/tea-cup-prelude";
+import type { User, Errors } from "../../api/type";
+import * as FormUpdate from "@rinn7e/tea-cup-form/lib/update";
+import { lookupForm, valueTextType } from "@rinn7e/tea-cup-form/lib/update";
+import { standardInputUi } from "../../component/FormFields";
 
 export const init = (user: User): [Model, Cmd<Msg>] => {
+  let forms: FormUpdate.Forms = Map.empty;
+
+  forms = Map.upsertAt(S.Eq)("image", {
+    _tag: "TextType",
+    placeholder: "URL of profile picture",
+    label: "Profile picture",
+    currentValue: user.image || "",
+    validation: (s: string) => FormUpdate.nonEmptyValidator(s, "Image URL"),
+    linkValidations: [],
+    showValidation: false,
+    isTextarea: false,
+    isPassword: O.none,
+    isFocus: false,
+    onKeyDown: O.none,
+    ui: standardInputUi(false),
+  } as any)(forms);
+
+  forms = Map.upsertAt(S.Eq)("username", {
+    _tag: "TextType",
+    placeholder: "Username",
+    label: "Username",
+    currentValue: user.username,
+    validation: (s: string) => FormUpdate.nonEmptyValidator(s, "Username"),
+    linkValidations: [],
+    showValidation: false,
+    isTextarea: false,
+    isPassword: O.none,
+    isFocus: false,
+    onKeyDown: O.none,
+    ui: standardInputUi(false),
+  } as any)(forms);
+
+  forms = Map.upsertAt(S.Eq)("bio", {
+    _tag: "TextType",
+    placeholder: "Short bio about you",
+    label: "Bio",
+    currentValue: user.bio || "",
+    validation: (s: string) => FormUpdate.nonEmptyValidator(s, "Bio"),
+    linkValidations: [],
+    showValidation: false,
+    isTextarea: true,
+    isPassword: O.none,
+    isFocus: false,
+    onKeyDown: O.none,
+    ui: standardInputUi(true),
+  } as any)(forms);
+
+  forms = Map.upsertAt(S.Eq)("email", {
+    _tag: "TextType",
+    placeholder: "Email",
+    label: "Email",
+    currentValue: user.email,
+    validation: (s: string) => FormUpdate.emailValidator(s),
+    linkValidations: [],
+    showValidation: false,
+    isTextarea: false,
+    isPassword: O.none,
+    isFocus: false,
+    onKeyDown: O.none,
+    ui: standardInputUi(false),
+  } as any)(forms);
+
+  forms = Map.upsertAt(S.Eq)("password", {
+    _tag: "TextType",
+    placeholder: "New Password",
+    label: "Password",
+    currentValue: "",
+    validation: (s: string) => FormUpdate.minLengthValidator("Password", 8)(s),
+    linkValidations: [],
+    showValidation: false,
+    isTextarea: false,
+    isPassword: O.some({ revealPassword: false, disableAutocomplete: false }),
+    isFocus: false,
+    onKeyDown: O.none,
+    ui: standardInputUi(false),
+  } as any)(forms);
+
   return [
     {
-      image: user.image || '',
-      username: user.username,
-      bio: user.bio || '',
-      email: user.email,
-      password: '',
+      form: FormUpdate.init(forms),
       errors: null,
       submitting: false,
     },
@@ -20,53 +98,67 @@ export const init = (user: User): [Model, Cmd<Msg>] => {
   ];
 };
 
-export const update = (token: string) => (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
-  switch (msg._tag) {
-    case 'SetImage':
-      return [{ ...model, image: msg.value }, Cmd.none()];
-    case 'SetUsername':
-      return [{ ...model, username: msg.value }, Cmd.none()];
-    case 'SetBio':
-      return [{ ...model, bio: msg.value }, Cmd.none()];
-    case 'SetEmail':
-      return [{ ...model, email: msg.value }, Cmd.none()];
-    case 'SetPassword':
-      return [{ ...model, password: msg.value }, Cmd.none()];
-    case 'Logout':
-      // Handled by main update
-      return [model, Cmd.none()];
-    case 'Submit': {
-      const userUpdate: any = {
-        image: model.image,
-        username: model.username,
-        bio: model.bio,
-        email: model.email,
-      };
-      if (model.password) {
-        userUpdate.password = model.password;
-      }
-
-      return [
-        { ...model, submitting: true, errors: null },
-        attemptTE(
-          updateUser(userUpdate, token) as TE.TaskEither<any, any>,
-          (result): Msg => ({ _tag: 'SubmitResponse', result: result as any })
-        ),
-      ];
-    }
-    case 'SubmitResponse':
-      if (msg.result.tag === 'Ok') {
-        return [{ ...model, submitting: false }, Cmd.none()];
-      } else {
-        const err = msg.result.err;
+export const update =
+  (token: string) =>
+  (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
+    switch (msg._tag) {
+      case "FormMsg":
         return [
-          {
-            ...model,
-            submitting: false,
-            errors: (err as any).errors ? (err as any) : { errors: { 'error': [String(err)] } }
-          },
-          Cmd.none()
+          { ...model, form: FormUpdate.update(msg.msg)(model.form) },
+          Cmd.none(),
+        ];
+      case "Logout":
+        return [model, Cmd.none()];
+      case "Submit": {
+        const image = valueTextType(lookupForm("image", model.form.forms));
+        const username = valueTextType(
+          lookupForm("username", model.form.forms),
+        );
+        const bio = valueTextType(lookupForm("bio", model.form.forms));
+        const email = valueTextType(lookupForm("email", model.form.forms));
+        const password = valueTextType(
+          lookupForm("password", model.form.forms),
+        );
+
+        const userUpdate: {
+          image?: string;
+          username?: string;
+          bio?: string;
+          email?: string;
+          password?: string;
+        } = {
+          image,
+          username,
+          bio,
+          email,
+        };
+        if (password) {
+          userUpdate.password = password;
+        }
+
+        return [
+          { ...model, submitting: true, errors: null },
+          attemptTE(
+            updateUser({ user: userUpdate }, token),
+            (result): Msg => ({ _tag: "SubmitResponse", result }),
+          ),
         ];
       }
-  }
-};
+      case "SubmitResponse":
+        if (msg.result.tag === "Ok") {
+          return [{ ...model, submitting: false }, Cmd.none()];
+        } else {
+          const err = msg.result.err;
+          return [
+            {
+              ...model,
+              submitting: false,
+              errors: (err as Errors).errors
+                ? (err as Errors)
+                : { errors: { error: [String(err)] } },
+            },
+            Cmd.none(),
+          ];
+        }
+    }
+  };

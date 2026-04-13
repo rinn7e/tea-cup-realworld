@@ -2,7 +2,7 @@ import * as RD from '@devexperts/remote-data-ts';
 import { Cmd } from 'tea-cup-fp';
 import type { Model, Msg } from './type';
 import { getProfile, getArticles, followUser, unfollowUser } from '../../api/service';
-import { attemptTE } from '../../tea/util';
+import { attemptTE } from '@rinn7e/tea-cup-prelude';
 import type { Option } from 'fp-ts/lib/Option';
 import type { User } from '../../api/type';
 

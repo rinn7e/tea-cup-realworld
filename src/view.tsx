@@ -9,6 +9,9 @@ import * as Auth from './page/auth/view';
 import * as Settings from './page/settings/view';
 import * as Profile from './page/profile/view';
 import * as Editor from './page/editor/view';
+import { DebugPanel } from './component/DebugPanel';
+
+import { SetGlobalMsgContext } from './component/GlobalContext';
 
 interface Props {
   model: Model;
@@ -17,13 +20,19 @@ interface Props {
 
 export const View: React.FC<Props> = ({ model, dispatch }) => {
   return (
-    <div className="flex flex-col min-h-screen">
-      <Navbar model={model} dispatch={dispatch} />
-      <main className="flex-grow">
-        {renderPage(model, dispatch)}
-      </main>
-      <Footer />
-    </div>
+    <SetGlobalMsgContext.Provider value={dispatch}>
+      <div className="flex flex-col min-h-screen">
+        <Navbar model={model} />
+        <main className="flex-grow">
+          {renderPage(model, dispatch)}
+        </main>
+        <Footer />
+      </div>
+      <DebugPanel
+        model={model.debugPanel}
+        dispatch={(msg) => dispatch({ _tag: 'DebugPanelMsg', msg })}
+      />
+    </SetGlobalMsgContext.Provider>
   );
 };
 

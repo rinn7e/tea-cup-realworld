@@ -2,7 +2,7 @@ import * as RD from '@devexperts/remote-data-ts';
 import { Cmd } from 'tea-cup-fp';
 import type { Model, Msg } from './type';
 import { getArticles, getTags } from '../../api/service';
-import { attemptTE } from '../../tea/util';
+import { attemptTE } from '@rinn7e/tea-cup-prelude';
 
 export const init = (): [Model, Cmd<Msg>] => {
   const model: Model = {

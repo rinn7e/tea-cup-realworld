@@ -3,6 +3,10 @@ import type { Dispatcher } from 'tea-cup-fp';
 import * as RD from '@devexperts/remote-data-ts';
 import type { Model, Msg } from './type';
 import type { ArticlesResponse, TagsResponse } from '../../api/type';
+import { Link } from '../../component/Link';
+import { pipe } from 'fp-ts/lib/function';
+import { HeartIcon } from '@heroicons/react/24/solid';
+import { homePage } from '../../data/route';
 
 interface Props {
   model: Model;
@@ -25,12 +29,17 @@ export const HomeView: React.FC<Props> = ({ model }) => {
             <div className="feed-toggle mb-4">
               <ul className="flex border-b">
                 <li className="mr-1">
-                  <a className="bg-white inline-block py-2 px-4 text-brand-primary border-b-2 border-brand-primary font-medium" href="">Global Feed</a>
+                  <Link
+                    className="bg-white inline-block py-2 px-4 text-brand-primary border-b-2 border-brand-primary font-medium"
+                    route={{ page: homePage() }}
+                  >
+                    Global Feed
+                  </Link>
                 </li>
               </ul>
             </div>
 
-            {pipe<RD.RemoteData<Error, ArticlesResponse>, React.ReactNode>(
+            {pipe(
               model.articles,
               RD.fold(
                 () => <div>Loading articles...</div>,
@@ -44,20 +53,23 @@ export const HomeView: React.FC<Props> = ({ model }) => {
                       data.articles.map((article) => (
                         <div key={article.slug} className="article-preview py-6 border-t first:border-t-0">
                           <div className="article-meta flex items-center mb-4">
-                            <a href={`/profile/${article.author.username}`}>
+                            <Link route={{ page: { _tag: 'ProfilePage', username: article.author.username, favorites: false } }}>
                               <img src={article.author.image || 'https://api.realworld.io/images/smiley-cyrus.jpeg'} className="w-8 h-8 rounded-full" alt="" />
-                            </a>
+                            </Link>
                             <div className="info ml-2 flex-grow">
-                              <a href={`/profile/${article.author.username}`} className="text-brand-primary font-medium block hover:underline">
+                              <Link
+                                route={{ page: { _tag: 'ProfilePage', username: article.author.username, favorites: false } }}
+                                className="text-brand-primary font-medium block hover:underline"
+                              >
                                 {article.author.username}
-                              </a>
+                              </Link>
                               <span className="text-gray-400 text-xs">{new Date(article.createdAt).toDateString()}</span>
                             </div>
-                            <button className="btn btn-sm outline-brand-primary border border-brand-primary text-brand-primary px-2 py-1 rounded hover:bg-brand-primary hover:text-white transition-colors text-sm">
-                              <i className="ion-heart"></i> {article.favoritesCount}
+                            <button className="btn btn-sm outline-brand-primary border border-brand-primary text-brand-primary px-2 py-1 rounded hover:bg-brand-primary hover:text-white transition-colors text-sm flex items-center gap-1">
+                              <HeartIcon className="w-4 h-4" /> {article.favoritesCount}
                             </button>
                           </div>
-                          <a href={`/article/${article.slug}`} className="preview-link">
+                          <Link route={{ page: { _tag: 'ArticlePage', slug: article.slug } }} className="preview-link">
                             <h1 className="text-2xl font-bold mb-1">{article.title}</h1>
                             <p className="text-gray-400 font-light mb-4">{article.description}</p>
                             <span className="text-gray-400 text-xs font-light">Read more...</span>
@@ -68,7 +80,7 @@ export const HomeView: React.FC<Props> = ({ model }) => {
                                 </li>
                               ))}
                             </ul>
-                          </a>
+                          </Link>
                         </div>
                       ))
                     )}
@@ -82,7 +94,7 @@ export const HomeView: React.FC<Props> = ({ model }) => {
             <div className="sidebar bg-gray-100 p-4 rounded">
               <p className="font-medium mb-3">Popular Tags</p>
               <div className="tag-list flex flex-wrap">
-                {pipe<RD.RemoteData<Error, TagsResponse>, React.ReactNode>(
+                {pipe(
                   model.tags,
                   RD.fold(
                     () => <div>Loading tags...</div>,
@@ -91,9 +103,9 @@ export const HomeView: React.FC<Props> = ({ model }) => {
                     (data: TagsResponse) => (
                       <>
                         {data.tags.map(tag => (
-                          <a key={tag} href="" className="tag-pill">
+                          <span key={tag} className="tag-pill cursor-pointer">
                             {tag}
-                          </a>
+                          </span>
                         ))}
                       </>
                     )
@@ -107,7 +119,3 @@ export const HomeView: React.FC<Props> = ({ model }) => {
     </div>
   );
 };
-
-function pipe<A, B>(a: A, f: (a: A) => B): B {
-  return f(a);
-}

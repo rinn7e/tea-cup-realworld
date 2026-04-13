@@ -7,6 +7,8 @@ import type { Model, Msg } from './type'
 import { init, update } from './update'
 import { View } from './view'
 
+import { devTools } from '@rinn7e/tea-cup-prelude'
+
 const container = document.getElementById('root')
 
 if (container) {
@@ -21,6 +23,7 @@ if (container) {
           model ? <View model={model} dispatch={dispatch} /> : null
         )}
         subscriptions={() => Sub.none()}
+        {...devTools<Model, Msg>().getProgramProps()}
       />
     </StrictMode>
   )

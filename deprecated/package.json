@@ -1,0 +1,47 @@
+{
+  "name": "realworld-frontend",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "check": "npx tsc --noEmit -p tsconfig.app.json",
+    "check:watch": "npx tsc --noEmit -p tsconfig.app.json --watch",
+    "check-style": "prettier --check .",
+    "fix-style": "prettier --write .",
+    "lint": "eslint src",
+    "clean": "npm run fix-style && npm run check && npm run lint && npm run bundle",
+    "generate-api": "openapi-ts"
+  },
+  "dependencies": {
+    "@devexperts/remote-data-ts": "^2.1.1",
+    "@rinn7e/tea-cup-form": "github:rinn7e/tea-cup-form#570d54f4114864dce64b95dc106bf539e94a1544",
+    "@tailwindcss/vite": "^4.1.17",
+    "fp-ts": "^2.16.11",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-tea-cup": "^5.1.1",
+    "tailwind-merge": "^3.4.0",
+    "tailwindcss": "^4.1.17",
+    "tea-cup-fp": "^1.1.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@hey-api/openapi-ts": "^0.88.0",
+    "@types/node": "^24.10.0",
+    "@types/react": "^19.2.2",
+    "@types/react-dom": "^19.2.2",
+    "@vitejs/plugin-react": "^5.1.0",
+    "eslint": "^9.39.1",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.4.24",
+    "globals": "^16.5.0",
+    "prettier": "^3.6.2",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.46.3",
+    "vite": "^7.2.2",
+    "vite-tsconfig-paths": "^5.1.4"
+  }
+}

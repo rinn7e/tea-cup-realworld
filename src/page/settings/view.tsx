@@ -1,5 +1,6 @@
-import React from 'react';
-import type { Model, Msg } from './type';
+import React from "react";
+import type { Model, Msg } from "./type";
+import { FormItemMemo } from "@rinn7e/tea-cup-form";
 
 interface Props {
   model: Model;
@@ -16,55 +17,47 @@ export const SettingsView: React.FC<Props> = ({ model, dispatch }) => {
 
             {model.errors && (
               <ul className="error-messages text-red-500 mb-4 list-disc list-inside">
-                {Object.entries(model.errors.errors).map(([field, messages]) => (
-                  <li key={field}>
-                    {field} {messages.join(', ')}
-                  </li>
-                ))}
+                {Object.entries(model.errors.errors).map(
+                  ([field, messages]) => (
+                    <li key={field}>
+                      {field} {(messages as string[]).join(", ")}
+                    </li>
+                  ),
+                )}
               </ul>
             )}
 
-            <form onSubmit={(e) => { e.preventDefault(); dispatch({ _tag: 'Submit' }); }}>
-              <fieldset className="space-y-4">
-                <input
-                  className="w-full px-4 py-3 border border-gray-300 rounded focus:border-brand-primary outline-none"
-                  type="text"
-                  placeholder="URL of profile picture"
-                  value={model.image}
-                  onChange={(e) => dispatch({ _tag: 'SetImage', value: e.target.value })}
-                  disabled={model.submitting}
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                dispatch({ _tag: "Submit" });
+              }}
+            >
+              <fieldset>
+                <FormItemMemo
+                  field="image"
+                  model={model.form}
+                  dispatch={(msg) => dispatch({ _tag: "FormMsg", msg })}
                 />
-                <input
-                  className="w-full px-4 py-3 border border-gray-300 rounded focus:border-brand-primary outline-none text-xl font-medium"
-                  type="text"
-                  placeholder="Username"
-                  value={model.username}
-                  onChange={(e) => dispatch({ _tag: 'SetUsername', value: e.target.value })}
-                  disabled={model.submitting}
+                <FormItemMemo
+                  field="username"
+                  model={model.form}
+                  dispatch={(msg) => dispatch({ _tag: "FormMsg", msg })}
                 />
-                <textarea
-                  className="w-full px-4 py-3 border border-gray-300 rounded focus:border-brand-primary outline-none"
-                  rows={8}
-                  placeholder="Short bio about you"
-                  value={model.bio}
-                  onChange={(e) => dispatch({ _tag: 'SetBio', value: e.target.value })}
-                  disabled={model.submitting}
-                ></textarea>
-                <input
-                  className="w-full px-4 py-3 border border-gray-300 rounded focus:border-brand-primary outline-none"
-                  type="email"
-                  placeholder="Email"
-                  value={model.email}
-                  onChange={(e) => dispatch({ _tag: 'SetEmail', value: e.target.value })}
-                  disabled={model.submitting}
+                <FormItemMemo
+                  field="bio"
+                  model={model.form}
+                  dispatch={(msg) => dispatch({ _tag: "FormMsg", msg })}
                 />
-                <input
-                  className="w-full px-4 py-3 border border-gray-300 rounded focus:border-brand-primary outline-none"
-                  type="password"
-                  placeholder="New Password"
-                  value={model.password}
-                  onChange={(e) => dispatch({ _tag: 'SetPassword', value: e.target.value })}
-                  disabled={model.submitting}
+                <FormItemMemo
+                  field="email"
+                  model={model.form}
+                  dispatch={(msg) => dispatch({ _tag: "FormMsg", msg })}
+                />
+                <FormItemMemo
+                  field="password"
+                  model={model.form}
+                  dispatch={(msg) => dispatch({ _tag: "FormMsg", msg })}
                 />
                 <button
                   className="btn btn-lg bg-brand-primary text-white px-6 py-3 rounded float-right hover:bg-opacity-90 transition-colors text-lg"
@@ -80,7 +73,7 @@ export const SettingsView: React.FC<Props> = ({ model, dispatch }) => {
 
             <button
               className="btn border border-red-500 text-red-500 px-4 py-2 rounded hover:bg-red-500 hover:text-white transition-colors"
-              onClick={() => dispatch({ _tag: 'Logout' })}
+              onClick={() => dispatch({ _tag: "Logout" })}
             >
               Or click here to logout.
             </button>

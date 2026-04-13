@@ -66,3 +66,38 @@ export type CommentsResponse = {
 export type Errors = {
   errors: Record<string, string[]>;
 };
+
+export type LoginRequest = {
+  user: {
+    email: string;
+    password: string;
+  };
+};
+
+export type RegisterRequest = {
+  user: {
+    username: string;
+    email: string;
+    password: string;
+  };
+};
+
+export type UpdateUserRequest = {
+  user: {
+    email?: string;
+    token?: string;
+    username?: string;
+    bio?: string;
+    image?: string;
+    password?: string;
+  };
+};
+
+export type ArticleRequest = {
+  article: {
+    title: string;
+    description: string;
+    body: string;
+    tagList?: string[];
+  };
+};

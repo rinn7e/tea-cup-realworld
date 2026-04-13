@@ -1,14 +1,27 @@
 import * as TE from 'fp-ts/lib/TaskEither';
 import type {
+  ArticleRequest,
   ArticleResponse,
   ArticlesResponse,
   CommentsResponse,
+  LoginRequest,
   ProfileResponse,
+  RegisterRequest,
   TagsResponse,
+  UpdateUserRequest,
   UserResponse,
 } from './type';
 
 const API_BASE = 'http://localhost:3000/api';
+
+export const getCurrentUser = (token: string): TE.TaskEither<Error, UserResponse> => {
+  return TE.tryCatch(
+    () => fetch(`${API_BASE}/user`, {
+      headers: { 'Authorization': `Token ${token}` }
+    }).then(res => res.json()),
+    reason => new Error(String(reason))
+  );
+};
 
 export const getArticles = (params: { tag?: string, author?: string, favorited?: string, offset?: number, limit?: number } = {}): TE.TaskEither<Error, ArticlesResponse> => {
   const query = new URLSearchParams();
@@ -39,29 +52,29 @@ export const getComments = (slug: string): TE.TaskEither<Error, CommentsResponse
   );
 };
 
-export const login = (user: any): TE.TaskEither<Error, UserResponse> => {
+export const login = (request: LoginRequest): TE.TaskEither<Error, UserResponse> => {
   return TE.tryCatch(
     () => fetch(`${API_BASE}/users/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user })
+      body: JSON.stringify(request)
     }).then(res => res.json()),
     reason => new Error(String(reason))
   );
 };
 
-export const register = (user: any): TE.TaskEither<Error, UserResponse> => {
+export const register = (request: RegisterRequest): TE.TaskEither<Error, UserResponse> => {
   return TE.tryCatch(
     () => fetch(`${API_BASE}/users`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user })
+      body: JSON.stringify(request)
     }).then(res => res.json()),
     reason => new Error(String(reason))
   );
 };
 
-export const updateUser = (user: any, token: string): TE.TaskEither<Error, UserResponse> => {
+export const updateUser = (request: UpdateUserRequest, token: string): TE.TaskEither<Error, UserResponse> => {
   return TE.tryCatch(
     () => fetch(`${API_BASE}/user`, {
       method: 'PUT',
@@ -69,7 +82,7 @@ export const updateUser = (user: any, token: string): TE.TaskEither<Error, UserR
         'Content-Type': 'application/json',
         'Authorization': `Token ${token}`
       },
-      body: JSON.stringify({ user })
+      body: JSON.stringify(request)
     }).then(res => res.json()),
     reason => new Error(String(reason))
   );
@@ -84,7 +97,7 @@ export const getProfile = (username: string, token?: string): TE.TaskEither<Erro
   );
 };
 
-export const createArticle = (article: any, token: string): TE.TaskEither<Error, ArticleResponse> => {
+export const createArticle = (request: ArticleRequest, token: string): TE.TaskEither<Error, ArticleResponse> => {
   return TE.tryCatch(
     () => fetch(`${API_BASE}/articles`, {
       method: 'POST',
@@ -92,13 +105,13 @@ export const createArticle = (article: any, token: string): TE.TaskEither<Error,
         'Content-Type': 'application/json',
         'Authorization': `Token ${token}`
       },
-      body: JSON.stringify({ article })
+      body: JSON.stringify(request)
     }).then(res => res.json()),
     reason => new Error(String(reason))
   );
 };
 
-export const updateArticle = (slug: string, article: any, token: string): TE.TaskEither<Error, ArticleResponse> => {
+export const updateArticle = (slug: string, request: ArticleRequest, token: string): TE.TaskEither<Error, ArticleResponse> => {
   return TE.tryCatch(
     () => fetch(`${API_BASE}/articles/${slug}`, {
       method: 'PUT',
@@ -106,7 +119,7 @@ export const updateArticle = (slug: string, article: any, token: string): TE.Tas
         'Content-Type': 'application/json',
         'Authorization': `Token ${token}`
       },
-      body: JSON.stringify({ article })
+      body: JSON.stringify(request)
     }).then(res => res.json()),
     reason => new Error(String(reason))
   );
