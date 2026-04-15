@@ -12,13 +12,14 @@ export const standardInputUi =
   ) =>
   (props: CustomTextInputProps) => {
     const isError = E.isLeft(props.validationResult) && props.showValidation
-    const sizeClass = isLarge ? 'form-control-lg' : ''
-    const validationClass = isError ? 'is-invalid' : ''
-    const inputClass = `form-control ${sizeClass} ${validationClass}`.trim()
+    const sizeClass = isLarge ? 'py-3 text-base' : 'py-2 text-sm'
+    const validationClass = isError ? 'border-red-500' : 'border-gray-300'
+    const inputClass =
+      `w-full rounded border ${validationClass} ${sizeClass} px-3 bg-white outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-colors`.trim()
 
     if (isTextarea) {
       return (
-        <fieldset className='form-group'>
+        <div className='mb-4'>
           <textarea
             className={inputClass}
             rows={8}
@@ -55,16 +56,18 @@ export const standardInputUi =
             pipe(
               props.validationResult,
               E.fold(
-                (err) => <div className='error-messages'>{err}</div>,
+                (err) => (
+                  <div className='mt-1 text-xs text-red-600'>{err}</div>
+                ),
                 () => null,
               ),
             )}
-        </fieldset>
+        </div>
       )
     }
 
     return (
-      <fieldset className='form-group'>
+      <div className='mb-4'>
         <input
           className={inputClass}
           type={
@@ -107,10 +110,12 @@ export const standardInputUi =
           pipe(
             props.validationResult,
             E.fold(
-              (err) => <div className='error-messages'>{err}</div>,
+              (err) => (
+                <div className='mt-1 text-xs text-red-600'>{err}</div>
+              ),
               () => null,
             ),
           )}
-      </fieldset>
+      </div>
     )
   }

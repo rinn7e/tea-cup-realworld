@@ -1,4 +1,5 @@
 import * as RD from '@devexperts/remote-data-ts'
+import { Heart, Settings, UserPlus } from 'lucide-react'
 import { pipe } from 'fp-ts/lib/function'
 import React from 'react'
 
@@ -13,131 +14,126 @@ interface Props {
   isCurrentUser: boolean
 }
 
-export const ProfileView: React.FC<Props> = ({
-  model,
-  dispatch,
-  isCurrentUser,
-}) => {
+export const ProfileView: React.FC<Props> = ({ model, dispatch, isCurrentUser }) => {
   return (
-    <div className='profile-page'>
+    <div>
       {pipe(
         model.profile,
         RD.fold(
-          () => <div className='article-preview'>Loading profile...</div>,
-          () => <div className='article-preview'>Loading profile...</div>,
+          () => <div className='py-6 text-center text-sm text-gray-500'>Loading profile...</div>,
+          () => <div className='py-6 text-center text-sm text-gray-500'>Loading profile...</div>,
           (err: Error) => (
-            <div className='article-preview'>
+            <div className='py-6 text-center text-sm text-red-500'>
               Error loading profile: {err.message}
             </div>
           ),
           (data: ProfileResponse) => (
             <>
-              <div className='user-info'>
-                <div className='container'>
-                  <div className='row'>
-                    <div className='col-xs-12 col-md-10 offset-md-1'>
-                      <img
-                        src={
-                          data.profile.image ||
-                          'https://api.realworld.io/images/smiley-cyrus.jpeg'
-                        }
-                        className='user-img'
-                        alt=''
-                      />
-                      <h4>{data.profile.username}</h4>
-                      <p>{data.profile.bio}</p>
+              <div className='border-b border-gray-200 bg-gray-50 py-10 text-center'>
+                <div className='mx-auto max-w-6xl px-4'>
+                  <img
+                    src={
+                      data.profile.image ||
+                      '/default-avatar.svg'
+                    }
+                    className='mx-auto h-24 w-24 rounded-full border-4 border-white object-cover shadow'
+                    alt=''
+                  />
+                  <h4 className='mt-3 text-2xl font-bold text-gray-900'>
+                    {data.profile.username}
+                  </h4>
+                  {data.profile.bio && (
+                    <p className='mt-1 text-sm text-gray-500'>{data.profile.bio}</p>
+                  )}
 
-                      {isCurrentUser ? (
-                        <Link
-                          route={{ page: { _tag: 'SettingsPage' } }}
-                          className='btn btn-sm btn-outline-secondary action-btn'
-                        >
-                          <i className='ion-gear-a' /> Edit Profile Settings
-                        </Link>
-                      ) : (
-                        <button
-                          type='button'
-                          className='btn btn-sm btn-outline-secondary action-btn'
-                          onClick={() =>
-                            dispatch({
-                              _tag: data.profile.following
-                                ? 'Unfollow'
-                                : 'Follow',
-                            })
-                          }
-                        >
-                          <i className='ion-plus-round' />{' '}
-                          {data.profile.following
-                            ? `Unfollow ${data.profile.username}`
-                            : `Follow ${data.profile.username}`}
-                        </button>
-                      )}
-                    </div>
-                  </div>
+                  {isCurrentUser ? (
+                    <Link
+                      route={{ page: { _tag: 'SettingsPage' } }}
+                      className='mt-4 inline-flex items-center gap-1.5 rounded border border-gray-400 px-3 py-1.5 text-sm text-gray-600 hover:border-gray-600'
+                    >
+                      <Settings size={13} /> Edit Profile Settings
+                    </Link>
+                  ) : (
+                    <button
+                      type='button'
+                      className='mt-4 inline-flex items-center gap-1.5 rounded border border-gray-400 px-3 py-1.5 text-sm text-gray-600 hover:border-gray-600'
+                      onClick={() =>
+                        dispatch({
+                          _tag: data.profile.following ? 'Unfollow' : 'Follow',
+                        })
+                      }
+                    >
+                      <UserPlus size={13} />{' '}
+                      {data.profile.following
+                        ? `Unfollow ${data.profile.username}`
+                        : `Follow ${data.profile.username}`}
+                    </button>
+                  )}
                 </div>
               </div>
 
-              <div className='container'>
-                <div className='row'>
-                  <div className='col-xs-12 col-md-10 offset-md-1'>
-                    <div className='articles-toggle'>
-                      <ul className='nav nav-pills outline-active'>
-                        <li className='nav-item'>
-                          <button
-                            type='button'
-                            className={`nav-link${!model.showFavorites ? ' active' : ''}`}
-                            onClick={() =>
-                              dispatch({ _tag: 'ToggleFavorites', show: false })
-                            }
-                          >
-                            My Articles
-                          </button>
-                        </li>
-                        <li className='nav-item'>
-                          <button
-                            type='button'
-                            className={`nav-link${model.showFavorites ? ' active' : ''}`}
-                            onClick={() =>
-                              dispatch({ _tag: 'ToggleFavorites', show: true })
-                            }
-                          >
-                            Favorited Articles
-                          </button>
-                        </li>
-                      </ul>
-                    </div>
+              <div className='mx-auto max-w-6xl px-4 py-6'>
+                <div className='flex border-b border-gray-200'>
+                  <button
+                    type='button'
+                    className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px ${!model.showFavorites ? 'border-green-600 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                    onClick={() => dispatch({ _tag: 'ToggleFavorites', show: false })}
+                  >
+                    My Articles
+                  </button>
+                  <button
+                    type='button'
+                    className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px ${model.showFavorites ? 'border-green-600 text-green-600' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
+                    onClick={() => dispatch({ _tag: 'ToggleFavorites', show: true })}
+                  >
+                    Favorited Articles
+                  </button>
+                </div>
 
-                    {pipe(
-                      model.articles,
-                      RD.fold(
-                        () => (
-                          <div className='article-preview'>
-                            Loading articles...
-                          </div>
-                        ),
-                        () => (
-                          <div className='article-preview'>
-                            Loading articles...
-                          </div>
-                        ),
-                        (err: Error) => (
-                          <div className='article-preview'>
-                            Error loading articles: {err.message}
-                          </div>
-                        ),
-                        (articlesData: ArticlesResponse) =>
-                          articlesData.articles.length === 0 ? (
-                            <div className='article-preview'>
-                              No articles are here... yet.
-                            </div>
-                          ) : (
-                            <>
-                              {articlesData.articles.map((article: any) => (
-                                <div
-                                  key={article.slug}
-                                  className='article-preview'
-                                >
-                                  <div className='article-meta'>
+                {pipe(
+                  model.articles,
+                  RD.fold(
+                    () => (
+                      <div className='py-6 text-sm text-gray-500'>Loading articles...</div>
+                    ),
+                    () => (
+                      <div className='py-6 text-sm text-gray-500'>Loading articles...</div>
+                    ),
+                    (err: Error) => (
+                      <div className='py-6 text-sm text-red-500'>
+                        Error loading articles: {err.message}
+                      </div>
+                    ),
+                    (articlesData: ArticlesResponse) =>
+                      articlesData.articles.length === 0 ? (
+                        <div className='py-6 text-sm text-gray-500'>
+                          No articles are here... yet.
+                        </div>
+                      ) : (
+                        <>
+                          {articlesData.articles.map((article: any) => (
+                            <div key={article.slug} className='border-b border-gray-200 py-6'>
+                              <div className='flex items-center justify-between'>
+                                <div className='flex items-center gap-3'>
+                                  <Link
+                                    route={{
+                                      page: {
+                                        _tag: 'ProfilePage',
+                                        username: article.author.username,
+                                        favorites: false,
+                                      },
+                                    }}
+                                  >
+                                    <img
+                                      src={
+                                        article.author.image ||
+                                        '/default-avatar.svg'
+                                      }
+                                      className='h-8 w-8 rounded-full object-cover'
+                                      alt=''
+                                    />
+                                  </Link>
+                                  <div>
                                     <Link
                                       route={{
                                         page: {
@@ -146,64 +142,42 @@ export const ProfileView: React.FC<Props> = ({
                                           favorites: false,
                                         },
                                       }}
+                                      className='block text-sm font-medium text-green-600 hover:underline'
                                     >
-                                      <img
-                                        src={
-                                          article.author.image ||
-                                          'https://api.realworld.io/images/smiley-cyrus.jpeg'
-                                        }
-                                        alt=''
-                                      />
+                                      {article.author.username}
                                     </Link>
-                                    <div className='info'>
-                                      <Link
-                                        route={{
-                                          page: {
-                                            _tag: 'ProfilePage',
-                                            username: article.author.username,
-                                            favorites: false,
-                                          },
-                                        }}
-                                        className='author'
-                                      >
-                                        {article.author.username}
-                                      </Link>
-                                      <span className='date'>
-                                        {new Date(
-                                          article.createdAt,
-                                        ).toDateString()}
-                                      </span>
-                                    </div>
-                                    <button
-                                      type='button'
-                                      className='btn btn-outline-primary btn-sm pull-xs-right'
-                                    >
-                                      <i className='ion-heart' />{' '}
-                                      {article.favoritesCount}
-                                    </button>
+                                    <span className='text-xs text-gray-400'>
+                                      {new Date(article.createdAt).toDateString()}
+                                    </span>
                                   </div>
-                                  <Link
-                                    route={{
-                                      page: {
-                                        _tag: 'ArticlePage',
-                                        slug: article.slug,
-                                      },
-                                    }}
-                                    className='preview-link'
-                                  >
-                                    <h1>{article.title}</h1>
-                                    <p>{article.description}</p>
-                                    <span>Read more...</span>
-                                  </Link>
                                 </div>
-                              ))}
-                              {/* TODO: pagination — model doesn't support page state yet */}
-                            </>
-                          ),
+                                <button
+                                  type='button'
+                                  className='flex items-center gap-1 rounded border border-green-500 px-2 py-1 text-xs text-green-600 hover:bg-green-50'
+                                >
+                                  <Heart size={12} />
+                                  {article.favoritesCount}
+                                </button>
+                              </div>
+                              <Link
+                                route={{
+                                  page: {
+                                    _tag: 'ArticlePage',
+                                    slug: article.slug,
+                                  },
+                                }}
+                                className='mt-3 block'
+                              >
+                                <h1 className='text-xl font-bold text-gray-900'>{article.title}</h1>
+                                <p className='mt-1 text-sm text-gray-500'>{article.description}</p>
+                                <span className='mt-2 block text-xs text-gray-400'>Read more...</span>
+                              </Link>
+                            </div>
+                          ))}
+                        </>
                       ),
-                    )}
-                  </div>
-                </div>
+                  ),
+                )}
               </div>
             </>
           ),

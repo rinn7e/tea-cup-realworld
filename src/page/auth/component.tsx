@@ -19,62 +19,59 @@ export const AuthView: React.FC<Props> = ({ model, dispatch }) => {
   const route = model.isRegister ? loginRoute : registerRoute
 
   return (
-    <div className='auth-page'>
-      <div className='container page'>
-        <div className='row'>
-          <div className='col-md-6 offset-md-3 col-xs-12'>
-            <h1 className='text-xs-center'>{title}</h1>
-            <p className='text-xs-center'>
-              <Link route={route}>{linkText}</Link>
-            </p>
+    <div className='flex min-h-[calc(100vh-8rem)] items-start justify-center pt-16 px-4'>
+      <div className='w-full max-w-md'>
+        <h1 className='text-3xl font-bold text-center text-gray-900'>{title}</h1>
+        <p className='mt-2 text-center text-sm'>
+          <Link route={route} className='text-green-600 hover:underline'>
+            {linkText}
+          </Link>
+        </p>
 
-            {model.errors && (
-              <ul className='error-messages'>
-                {Object.entries(model.errors.errors).map(
-                  ([field, messages]) => (
-                    <li key={field}>
-                      {field} {(messages as string[]).join(', ')}
-                    </li>
-                  ),
-                )}
-              </ul>
+        {model.errors && (
+          <ul className='mt-4 rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700 space-y-1'>
+            {Object.entries(model.errors.errors).map(([field, messages]) => (
+              <li key={field}>
+                {field} {(messages as string[]).join(', ')}
+              </li>
+            ))}
+          </ul>
+        )}
+
+        <form
+          className='mt-6'
+          onSubmit={(e) => {
+            e.preventDefault()
+            dispatch({ _tag: 'Submit' })
+          }}
+        >
+          <fieldset className='space-y-0'>
+            {model.isRegister && (
+              <FormItemMemo
+                field='username'
+                model={model.signupForm}
+                dispatch={(msg) => dispatch({ _tag: 'FormMsg', msg })}
+              />
             )}
-
-            <form
-              onSubmit={(e) => {
-                e.preventDefault()
-                dispatch({ _tag: 'Submit' })
-              }}
+            <FormItemMemo
+              field='email'
+              model={model.isRegister ? model.signupForm : model.loginForm}
+              dispatch={(msg) => dispatch({ _tag: 'FormMsg', msg })}
+            />
+            <FormItemMemo
+              field='password'
+              model={model.isRegister ? model.signupForm : model.loginForm}
+              dispatch={(msg) => dispatch({ _tag: 'FormMsg', msg })}
+            />
+            <button
+              className='w-full rounded bg-green-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-60'
+              type='submit'
+              disabled={model.submitting}
             >
-              <fieldset>
-                {model.isRegister && (
-                  <FormItemMemo
-                    field='username'
-                    model={model.signupForm}
-                    dispatch={(msg) => dispatch({ _tag: 'FormMsg', msg })}
-                  />
-                )}
-                <FormItemMemo
-                  field='email'
-                  model={model.isRegister ? model.signupForm : model.loginForm}
-                  dispatch={(msg) => dispatch({ _tag: 'FormMsg', msg })}
-                />
-                <FormItemMemo
-                  field='password'
-                  model={model.isRegister ? model.signupForm : model.loginForm}
-                  dispatch={(msg) => dispatch({ _tag: 'FormMsg', msg })}
-                />
-                <button
-                  className='btn btn-lg btn-primary pull-xs-right'
-                  type='submit'
-                  disabled={model.submitting}
-                >
-                  {title}
-                </button>
-              </fieldset>
-            </form>
-          </div>
-        </div>
+              {title}
+            </button>
+          </fieldset>
+        </form>
       </div>
     </div>
   )

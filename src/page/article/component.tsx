@@ -1,6 +1,7 @@
 import * as RD from '@devexperts/remote-data-ts'
 import * as O from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/function'
+import { Heart, Pencil, Trash2, UserPlus } from 'lucide-react'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 
@@ -16,23 +17,23 @@ interface Props {
 
 export const ArticleView: React.FC<Props> = ({ model }) => {
   return (
-    <div className='article-page'>
+    <div>
       {pipe(
         model.article,
         RD.fold(
-          () => <div className='article-preview'>Loading article...</div>,
-          () => <div className='article-preview'>Loading article...</div>,
+          () => <div className='py-6 text-center text-sm text-gray-500'>Loading article...</div>,
+          () => <div className='py-6 text-center text-sm text-gray-500'>Loading article...</div>,
           (err: Error) => (
-            <div className='article-preview'>
+            <div className='py-6 text-center text-sm text-red-500'>
               Error loading article: {err.message}
             </div>
           ),
           (data: ArticleResponse) => (
             <>
-              <div className='banner'>
-                <div className='container'>
-                  <h1>{data.article.title}</h1>
-                  <div className='article-meta'>
+              <div className='bg-gray-900 py-10 text-white'>
+                <div className='mx-auto max-w-6xl px-4'>
+                  <h1 className='text-3xl font-bold'>{data.article.title}</h1>
+                  <div className='mt-4 flex flex-wrap items-center gap-3'>
                     <Link
                       route={{
                         page: {
@@ -45,12 +46,13 @@ export const ArticleView: React.FC<Props> = ({ model }) => {
                       <img
                         src={
                           data.article.author.image ||
-                          'https://api.realworld.io/images/smiley-cyrus.jpeg'
+                          '/default-avatar.svg'
                         }
+                        className='h-9 w-9 rounded-full object-cover'
                         alt=''
                       />
                     </Link>
-                    <div className='info'>
+                    <div>
                       <Link
                         route={{
                           page: {
@@ -59,78 +61,87 @@ export const ArticleView: React.FC<Props> = ({ model }) => {
                             favorites: false,
                           },
                         }}
-                        className='author'
+                        className='block text-sm font-medium text-green-400 hover:underline'
                       >
                         {data.article.author.username}
                       </Link>
-                      <span className='date'>
+                      <span className='text-xs text-gray-400'>
                         {new Date(data.article.createdAt).toDateString()}
                       </span>
                     </div>
-                    {/* TODO: show follow/favorite for non-owners, edit/delete for owner — ArticleView needs an isOwner prop */}
-                    <button
-                      type='button'
-                      className='btn btn-sm btn-outline-secondary'
-                    >
-                      <i className='ion-plus-round' /> Follow{' '}
-                      {data.article.author.username}
-                    </button>
-                    &nbsp;&nbsp;
-                    <button
-                      type='button'
-                      className='btn btn-sm btn-outline-primary'
-                    >
-                      <i className='ion-heart' /> Favorite Post{' '}
-                      <span className='counter'>
-                        ({data.article.favoritesCount})
-                      </span>
-                    </button>
-                    &nbsp;&nbsp;
-                    {/* TODO: only show Edit/Delete to article owner */}
-                    <Link
-                      route={{
-                        page: {
-                          _tag: 'EditorPage',
-                          slug: O.some(data.article.slug),
-                        },
-                      }}
-                      className='btn btn-sm btn-outline-secondary'
-                    >
-                      <i className='ion-edit' /> Edit Article
-                    </Link>
-                    &nbsp;
-                    <button
-                      type='button'
-                      className='btn btn-sm btn-outline-danger'
-                    >
-                      <i className='ion-trash-a' /> Delete Article
-                    </button>
+                    <div className='flex flex-wrap items-center gap-2'>
+                      <button
+                        type='button'
+                        className='flex items-center gap-1 rounded border border-gray-400 px-3 py-1 text-xs text-gray-300 hover:border-white hover:text-white'
+                      >
+                        <UserPlus size={13} /> Follow {data.article.author.username}
+                      </button>
+                      <button
+                        type='button'
+                        className='flex items-center gap-1 rounded border border-green-500 px-3 py-1 text-xs text-green-400 hover:bg-green-900'
+                      >
+                        <Heart size={13} /> Favorite Post{' '}
+                        <span>({data.article.favoritesCount})</span>
+                      </button>
+                      <Link
+                        route={{
+                          page: {
+                            _tag: 'EditorPage',
+                            slug: O.some(data.article.slug),
+                          },
+                        }}
+                        className='flex items-center gap-1 rounded border border-gray-400 px-3 py-1 text-xs text-gray-300 hover:border-white hover:text-white'
+                      >
+                        <Pencil size={13} /> Edit Article
+                      </Link>
+                      <button
+                        type='button'
+                        className='flex items-center gap-1 rounded border border-red-500 px-3 py-1 text-xs text-red-400 hover:bg-red-900'
+                      >
+                        <Trash2 size={13} /> Delete Article
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
 
-              <div className='container page'>
-                <div className='row article-content'>
-                  <div className='col-xs-12'>
-                    <ReactMarkdown>{data.article.body}</ReactMarkdown>
-                    <ul className='tag-list'>
-                      {data.article.tagList.map((tag) => (
-                        <li
-                          key={tag}
-                          className='tag-default tag-pill tag-outline'
-                        >
-                          {tag}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+              <div className='mx-auto max-w-6xl px-4 py-8'>
+                <div className='prose prose-gray max-w-none'>
+                  <ReactMarkdown>{data.article.body}</ReactMarkdown>
                 </div>
+                <ul className='mt-4 flex flex-wrap gap-1'>
+                  {data.article.tagList.map((tag) => (
+                    <li
+                      key={tag}
+                      className='rounded-full border border-gray-300 px-2 py-0.5 text-xs text-gray-400'
+                    >
+                      {tag}
+                    </li>
+                  ))}
+                </ul>
 
-                <hr />
+                <hr className='my-8 border-gray-200' />
 
-                <div className='article-actions'>
-                  {/* TODO: extract article-meta + action buttons into a shared helper to avoid duplication */}
-                  <div className='article-meta'>
+                <div className='flex flex-wrap items-center gap-3'>
+                  <Link
+                    route={{
+                      page: {
+                        _tag: 'ProfilePage',
+                        username: data.article.author.username,
+                        favorites: false,
+                      },
+                    }}
+                  >
+                    <img
+                      src={
+                        data.article.author.image ||
+                        '/default-avatar.svg'
+                      }
+                      className='h-9 w-9 rounded-full object-cover'
+                      alt=''
+                    />
+                  </Link>
+                  <div>
                     <Link
                       route={{
                         page: {
@@ -139,116 +150,90 @@ export const ArticleView: React.FC<Props> = ({ model }) => {
                           favorites: false,
                         },
                       }}
+                      className='block text-sm font-medium text-green-600 hover:underline'
                     >
-                      <img
-                        src={
-                          data.article.author.image ||
-                          'https://api.realworld.io/images/smiley-cyrus.jpeg'
-                        }
-                        alt=''
-                      />
-                    </Link>
-                    <div className='info'>
-                      <Link
-                        route={{
-                          page: {
-                            _tag: 'ProfilePage',
-                            username: data.article.author.username,
-                            favorites: false,
-                          },
-                        }}
-                        className='author'
-                      >
-                        {data.article.author.username}
-                      </Link>
-                      <span className='date'>
-                        {new Date(data.article.createdAt).toDateString()}
-                      </span>
-                    </div>
-                    <button
-                      type='button'
-                      className='btn btn-sm btn-outline-secondary'
-                    >
-                      <i className='ion-plus-round' /> Follow{' '}
                       {data.article.author.username}
-                    </button>
-                    &nbsp;&nbsp;
+                    </Link>
+                    <span className='text-xs text-gray-400'>
+                      {new Date(data.article.createdAt).toDateString()}
+                    </span>
+                  </div>
+                  <div className='flex flex-wrap items-center gap-2'>
                     <button
                       type='button'
-                      className='btn btn-sm btn-outline-primary'
+                      className='flex items-center gap-1 rounded border border-gray-300 px-3 py-1 text-xs text-gray-600 hover:border-gray-500'
                     >
-                      <i className='ion-heart' /> Favorite Post{' '}
-                      <span className='counter'>
-                        ({data.article.favoritesCount})
-                      </span>
+                      <UserPlus size={13} /> Follow {data.article.author.username}
+                    </button>
+                    <button
+                      type='button'
+                      className='flex items-center gap-1 rounded border border-green-500 px-3 py-1 text-xs text-green-600 hover:bg-green-50'
+                    >
+                      <Heart size={13} /> Favorite Post{' '}
+                      <span>({data.article.favoritesCount})</span>
                     </button>
                   </div>
                 </div>
 
-                <div className='row'>
-                  <div className='col-xs-12 col-md-8 offset-md-2'>
-                    {/* TODO: comment form — requires auth user + PostComment dispatch, not yet wired in model */}
-
-                    {pipe(
-                      model.comments,
-                      RD.fold(
-                        () => <div>Loading comments...</div>,
-                        () => <div>Loading comments...</div>,
-                        (err: Error) => (
-                          <div>Error loading comments: {err.message}</div>
-                        ),
-                        (commentsData: CommentsResponse) => (
-                          <div>
-                            {commentsData.comments.map((comment) => (
-                              <div key={comment.id} className='card'>
-                                <div className='card-block'>
-                                  <p className='card-text'>{comment.body}</p>
-                                </div>
-                                <div className='card-footer'>
-                                  <Link
-                                    route={{
-                                      page: {
-                                        _tag: 'ProfilePage',
-                                        username: comment.author.username,
-                                        favorites: false,
-                                      },
-                                    }}
-                                    className='comment-author'
-                                  >
-                                    <img
-                                      src={
-                                        comment.author.image ||
-                                        'https://api.realworld.io/images/smiley-cyrus.jpeg'
-                                      }
-                                      className='comment-author-img'
-                                      alt=''
-                                    />
-                                  </Link>
-                                  &nbsp;
-                                  <Link
-                                    route={{
-                                      page: {
-                                        _tag: 'ProfilePage',
-                                        username: comment.author.username,
-                                        favorites: false,
-                                      },
-                                    }}
-                                    className='comment-author'
-                                  >
-                                    {comment.author.username}
-                                  </Link>
-                                  <span className='date-posted'>
-                                    {new Date(comment.createdAt).toDateString()}
-                                  </span>
-                                  {/* TODO: show mod-options (delete icon) for own comments — needs auth user in ArticleView */}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        ),
+                <div className='mx-auto mt-8 max-w-2xl'>
+                  {pipe(
+                    model.comments,
+                    RD.fold(
+                      () => <div className='text-sm text-gray-500'>Loading comments...</div>,
+                      () => <div className='text-sm text-gray-500'>Loading comments...</div>,
+                      (err: Error) => (
+                        <div className='text-sm text-red-500'>
+                          Error loading comments: {err.message}
+                        </div>
                       ),
-                    )}
-                  </div>
+                      (commentsData: CommentsResponse) => (
+                        <div className='space-y-4'>
+                          {commentsData.comments.map((comment) => (
+                            <div key={comment.id} className='rounded-lg border border-gray-200'>
+                              <div className='p-4'>
+                                <p className='text-sm text-gray-800'>{comment.body}</p>
+                              </div>
+                              <div className='flex items-center gap-2 border-t border-gray-100 bg-gray-50 px-4 py-2 text-xs'>
+                                <Link
+                                  route={{
+                                    page: {
+                                      _tag: 'ProfilePage',
+                                      username: comment.author.username,
+                                      favorites: false,
+                                    },
+                                  }}
+                                >
+                                  <img
+                                    src={
+                                      comment.author.image ||
+                                      '/default-avatar.svg'
+                                    }
+                                    className='h-5 w-5 rounded-full object-cover'
+                                    alt=''
+                                  />
+                                </Link>
+                                <Link
+                                  route={{
+                                    page: {
+                                      _tag: 'ProfilePage',
+                                      username: comment.author.username,
+                                      favorites: false,
+                                    },
+                                  }}
+                                  className='font-medium text-green-600 hover:underline'
+                                >
+                                  {comment.author.username}
+                                </Link>
+                                <span className='text-gray-400'>
+                                  {new Date(comment.createdAt).toDateString()}
+                                </span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ),
+                    ),
+                  )}
                 </div>
               </div>
             </>
