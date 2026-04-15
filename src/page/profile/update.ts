@@ -8,8 +8,9 @@ import {
   getArticles,
   getProfile,
   unfollowUser,
-} from '../../api/service'
-import type { User } from '../../api/type'
+} from '@/api/service'
+import type { User } from '@/api/type'
+
 import type { Model, Msg } from './type'
 
 export const init = (

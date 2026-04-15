@@ -1,7 +1,7 @@
 import * as Form from '@rinn7e/tea-cup-form'
 import type { Result } from 'tea-cup-fp'
 
-import type { Errors, UserResponse } from '../../api/type'
+import type { Errors, UserResponse } from '@/api/type'
 
 export type Model = {
   form: Form.Model

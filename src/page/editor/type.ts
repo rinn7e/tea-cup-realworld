@@ -1,7 +1,7 @@
 import * as Form from '@rinn7e/tea-cup-form'
 import type { Result } from 'tea-cup-fp'
 
-import type { ArticleResponse, Errors } from '../../api/type'
+import type { ArticleResponse, Errors } from '@/api/type'
 
 export type Model = {
   slug: string | null

@@ -2,7 +2,8 @@ import * as RD from '@devexperts/remote-data-ts'
 import { attemptTE } from '@rinn7e/tea-cup-prelude'
 import { Cmd } from 'tea-cup-fp'
 
-import { getArticle, getComments } from '../../api/service'
+import { getArticle, getComments } from '@/api/service'
+
 import type { Model, Msg } from './type'
 
 export const init = (slug: string): [Model, Cmd<Msg>] => {

@@ -4,9 +4,10 @@ import { pipe } from 'fp-ts/lib/function'
 import React from 'react'
 import type { Dispatcher } from 'tea-cup-fp'
 
-import type { ArticlesResponse, TagsResponse } from '../../api/type'
-import { Link } from '../../component/link'
-import { homePage } from '../../data/route'
+import type { ArticlesResponse, TagsResponse } from '@/api/type'
+import { Link } from '@/component/link'
+import { homePage } from '@/data/route'
+
 import type { Model, Msg } from './type'
 
 interface Props {

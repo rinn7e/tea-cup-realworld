@@ -1,7 +1,7 @@
 import * as RD from '@devexperts/remote-data-ts'
 import type { Result } from 'tea-cup-fp'
 
-import type { ArticlesResponse, TagsResponse } from '../../api/type'
+import type { ArticlesResponse, TagsResponse } from '@/api/type'
 
 export type Model = {
   articles: RD.RemoteData<Error, ArticlesResponse>

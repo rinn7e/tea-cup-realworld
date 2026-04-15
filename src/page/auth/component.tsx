@@ -1,8 +1,9 @@
 import { FormItemMemo } from '@rinn7e/tea-cup-form/lib/component'
 import React from 'react'
 
-import { Link } from '../../component/link'
-import type { Route } from '../../type'
+import { Link } from '@/component/link'
+import type { Route } from '@/type'
+
 import type { Model, Msg } from './type'
 
 interface Props {

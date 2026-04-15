@@ -7,9 +7,10 @@ import * as O from 'fp-ts/lib/Option'
 import * as S from 'fp-ts/lib/string'
 import { Cmd } from 'tea-cup-fp'
 
-import { createArticle, getArticle, updateArticle } from '../../api/service'
-import type { Errors } from '../../api/type'
-import { standardInputUi } from '../../component/form-fields'
+import { createArticle, getArticle, updateArticle } from '@/api/service'
+import type { Errors } from '@/api/type'
+import { standardInputUi } from '@/component/form-fields'
+
 import type { Model, Msg } from './type'
 
 const initialForms = (

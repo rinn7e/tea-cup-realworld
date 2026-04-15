@@ -4,8 +4,9 @@ import { HeartIcon as HeartIconSolid } from '@heroicons/react/24/solid'
 import { pipe } from 'fp-ts/lib/function'
 import React from 'react'
 
-import type { ArticlesResponse, ProfileResponse } from '../../api/type'
-import { Link } from '../../component/link'
+import type { ArticlesResponse, ProfileResponse } from '@/api/type'
+import { Link } from '@/component/link'
+
 import type { Model, Msg } from './type'
 
 interface Props {

@@ -6,9 +6,10 @@ import * as O from 'fp-ts/lib/Option'
 import * as S from 'fp-ts/lib/string'
 import { Cmd } from 'tea-cup-fp'
 
-import { updateUser } from '../../api/service'
-import type { Errors, User } from '../../api/type'
-import { standardInputUi } from '../../component/form-fields'
+import { updateUser } from '@/api/service'
+import type { Errors, User } from '@/api/type'
+import { standardInputUi } from '@/component/form-fields'
+
 import type { Model, Msg } from './type'
 
 export const init = (user: User): [Model, Cmd<Msg>] => {

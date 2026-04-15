@@ -7,7 +7,7 @@ import { Sub } from 'tea-cup-fp'
 import './index.css'
 import type { Model, Msg } from './type'
 import { init, update } from './update'
-import { View } from './view'
+import { View } from './component'
 
 const container = document.getElementById('root')
 

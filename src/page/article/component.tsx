@@ -3,8 +3,9 @@ import { pipe } from 'fp-ts/lib/function'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 
-import type { ArticleResponse, CommentsResponse } from '../../api/type'
-import { Link } from '../../component/link'
+import type { ArticleResponse, CommentsResponse } from '@/api/type'
+import { Link } from '@/component/link'
+
 import type { Model, Msg } from './type'
 
 interface Props {
