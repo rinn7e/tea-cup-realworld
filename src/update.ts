@@ -1,4 +1,4 @@
-import { taskFromTE } from '@rinn7e/tea-cup-prelude'
+import { taskFromTE, updateAndCmd } from '@rinn7e/tea-cup-prelude'
 import * as O from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/function'
 import { newUrl } from 'react-tea-cup'
@@ -46,36 +46,40 @@ export const init = (location: Location): [Model, Cmd<Msg>] => {
   return [initialModel, initialCmd]
 }
 
-const changeRouteHandler =
-  (route: Route, isInternal: boolean) =>
+const navigate =
+  (newRoute: Route, isInternal: boolean) =>
   (model: Model): [Model, Cmd<Msg>] => {
-    const modelWithInternal = { ...model, isInternal }
-    const cmd = isInternal
-      ? Task.perform(newUrl(toUrlString(route)), (): Msg => ({ _tag: 'None' }))
+    const urlCmd = isInternal
+      ? Task.perform(
+          newUrl(toUrlString(newRoute)),
+          (): Msg => ({ _tag: 'None' }),
+        )
       : Cmd.none<Msg>()
 
-    switch (route.page._tag) {
+    switch (newRoute.page._tag) {
       case 'HomePage': {
         const [homeModel, homeCmd] = Home.init()
         return [
           {
-            ...modelWithInternal,
-            route,
+            ...model,
+            isInternal,
+            route: newRoute,
             page: { _tag: 'Home', model: homeModel },
           },
-          Cmd.batch([cmd, homeCmd.map((msg) => ({ _tag: 'HomeMsg', msg }))]),
+          Cmd.batch([urlCmd, homeCmd.map((msg) => ({ _tag: 'HomeMsg', msg }))]),
         ]
       }
       case 'ArticlePage': {
-        const [articleModel, articleCmd] = Article.init(route.page.slug)
+        const [articleModel, articleCmd] = Article.init(newRoute.page.slug)
         return [
           {
-            ...modelWithInternal,
-            route,
+            ...model,
+            isInternal,
+            route: newRoute,
             page: { _tag: 'Article', model: articleModel },
           },
           Cmd.batch([
-            cmd,
+            urlCmd,
             articleCmd.map((msg) => ({ _tag: 'ArticleMsg', msg })),
           ]),
         ]
@@ -84,22 +88,24 @@ const changeRouteHandler =
         const [authModel, authCmd] = Auth.init(false)
         return [
           {
-            ...modelWithInternal,
-            route,
+            ...model,
+            isInternal,
+            route: newRoute,
             page: { _tag: 'Auth', model: authModel },
           },
-          Cmd.batch([cmd, authCmd.map((msg) => ({ _tag: 'AuthMsg', msg }))]),
+          Cmd.batch([urlCmd, authCmd.map((msg) => ({ _tag: 'AuthMsg', msg }))]),
         ]
       }
       case 'RegisterPage': {
         const [authModel, authCmd] = Auth.init(true)
         return [
           {
-            ...modelWithInternal,
-            route,
+            ...model,
+            isInternal,
+            route: newRoute,
             page: { _tag: 'Auth', model: authModel },
           },
-          Cmd.batch([cmd, authCmd.map((msg) => ({ _tag: 'AuthMsg', msg }))]),
+          Cmd.batch([urlCmd, authCmd.map((msg) => ({ _tag: 'AuthMsg', msg }))]),
         ]
       }
       case 'SettingsPage': {
@@ -109,71 +115,96 @@ const changeRouteHandler =
           )
           return [
             {
-              ...modelWithInternal,
-              route,
+              ...model,
+              isInternal,
+              route: newRoute,
               page: { _tag: 'Settings', model: settingsModel },
             },
             Cmd.batch([
-              cmd,
+              urlCmd,
               settingsCmd.map((msg) => ({ _tag: 'SettingsMsg', msg })),
             ]),
           ]
+        } else {
+          return [
+            { ...model, isInternal },
+            Task.perform(
+              newUrl(toUrlString({ page: loginPage() })),
+              (): Msg => ({ _tag: 'None' }),
+            ),
+          ]
         }
-        return [
-          modelWithInternal,
-          Task.perform(
-            newUrl(toUrlString({ page: loginPage() })),
-            (): Msg => ({ _tag: 'None' }),
-          ),
-        ]
       }
       case 'ProfilePage': {
         const [profileModel, profileCmd] = Profile.init(
-          route.page.username,
-          route.page.favorites,
+          newRoute.page.username,
+          newRoute.page.favorites,
           model.shared.user,
         )
         return [
           {
-            ...modelWithInternal,
-            route,
+            ...model,
+            isInternal,
+            route: newRoute,
             page: { _tag: 'Profile', model: profileModel },
           },
           Cmd.batch([
-            cmd,
+            urlCmd,
             profileCmd.map((msg) => ({ _tag: 'ProfileMsg', msg })),
           ]),
         ]
       }
       case 'EditorPage': {
         if (model.shared.user._tag === 'Some') {
-          const [editorModel, editorCmd] = Editor.init(route.page.slug)
+          const [editorModel, editorCmd] = Editor.init(newRoute.page.slug)
           return [
             {
-              ...modelWithInternal,
-              route,
+              ...model,
+              isInternal,
+              route: newRoute,
               page: { _tag: 'Editor', model: editorModel },
             },
             Cmd.batch([
-              cmd,
+              urlCmd,
               editorCmd.map((msg) => ({ _tag: 'EditorMsg', msg })),
             ]),
           ]
+        } else {
+          return [
+            { ...model, isInternal },
+            Task.perform(
+              newUrl(toUrlString({ page: loginPage() })),
+              (): Msg => ({ _tag: 'None' }),
+            ),
+          ]
         }
-        return [
-          modelWithInternal,
-          Task.perform(
-            newUrl(toUrlString({ page: loginPage() })),
-            (): Msg => ({ _tag: 'None' }),
-          ),
-        ]
       }
       default:
         return [
-          { ...modelWithInternal, route, page: { _tag: 'NotFound' } },
-          cmd,
+          { ...model, isInternal, route: newRoute, page: { _tag: 'NotFound' } },
+          urlCmd,
         ]
     }
+  }
+
+const execChangeRoute =
+  (newRoute: Route, isInternal: boolean) =>
+  (model: Model): [Model, Cmd<Msg>] => {
+    if (model.route.page._tag !== newRoute.page._tag) {
+      return navigate(newRoute, isInternal)(model)
+    } else {
+      if (isInternal) {
+        return navigate(newRoute, isInternal)(model)
+      } else {
+        return [model, Cmd.none()]
+      }
+    }
+  }
+
+const changeRouteHandler =
+  (newRoute: Route, isInternal: boolean) =>
+  (model: Model): [Model, Cmd<Msg>] => {
+    return execChangeRoute(newRoute, isInternal)(model)
   }
 
 export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
@@ -223,72 +254,79 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
         ]
       }
       return [model, Cmd.none()]
-    case 'AuthMsg':
+    case 'AuthMsg': {
       if (model.page._tag === 'Auth') {
         const [authModel, authCmd] = Auth.update(msg.msg, model.page.model)
-        const newModel = {
-          ...model,
-          page: { _tag: 'Auth', model: authModel } as const,
-        }
 
-        // Check for success in SubmitResponse
-        if (msg.msg._tag === 'SubmitResponse' && msg.msg.result.tag === 'Ok') {
-          const user = msg.msg.result.value.user
-          saveToken(user.token)
-          const [nextModel, routeCmd] = changeRouteHandler(
-            { page: homePage() },
-            true,
-          )({
-            ...newModel,
-            shared: { ...newModel.shared, user: O.some(user) },
-          })
-          return [
-            nextModel,
-            Cmd.batch([
-              authCmd.map((m) => ({ _tag: 'AuthMsg', msg: m })),
-              routeCmd,
-            ]),
-          ]
-        }
-
-        return [newModel, authCmd.map((msg) => ({ _tag: 'AuthMsg', msg }))]
+        return pipe(
+          [
+            { ...model, page: { _tag: 'Auth', model: authModel } as const },
+            authCmd.map((m) => ({ _tag: 'AuthMsg' as const, msg: m }) as Msg),
+          ] as [Model, Cmd<Msg>],
+          updateAndCmd((m) => {
+            if (
+              msg.msg._tag === 'SubmitResponse' &&
+              msg.msg.result.tag === 'Ok'
+            ) {
+              const user = msg.msg.result.value.user
+              saveToken(user.token)
+              return changeRouteHandler(
+                { page: homePage() },
+                true,
+              )({ ...m, shared: { ...m.shared, user: O.some(user) } })
+            } else {
+              return [m, Cmd.none()]
+            }
+          }),
+        )
+      } else {
+        return [model, Cmd.none()]
       }
-      return [model, Cmd.none()]
-    case 'SettingsMsg':
+    }
+    case 'SettingsMsg': {
       if (model.page._tag === 'Settings' && model.shared.user._tag === 'Some') {
         const token = model.shared.user.value.token
         const [settingsModel, settingsCmd] = Settings.update(token)(
           msg.msg,
           model.page.model,
         )
-        const newModel = {
-          ...model,
-          page: { _tag: 'Settings', model: settingsModel } as const,
-        }
 
-        if (msg.msg._tag === 'Logout') {
-          removeToken()
-          return changeRouteHandler(
-            { page: homePage() },
-            true,
-          )({ ...model, shared: { ...model.shared, user: O.none } })
-        }
-
-        if (msg.msg._tag === 'SubmitResponse' && msg.msg.result.tag === 'Ok') {
-          const user = msg.msg.result.value.user
-          saveToken(user.token)
-          return [
-            { ...newModel, shared: { ...newModel.shared, user: O.some(user) } },
-            settingsCmd.map((m) => ({ _tag: 'SettingsMsg', msg: m })),
-          ]
-        }
-
-        return [
-          newModel,
-          settingsCmd.map((m) => ({ _tag: 'SettingsMsg', msg: m })),
-        ]
+        return pipe(
+          [
+            {
+              ...model,
+              page: { _tag: 'Settings', model: settingsModel } as const,
+            },
+            settingsCmd.map(
+              (m) => ({ _tag: 'SettingsMsg' as const, msg: m }) as Msg,
+            ),
+          ] as [Model, Cmd<Msg>],
+          updateAndCmd((m) => {
+            if (msg.msg._tag === 'Logout') {
+              removeToken()
+              return changeRouteHandler(
+                { page: homePage() },
+                true,
+              )({ ...m, shared: { ...m.shared, user: O.none } })
+            } else if (
+              msg.msg._tag === 'SubmitResponse' &&
+              msg.msg.result.tag === 'Ok'
+            ) {
+              const user = msg.msg.result.value.user
+              saveToken(user.token)
+              return [
+                { ...m, shared: { ...m.shared, user: O.some(user) } },
+                Cmd.none(),
+              ]
+            } else {
+              return [m, Cmd.none()]
+            }
+          }),
+        )
+      } else {
+        return [model, Cmd.none()]
       }
-      return [model, Cmd.none()]
+    }
     case 'ProfileMsg':
       if (model.page._tag === 'Profile') {
         const username =
@@ -311,36 +349,40 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
         ]
       }
       return [model, Cmd.none()]
-    case 'EditorMsg':
+    case 'EditorMsg': {
       if (model.page._tag === 'Editor' && model.shared.user._tag === 'Some') {
         const token = model.shared.user.value.token
         const [editorModel, editorCmd] = Editor.update(token)(
           msg.msg,
           model.page.model,
         )
-        const newModel = {
-          ...model,
-          page: { _tag: 'Editor', model: editorModel } as const,
-        }
 
-        if (msg.msg._tag === 'SubmitResponse' && msg.msg.result.tag === 'Ok') {
-          const slug = msg.msg.result.value.article.slug
-          const [nextModel, routeCmd] = changeRouteHandler(
-            { page: { _tag: 'ArticlePage', slug } },
-            true,
-          )(newModel)
-          return [
-            nextModel,
-            Cmd.batch([
-              editorCmd.map((m) => ({ _tag: 'EditorMsg', msg: m })),
-              routeCmd,
-            ]),
-          ]
-        }
-
-        return [newModel, editorCmd.map((m) => ({ _tag: 'EditorMsg', msg: m }))]
+        return pipe(
+          [
+            { ...model, page: { _tag: 'Editor', model: editorModel } as const },
+            editorCmd.map(
+              (m) => ({ _tag: 'EditorMsg' as const, msg: m }) as Msg,
+            ),
+          ] as [Model, Cmd<Msg>],
+          updateAndCmd((m) => {
+            if (
+              msg.msg._tag === 'SubmitResponse' &&
+              msg.msg.result.tag === 'Ok'
+            ) {
+              const slug = msg.msg.result.value.article.slug
+              return changeRouteHandler(
+                { page: { _tag: 'ArticlePage', slug } },
+                true,
+              )(m)
+            } else {
+              return [m, Cmd.none()]
+            }
+          }),
+        )
+      } else {
+        return [model, Cmd.none()]
       }
-      return [model, Cmd.none()]
+    }
     case 'DebugPanelMsg':
       return [
         { ...model, debugPanel: DebugPanel.update(msg.msg, model.debugPanel) },
