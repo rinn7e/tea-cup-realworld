@@ -29,7 +29,7 @@ export const standardInputUi =
               props.dispatch({
                 _tag: 'UpdateForm',
                 key: props.key,
-                event: e as any,
+                event: e as unknown as React.ChangeEvent<HTMLInputElement>,
               })
             }
             onFocus={() =>
@@ -56,9 +56,7 @@ export const standardInputUi =
             pipe(
               props.validationResult,
               E.fold(
-                (err) => (
-                  <div className='mt-1 text-xs text-red-600'>{err}</div>
-                ),
+                (err) => <div className='mt-1 text-xs text-red-600'>{err}</div>,
                 () => null,
               ),
             )}
@@ -83,7 +81,7 @@ export const standardInputUi =
             props.dispatch({
               _tag: 'UpdateForm',
               key: props.key,
-              event: e as any,
+              event: e as unknown as React.ChangeEvent<HTMLInputElement>,
             })
           }
           onFocus={() =>
@@ -110,9 +108,7 @@ export const standardInputUi =
           pipe(
             props.validationResult,
             E.fold(
-              (err) => (
-                <div className='mt-1 text-xs text-red-600'>{err}</div>
-              ),
+              (err) => <div className='mt-1 text-xs text-red-600'>{err}</div>,
               () => null,
             ),
           )}

@@ -1,17 +1,12 @@
 import { FormItemMemo } from '@rinn7e/tea-cup-form/lib/component'
-import React from 'react'
 
 import { Link } from '@/component/link'
 import type { Route } from '@/type'
+import { memoStrategy } from '@/util/memo-strategy'
 
-import type { Model, Msg } from './type'
+import { Props, PropsEq } from './type'
 
-interface Props {
-  model: Model
-  dispatch: (msg: Msg) => void
-}
-
-export const AuthView: React.FC<Props> = ({ model, dispatch }) => {
+function AuthView({ model, dispatch }: Props) {
   const title = model.isRegister ? 'Sign up' : 'Sign in'
   const linkText = model.isRegister ? 'Have an account?' : 'Need an account?'
   const loginRoute: Route = { page: { _tag: 'LoginPage' } }
@@ -80,3 +75,5 @@ export const AuthView: React.FC<Props> = ({ model, dispatch }) => {
     </div>
   )
 }
+
+export const AuthViewMemo = memoStrategy(AuthView, PropsEq.equals)

@@ -1,14 +1,20 @@
-import { pipe } from 'fp-ts/lib/function'
 import * as TE from 'fp-ts/lib/TaskEither'
+import { pipe } from 'fp-ts/lib/function'
 
-import { type HttpErrorString } from '../type/common'
 import {
   type CommentResponse,
   CommentResponseJson,
   type CommentsResponse,
   CommentsResponseJson,
 } from '../type/comment'
-import { API_BASE, decodeError, decodeSuccess, ensureIsOk, fetchToTaskEither } from './common'
+import { type HttpErrorString } from '../type/common'
+import {
+  API_BASE,
+  decodeError,
+  decodeSuccess,
+  ensureIsOk,
+  fetchToTaskEither,
+} from './common'
 
 export const getComments = (
   slug: string,

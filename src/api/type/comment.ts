@@ -1,6 +1,10 @@
+import * as A from 'fp-ts/lib/Array'
+import * as EqClass from 'fp-ts/lib/Eq'
+import * as N from 'fp-ts/lib/number'
+import * as S from 'fp-ts/lib/string'
 import * as t from 'io-ts'
 
-import { ProfileJson } from './profile'
+import { ProfileEq, ProfileJson } from './profile'
 import type { Profile } from './profile'
 
 export type Comment = {
@@ -10,6 +14,22 @@ export type Comment = {
   body: string
   author: Profile
 }
+
+export const CommentEq = EqClass.struct<Comment>({
+  id: N.Eq,
+  createdAt: S.Eq,
+  updatedAt: S.Eq,
+  body: S.Eq,
+  author: ProfileEq,
+})
+
+export const CommentResponseEq = EqClass.struct<CommentResponse>({
+  comment: CommentEq,
+})
+
+export const CommentsResponseEq = EqClass.struct<CommentsResponse>({
+  comments: A.getEq(CommentEq),
+})
 
 export const CommentJson: t.Type<Comment> = t.type({
   id: t.number,

@@ -1,14 +1,10 @@
 import { FormItemMemo } from '@rinn7e/tea-cup-form/lib/component'
-import React from 'react'
 
-import type { Model, Msg } from './type'
+import { memoStrategy } from '@/util/memo-strategy'
 
-interface Props {
-  model: Model
-  dispatch: (msg: Msg) => void
-}
+import { Props, PropsEq } from './type'
 
-export const SettingsView: React.FC<Props> = ({ model, dispatch }) => {
+function SettingsView({ model, dispatch }: Props) {
   return (
     <div className='flex min-h-[calc(100vh-8rem)] items-start justify-center px-4 pt-16'>
       <div className='w-full max-w-md'>
@@ -86,3 +82,5 @@ export const SettingsView: React.FC<Props> = ({ model, dispatch }) => {
     </div>
   )
 }
+
+export const SettingsViewMemo = memoStrategy(SettingsView, PropsEq.equals)

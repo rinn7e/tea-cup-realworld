@@ -1,5 +1,6 @@
-import { pipe } from 'fp-ts/lib/function'
+import { Option } from 'fp-ts/lib/Option'
 import * as TE from 'fp-ts/lib/TaskEither'
+import { pipe } from 'fp-ts/lib/function'
 
 import {
   type ArticleResponse,
@@ -10,7 +11,13 @@ import {
   type UpdateArticleRequest,
 } from '../type/article'
 import { type HttpErrorString } from '../type/common'
-import { API_BASE, decodeError, decodeSuccess, ensureIsOk, fetchToTaskEither } from './common'
+import {
+  API_BASE,
+  decodeError,
+  decodeSuccess,
+  ensureIsOk,
+  fetchToTaskEither,
+} from './common'
 
 export const getArticles = (
   params: {
@@ -20,6 +27,7 @@ export const getArticles = (
     offset?: number
     limit?: number
   } = {},
+  token: Option<string>,
 ): TE.TaskEither<HttpErrorString, ArticlesResponse> => {
   const query = new URLSearchParams()
   if (params.tag !== undefined) query.set('tag', params.tag)
@@ -29,7 +37,14 @@ export const getArticles = (
   if (params.limit !== undefined) query.set('limit', String(params.limit))
   const qs = query.toString()
   return pipe(
-    fetch(`${API_BASE}/articles${qs ? `?${qs}` : ''}`),
+    fetch(
+      `${API_BASE}/articles${qs ? `?${qs}` : ''}`,
+      token._tag === 'Some'
+        ? {
+            headers: { Authorization: `Token ${token.value}` },
+          }
+        : undefined,
+    ),
     fetchToTaskEither,
     TE.chainEitherK(decodeSuccess(ArticlesResponseJson)),
     TE.mapLeft(decodeError),
@@ -54,7 +69,9 @@ export const getArticlesFeed = (
   )
 }
 
-export const getArticle = (slug: string): TE.TaskEither<HttpErrorString, ArticleResponse> =>
+export const getArticle = (
+  slug: string,
+): TE.TaskEither<HttpErrorString, ArticleResponse> =>
   pipe(
     fetch(`${API_BASE}/articles/${encodeURIComponent(slug)}`),
     fetchToTaskEither,

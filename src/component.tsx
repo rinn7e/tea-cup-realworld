@@ -38,28 +38,29 @@ const renderPage = (model: Model, dispatch: Dispatcher<Msg>) => {
   switch (model.page._tag) {
     case 'Home':
       return (
-        <Home.HomeView
+        <Home.HomeViewMemo
           model={model.page.model}
           dispatch={(msg) => dispatch({ _tag: 'HomeMsg', msg })}
         />
       )
     case 'Article':
       return (
-        <Article.ArticleView
+        <Article.ArticleViewMemo
           model={model.page.model}
+          token={model.shared.token}
           dispatch={(msg) => dispatch({ _tag: 'ArticleMsg', msg })}
         />
       )
     case 'Auth':
       return (
-        <Auth.AuthView
+        <Auth.AuthViewMemo
           model={model.page.model}
           dispatch={(msg) => dispatch({ _tag: 'AuthMsg', msg })}
         />
       )
     case 'Settings':
       return (
-        <Settings.SettingsView
+        <Settings.SettingsViewMemo
           model={model.page.model}
           dispatch={(msg) => dispatch({ _tag: 'SettingsMsg', msg })}
         />
@@ -73,7 +74,7 @@ const renderPage = (model: Model, dispatch: Dispatcher<Msg>) => {
             : '')
 
       return (
-        <Profile.ProfileView
+        <Profile.ProfileViewMemo
           model={model.page.model}
           dispatch={(msg) => dispatch({ _tag: 'ProfileMsg', msg })}
           isCurrentUser={isCurrentUser}
@@ -82,7 +83,7 @@ const renderPage = (model: Model, dispatch: Dispatcher<Msg>) => {
     }
     case 'Editor':
       return (
-        <Editor.EditorView
+        <Editor.EditorViewMemo
           model={model.page.model}
           dispatch={(msg) => dispatch({ _tag: 'EditorMsg', msg })}
         />

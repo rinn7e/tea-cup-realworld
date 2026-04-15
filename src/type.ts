@@ -14,6 +14,7 @@ export type Route = AppRoute
 
 export type Shared = {
   user: Option<User>
+  token: Option<string>
 }
 
 export type PageModel =

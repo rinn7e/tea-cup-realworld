@@ -4,10 +4,10 @@ import { createRoot } from 'react-dom/client'
 import { ProgramWithNav } from 'react-tea-cup'
 import { Sub } from 'tea-cup-fp'
 
+import { View } from './component'
 import './index.css'
 import type { Model, Msg } from './type'
 import { init, update } from './update'
-import { View } from './component'
 
 const container = document.getElementById('root')
 

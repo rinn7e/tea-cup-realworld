@@ -1,9 +1,14 @@
-import { pipe } from 'fp-ts/lib/function'
 import * as TE from 'fp-ts/lib/TaskEither'
+import { pipe } from 'fp-ts/lib/function'
 
 import { type HttpErrorString } from '../type/common'
 import { type TagsResponse, TagsResponseJson } from '../type/tag'
-import { API_BASE, decodeError, decodeSuccess, fetchToTaskEither } from './common'
+import {
+  API_BASE,
+  decodeError,
+  decodeSuccess,
+  fetchToTaskEither,
+} from './common'
 
 export const getTags = (): TE.TaskEither<HttpErrorString, TagsResponse> =>
   pipe(

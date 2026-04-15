@@ -1,5 +1,5 @@
-import { pipe } from 'fp-ts/lib/function'
 import * as TE from 'fp-ts/lib/TaskEither'
+import { pipe } from 'fp-ts/lib/function'
 
 import { type HttpErrorString } from '../type/common'
 import {
@@ -9,9 +9,16 @@ import {
   type UserResponse,
   UserResponseJson,
 } from '../type/user'
-import { API_BASE, decodeError, decodeSuccess, fetchToTaskEither } from './common'
+import {
+  API_BASE,
+  decodeError,
+  decodeSuccess,
+  fetchToTaskEither,
+} from './common'
 
-export const getCurrentUser = (token: string): TE.TaskEither<HttpErrorString, UserResponse> =>
+export const getCurrentUser = (
+  token: string,
+): TE.TaskEither<HttpErrorString, UserResponse> =>
   pipe(
     fetch(`${API_BASE}/user`, {
       headers: { Authorization: `Token ${token}` },
@@ -39,7 +46,9 @@ export const updateUser = (
     TE.mapLeft(decodeError),
   )
 
-export const login = (request: LoginRequest): TE.TaskEither<HttpErrorString, UserResponse> =>
+export const login = (
+  request: LoginRequest,
+): TE.TaskEither<HttpErrorString, UserResponse> =>
   pipe(
     fetch(`${API_BASE}/users/login`, {
       method: 'POST',
@@ -51,7 +60,9 @@ export const login = (request: LoginRequest): TE.TaskEither<HttpErrorString, Use
     TE.mapLeft(decodeError),
   )
 
-export const register = (request: RegisterRequest): TE.TaskEither<HttpErrorString, UserResponse> =>
+export const register = (
+  request: RegisterRequest,
+): TE.TaskEither<HttpErrorString, UserResponse> =>
   pipe(
     fetch(`${API_BASE}/users`, {
       method: 'POST',

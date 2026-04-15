@@ -1,7 +1,16 @@
-import type * as RD from '@devexperts/remote-data-ts'
+import * as RD from '@devexperts/remote-data-ts'
+import { EqAlways } from '@rinn7e/tea-cup-prelude'
+import * as EqClass from 'fp-ts/lib/Eq'
+import * as O from 'fp-ts/lib/Option'
 import type { Option } from 'fp-ts/lib/Option'
-import type { Result } from 'tea-cup-fp'
+import * as S from 'fp-ts/lib/string'
+import type { Dispatcher, Result } from 'tea-cup-fp'
 
+import {
+  ArticleResponseEq,
+  CommentsResponseEq,
+  HttpErrorStringEq,
+} from '@/api/type'
 import type {
   ArticleResponse,
   CommentResponse,
@@ -12,11 +21,17 @@ import type {
 
 export type Model = {
   slug: string
-  token: Option<string>
   article: RD.RemoteData<HttpErrorString, ArticleResponse>
   comments: RD.RemoteData<HttpErrorString, CommentsResponse>
   commentInput: string
 }
+
+export const ModelEq = EqClass.struct<Model>({
+  slug: S.Eq,
+  article: RD.getEq(HttpErrorStringEq, ArticleResponseEq),
+  comments: RD.getEq(HttpErrorStringEq, CommentsResponseEq),
+  commentInput: S.Eq,
+})
 
 export type Msg =
   | {
@@ -35,8 +50,14 @@ export type Msg =
     }
   | { _tag: 'FollowAuthor'; username: string }
   | { _tag: 'UnfollowAuthor'; username: string }
-  | { _tag: 'FollowAuthorResponse'; result: Result<HttpErrorString, ProfileResponse> }
-  | { _tag: 'UnfollowAuthorResponse'; result: Result<HttpErrorString, ProfileResponse> }
+  | {
+      _tag: 'FollowAuthorResponse'
+      result: Result<HttpErrorString, ProfileResponse>
+    }
+  | {
+      _tag: 'UnfollowAuthorResponse'
+      result: Result<HttpErrorString, ProfileResponse>
+    }
   | { _tag: 'DeleteArticle' }
   | { _tag: 'DeleteArticleResponse'; result: Result<HttpErrorString, true> }
   | { _tag: 'SetCommentInput'; value: string }
@@ -51,3 +72,15 @@ export type Msg =
       id: number
       result: Result<HttpErrorString, true>
     }
+
+export type Props = {
+  model: Model
+  token: Option<string>
+  dispatch: Dispatcher<Msg>
+}
+
+export const PropsEq: EqClass.Eq<Props> = EqClass.struct({
+  model: ModelEq,
+  token: O.getEq(S.Eq),
+  dispatch: EqAlways,
+})

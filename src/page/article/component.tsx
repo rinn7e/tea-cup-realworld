@@ -11,15 +11,11 @@ import type {
   HttpErrorString,
 } from '@/api/type'
 import { Link } from '@/component/link'
+import { memoStrategy } from '@/util/memo-strategy'
 
-import type { Model, Msg } from './type'
+import { Props, PropsEq } from './type'
 
-interface Props {
-  model: Model
-  dispatch: (msg: Msg) => void
-}
-
-export const ArticleView: React.FC<Props> = ({ model, dispatch }) => {
+function ArticleView({ model, token, dispatch }: Props) {
   return (
     <div>
       {pipe(
@@ -41,7 +37,7 @@ export const ArticleView: React.FC<Props> = ({ model, dispatch }) => {
             </div>
           ),
           (data: ArticleResponse) => {
-            const isLoggedIn = O.isSome(model.token)
+            const isLoggedIn = O.isSome(token)
             const author = data.article.author
             return (
               <>
@@ -82,11 +78,16 @@ export const ArticleView: React.FC<Props> = ({ model, dispatch }) => {
                         </span>
                       </div>
                       <div className='flex flex-wrap items-center gap-2'>
-                        {isLoggedIn && (
-                          author.following ? (
+                        {isLoggedIn &&
+                          (author.following ? (
                             <button
                               type='button'
-                              onClick={() => dispatch({ _tag: 'UnfollowAuthor', username: author.username })}
+                              onClick={() =>
+                                dispatch({
+                                  _tag: 'UnfollowAuthor',
+                                  username: author.username,
+                                })
+                              }
                               className='flex items-center gap-1 rounded border border-gray-400 px-3 py-1 text-xs text-gray-300 hover:border-white hover:text-white'
                             >
                               <UserMinus size={13} /> Unfollow {author.username}
@@ -94,16 +95,27 @@ export const ArticleView: React.FC<Props> = ({ model, dispatch }) => {
                           ) : (
                             <button
                               type='button'
-                              onClick={() => dispatch({ _tag: 'FollowAuthor', username: author.username })}
+                              onClick={() =>
+                                dispatch({
+                                  _tag: 'FollowAuthor',
+                                  username: author.username,
+                                })
+                              }
                               className='flex items-center gap-1 rounded border border-gray-400 px-3 py-1 text-xs text-gray-300 hover:border-white hover:text-white'
                             >
                               <UserPlus size={13} /> Follow {author.username}
                             </button>
-                          )
-                        )}
+                          ))}
                         <button
                           type='button'
-                          onClick={() => isLoggedIn && dispatch({ _tag: data.article.favorited ? 'UnfavoriteArticle' : 'FavoriteArticle' })}
+                          onClick={() =>
+                            isLoggedIn &&
+                            dispatch({
+                              _tag: data.article.favorited
+                                ? 'UnfavoriteArticle'
+                                : 'FavoriteArticle',
+                            })
+                          }
                           className='flex items-center gap-1 rounded border border-green-500 px-3 py-1 text-xs text-green-400 hover:bg-green-900'
                         >
                           <Heart size={13} /> Favorite Post{' '}
@@ -124,7 +136,9 @@ export const ArticleView: React.FC<Props> = ({ model, dispatch }) => {
                             </Link>
                             <button
                               type='button'
-                              onClick={() => dispatch({ _tag: 'DeleteArticle' })}
+                              onClick={() =>
+                                dispatch({ _tag: 'DeleteArticle' })
+                              }
                               className='flex items-center gap-1 rounded border border-red-500 px-3 py-1 text-xs text-red-400 hover:bg-red-900'
                             >
                               <Trash2 size={13} /> Delete Article
@@ -187,11 +201,16 @@ export const ArticleView: React.FC<Props> = ({ model, dispatch }) => {
                       </span>
                     </div>
                     <div className='flex flex-wrap items-center gap-2'>
-                      {isLoggedIn && (
-                        author.following ? (
+                      {isLoggedIn &&
+                        (author.following ? (
                           <button
                             type='button'
-                            onClick={() => dispatch({ _tag: 'UnfollowAuthor', username: author.username })}
+                            onClick={() =>
+                              dispatch({
+                                _tag: 'UnfollowAuthor',
+                                username: author.username,
+                              })
+                            }
                             className='flex items-center gap-1 rounded border border-gray-300 px-3 py-1 text-xs text-gray-600 hover:border-gray-500'
                           >
                             <UserMinus size={13} /> Unfollow {author.username}
@@ -199,16 +218,27 @@ export const ArticleView: React.FC<Props> = ({ model, dispatch }) => {
                         ) : (
                           <button
                             type='button'
-                            onClick={() => dispatch({ _tag: 'FollowAuthor', username: author.username })}
+                            onClick={() =>
+                              dispatch({
+                                _tag: 'FollowAuthor',
+                                username: author.username,
+                              })
+                            }
                             className='flex items-center gap-1 rounded border border-gray-300 px-3 py-1 text-xs text-gray-600 hover:border-gray-500'
                           >
                             <UserPlus size={13} /> Follow {author.username}
                           </button>
-                        )
-                      )}
+                        ))}
                       <button
                         type='button'
-                        onClick={() => isLoggedIn && dispatch({ _tag: data.article.favorited ? 'UnfavoriteArticle' : 'FavoriteArticle' })}
+                        onClick={() =>
+                          isLoggedIn &&
+                          dispatch({
+                            _tag: data.article.favorited
+                              ? 'UnfavoriteArticle'
+                              : 'FavoriteArticle',
+                          })
+                        }
                         className='flex items-center gap-1 rounded border border-green-500 px-3 py-1 text-xs text-green-600 hover:bg-green-50'
                       >
                         <Heart size={13} /> Favorite Post{' '}
@@ -231,7 +261,12 @@ export const ArticleView: React.FC<Props> = ({ model, dispatch }) => {
                           rows={3}
                           placeholder='Write a comment...'
                           value={model.commentInput}
-                          onChange={(e) => dispatch({ _tag: 'SetCommentInput', value: e.target.value })}
+                          onChange={(e) =>
+                            dispatch({
+                              _tag: 'SetCommentInput',
+                              value: e.target.value,
+                            })
+                          }
                         />
                         <div className='flex justify-end border-t border-gray-100 bg-gray-50 px-3 py-2'>
                           <button
@@ -284,7 +319,10 @@ export const ArticleView: React.FC<Props> = ({ model, dispatch }) => {
                                     }}
                                   >
                                     <img
-                                      src={comment.author.image || '/default-avatar.svg'}
+                                      src={
+                                        comment.author.image ||
+                                        '/default-avatar.svg'
+                                      }
                                       className='h-5 w-5 rounded-full object-cover'
                                       alt=''
                                     />
@@ -307,7 +345,12 @@ export const ArticleView: React.FC<Props> = ({ model, dispatch }) => {
                                   {isLoggedIn && (
                                     <button
                                       type='button'
-                                      onClick={() => dispatch({ _tag: 'DeleteComment', id: comment.id })}
+                                      onClick={() =>
+                                        dispatch({
+                                          _tag: 'DeleteComment',
+                                          id: comment.id,
+                                        })
+                                      }
                                       className='ml-auto text-gray-400 hover:text-red-500'
                                     >
                                       <Trash2 size={12} />
@@ -330,3 +373,5 @@ export const ArticleView: React.FC<Props> = ({ model, dispatch }) => {
     </div>
   )
 }
+
+export const ArticleViewMemo = memoStrategy(ArticleView, PropsEq.equals)

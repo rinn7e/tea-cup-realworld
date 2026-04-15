@@ -29,7 +29,10 @@ export const Navbar: React.FC<Props> = ({ model }) => {
     <nav className='border-b border-gray-100 bg-white shadow-sm'>
       <div className='mx-auto max-w-6xl px-4'>
         <div className='flex h-14 items-center justify-between'>
-          <Link className='text-xl font-bold tracking-tight text-green-600' route={{ page: homePage() }}>
+          <Link
+            className='text-xl font-bold tracking-tight text-green-600'
+            route={{ page: homePage() }}
+          >
             conduit
           </Link>
           <ul className='flex items-center gap-1'>
@@ -74,10 +77,7 @@ export const Navbar: React.FC<Props> = ({ model }) => {
                       }}
                     >
                       <img
-                        src={
-                          optUser.value.image ||
-                          '/default-avatar.svg'
-                        }
+                        src={optUser.value.image || '/default-avatar.svg'}
                         className='h-7 w-7 rounded-full object-cover'
                         alt=''
                       />

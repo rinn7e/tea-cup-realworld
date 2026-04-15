@@ -1,8 +1,6 @@
-import * as FormUpdate from '@rinn7e/tea-cup-form'
+import * as Form from '@rinn7e/tea-cup-form'
 import { attemptTE } from '@rinn7e/tea-cup-prelude'
-import * as Map from 'fp-ts/lib/Map'
 import * as O from 'fp-ts/lib/Option'
-import * as S from 'fp-ts/lib/string'
 import { Cmd } from 'tea-cup-fp'
 
 import { login, register } from '@/api'
@@ -10,60 +8,71 @@ import { standardInputUi } from '@/component/form-fields'
 
 import type { Model, Msg } from './type'
 
-const emailField = (ui: any): [string, FormUpdate.FormType] => [
+const emailField: [string, Form.FormType] = [
   'email',
   {
-    ...FormUpdate.defaultTextType(ui),
+    _tag: 'TextType',
     placeholder: 'Email',
     label: 'Email',
-    validation: FormUpdate.emailValidator,
+    currentValue: '',
+    validation: Form.emailValidator,
+    linkValidations: [],
+    showValidation: false,
+    isTextarea: false,
+    isPassword: O.none,
+    isFocus: false,
+    ui: standardInputUi(false),
   },
 ]
 
-const passwordField = (ui: any): [string, FormUpdate.FormType] => [
+const passwordField: [string, Form.FormType] = [
   'password',
   {
-    ...FormUpdate.defaultTextType(ui),
+    _tag: 'TextType',
     placeholder: 'Password',
     label: 'Password',
+    currentValue: '',
+    validation: (s: string) => Form.minLengthValidator('Password', 8)(s),
+    linkValidations: [],
+    showValidation: false,
+    isTextarea: false,
     isPassword: O.some({ revealPassword: false, disableAutocomplete: false }),
-    validation: (s: string) => FormUpdate.minLengthValidator('Password', 8)(s),
+    isFocus: false,
+    ui: standardInputUi(false),
   },
 ]
 
-const usernameField = (ui: any): [string, FormUpdate.FormType] => [
+const usernameField: [string, Form.FormType] = [
   'username',
   {
-    ...FormUpdate.defaultTextType(ui),
+    _tag: 'TextType',
     placeholder: 'Username',
     label: 'Username',
-    validation: (s: string) => FormUpdate.nonEmptyValidator(s, 'Username'),
+    currentValue: '',
+    validation: (s: string) => Form.nonEmptyValidator(s, 'Username'),
+    linkValidations: [],
+    showValidation: false,
+    isTextarea: false,
+    isPassword: O.none,
+    isFocus: false,
+    ui: standardInputUi(false),
   },
 ]
 
-const loginFormConfig: [string, FormUpdate.FormType][] = [
-  emailField(standardInputUi(false)),
-  passwordField(standardInputUi(false)),
-]
+const loginFormConfig: [string, Form.FormType][] = [emailField, passwordField]
 
-const signupFormConfig: [string, FormUpdate.FormType][] = [
-  usernameField(standardInputUi(false)),
-  emailField(standardInputUi(false)),
-  passwordField(standardInputUi(false)),
+const signupFormConfig: [string, Form.FormType][] = [
+  usernameField,
+  emailField,
+  passwordField,
 ]
-
-const toForms = (config: [string, FormUpdate.FormType][]): FormUpdate.Forms =>
-  config.reduce(
-    (acc, [key, val]) => Map.upsertAt(S.Eq)(key, val)(acc),
-    Map.empty as FormUpdate.Forms,
-  )
 
 export const init = (isRegister: boolean): [Model, Cmd<Msg>] => {
   return [
     {
       isRegister,
-      loginForm: FormUpdate.init(toForms(loginFormConfig)),
-      signupForm: FormUpdate.init(toForms(signupFormConfig)),
+      loginForm: Form.init(new Map(loginFormConfig)),
+      signupForm: Form.init(new Map(signupFormConfig)),
       errors: null,
       submitting: false,
     },
@@ -76,32 +85,29 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
     case 'FormMsg':
       if (model.isRegister) {
         return [
-          {
-            ...model,
-            signupForm: FormUpdate.update(msg.msg)(model.signupForm),
-          },
+          { ...model, signupForm: Form.update(msg.msg)(model.signupForm) },
           Cmd.none(),
         ]
       } else {
         return [
-          { ...model, loginForm: FormUpdate.update(msg.msg)(model.loginForm) },
+          { ...model, loginForm: Form.update(msg.msg)(model.loginForm) },
           Cmd.none(),
         ]
       }
     case 'Submit': {
       const currentForm = model.isRegister ? model.signupForm : model.loginForm
-      const email = FormUpdate.valueTextType(
-        FormUpdate.lookupForm('email', currentForm.forms),
+      const email = Form.valueTextType(
+        Form.lookupForm('email', currentForm.forms),
       )
-      const password = FormUpdate.valueTextType(
-        FormUpdate.lookupForm('password', currentForm.forms),
+      const password = Form.valueTextType(
+        Form.lookupForm('password', currentForm.forms),
       )
 
       const authTask = model.isRegister
         ? register({
             user: {
-              username: FormUpdate.valueTextType(
-                FormUpdate.lookupForm('username', currentForm.forms),
+              username: Form.valueTextType(
+                Form.lookupForm('username', currentForm.forms),
               ),
               email,
               password,
@@ -121,15 +127,8 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
       if (msg.result.tag === 'Ok') {
         return [{ ...model, submitting: false }, Cmd.none()]
       } else {
-        const err = msg.result.err
         return [
-          {
-            ...model,
-            submitting: false,
-            errors: (err as any).errors
-              ? (err as any)
-              : { errors: { error: [String(err)] } },
-          },
+          { ...model, submitting: false, errors: msg.result.err },
           Cmd.none(),
         ]
       }

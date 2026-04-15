@@ -2,7 +2,6 @@ import * as RD from '@devexperts/remote-data-ts'
 import { pipe } from 'fp-ts/lib/function'
 import { Heart } from 'lucide-react'
 import React from 'react'
-import type { Dispatcher } from 'tea-cup-fp'
 
 import type {
   ArticlesResponse,
@@ -11,15 +10,11 @@ import type {
 } from '@/api/type'
 import { Link } from '@/component/link'
 import { homePage } from '@/data/route'
+import { memoStrategy } from '@/util/memo-strategy'
 
-import type { Model, Msg } from './type'
+import { Props, PropsEq } from './type'
 
-interface Props {
-  model: Model
-  dispatch: Dispatcher<Msg>
-}
-
-export const HomeView: React.FC<Props> = ({ model }) => {
+function HomeView({ model, dispatch }: Props) {
   return (
     <div>
       <div className='bg-green-600 py-12 text-center text-white shadow-inner'>
@@ -73,6 +68,7 @@ export const HomeView: React.FC<Props> = ({ model }) => {
                           key={article.slug}
                           className='border-b border-gray-200 py-6'
                         >
+                          {/* what {JSON.stringify(article.favorited)} */}
                           <div className='flex items-center justify-between'>
                             <div className='flex items-center gap-3'>
                               <Link
@@ -114,6 +110,14 @@ export const HomeView: React.FC<Props> = ({ model }) => {
                             <button
                               type='button'
                               className='flex items-center gap-1 rounded border border-green-500 px-2 py-1 text-xs text-green-600 hover:bg-green-50'
+                              onClick={() =>
+                                dispatch({
+                                  _tag: article.favorited
+                                    ? 'UnfavoriteArticle'
+                                    : 'FavoriteArticle',
+                                  slug: article.slug,
+                                })
+                              }
                             >
                               <Heart size={12} />
                               {article.favoritesCount}
@@ -205,3 +209,5 @@ export const HomeView: React.FC<Props> = ({ model }) => {
     </div>
   )
 }
+
+export const HomeViewMemo = memoStrategy(HomeView, PropsEq.equals)

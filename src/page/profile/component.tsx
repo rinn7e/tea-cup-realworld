@@ -1,7 +1,6 @@
 import * as RD from '@devexperts/remote-data-ts'
 import { pipe } from 'fp-ts/lib/function'
 import { Heart, Settings, UserPlus } from 'lucide-react'
-import React from 'react'
 
 import type {
   ArticlesResponse,
@@ -9,20 +8,11 @@ import type {
   ProfileResponse,
 } from '@/api/type'
 import { Link } from '@/component/link'
+import { memoStrategy } from '@/util/memo-strategy'
 
-import type { Model, Msg } from './type'
+import { Props, PropsEq } from './type'
 
-interface Props {
-  model: Model
-  dispatch: (msg: Msg) => void
-  isCurrentUser: boolean
-}
-
-export const ProfileView: React.FC<Props> = ({
-  model,
-  dispatch,
-  isCurrentUser,
-}) => {
+function ProfileView({ model, dispatch, isCurrentUser }: Props) {
   return (
     <div>
       {pipe(
@@ -134,7 +124,7 @@ export const ProfileView: React.FC<Props> = ({
                         </div>
                       ) : (
                         <>
-                          {articlesData.articles.map((article: any) => (
+                          {articlesData.articles.map((article) => (
                             <div
                               key={article.slug}
                               className='border-b border-gray-200 py-6'
@@ -182,6 +172,14 @@ export const ProfileView: React.FC<Props> = ({
                                 <button
                                   type='button'
                                   className='flex items-center gap-1 rounded border border-green-500 px-2 py-1 text-xs text-green-600 hover:bg-green-50'
+                                  onClick={() =>
+                                    dispatch({
+                                      _tag: article.favorited
+                                        ? 'UnfavoriteArticle'
+                                        : 'FavoriteArticle',
+                                      slug: article.slug,
+                                    })
+                                  }
                                 >
                                   <Heart size={12} />
                                   {article.favoritesCount}
@@ -220,3 +218,5 @@ export const ProfileView: React.FC<Props> = ({
     </div>
   )
 }
+
+export const ProfileViewMemo = memoStrategy(ProfileView, PropsEq.equals)

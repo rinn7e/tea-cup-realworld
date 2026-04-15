@@ -1,7 +1,11 @@
 import * as Form from '@rinn7e/tea-cup-form'
-import type { Result } from 'tea-cup-fp'
+import { EqAlways, NullableEq } from '@rinn7e/tea-cup-prelude'
+import * as EqClass from 'fp-ts/lib/Eq'
+import * as B from 'fp-ts/lib/boolean'
+import type { Dispatcher, Result } from 'tea-cup-fp'
 
-import type { Errors, HttpErrorString, UserResponse } from '@/api/type'
+import { HttpErrorStringEq } from '@/api/type'
+import type { HttpErrorString, UserResponse } from '@/api/type'
 
 export type Model = {
   form: Form.Model
@@ -9,8 +13,24 @@ export type Model = {
   submitting: boolean
 }
 
+export const ModelEq = EqClass.struct<Model>({
+  form: Form.ModelEq,
+  errors: NullableEq(HttpErrorStringEq),
+  submitting: B.Eq,
+})
+
 export type Msg =
   | { _tag: 'FormMsg'; msg: Form.Msg }
   | { _tag: 'Submit' }
   | { _tag: 'SubmitResponse'; result: Result<HttpErrorString, UserResponse> }
   | { _tag: 'Logout' }
+
+export type Props = {
+  model: Model
+  dispatch: Dispatcher<Msg>
+}
+
+export const PropsEq: EqClass.Eq<Props> = EqClass.struct({
+  model: ModelEq,
+  dispatch: EqAlways,
+})

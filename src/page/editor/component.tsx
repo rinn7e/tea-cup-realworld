@@ -1,15 +1,11 @@
 import { FormItemMemo } from '@rinn7e/tea-cup-form/lib/component'
 import { X } from 'lucide-react'
-import React from 'react'
 
-import type { Model, Msg } from './type'
+import { memoStrategy } from '@/util/memo-strategy'
 
-interface Props {
-  model: Model
-  dispatch: (msg: Msg) => void
-}
+import { Props, PropsEq } from './type'
 
-export const EditorView: React.FC<Props> = ({ model, dispatch }) => {
+function EditorView({ model, dispatch }: Props) {
   return (
     <div className='mx-auto max-w-3xl px-4 py-8'>
       {model.errors && (
@@ -86,3 +82,5 @@ export const EditorView: React.FC<Props> = ({ model, dispatch }) => {
     </div>
   )
 }
+
+export const EditorViewMemo = memoStrategy(EditorView, PropsEq.equals)

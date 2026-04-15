@@ -1,6 +1,12 @@
+import { UndefinableEq } from '@rinn7e/tea-cup-prelude'
+import * as A from 'fp-ts/lib/Array'
+import * as EqClass from 'fp-ts/lib/Eq'
+import * as B from 'fp-ts/lib/boolean'
+import * as N from 'fp-ts/lib/number'
+import * as S from 'fp-ts/lib/string'
 import * as t from 'io-ts'
 
-import { ProfileJson } from './profile'
+import { ProfileEq, ProfileJson } from './profile'
 import type { Profile } from './profile'
 
 export type Article = {
@@ -15,6 +21,28 @@ export type Article = {
   favoritesCount: number
   author: Profile
 }
+
+export const ArticleEq = EqClass.struct<Article>({
+  slug: S.Eq,
+  title: S.Eq,
+  description: S.Eq,
+  body: UndefinableEq(S.Eq),
+  tagList: A.getEq(S.Eq),
+  createdAt: S.Eq,
+  updatedAt: S.Eq,
+  favorited: B.Eq,
+  favoritesCount: N.Eq,
+  author: ProfileEq,
+})
+
+export const ArticleResponseEq = EqClass.struct<ArticleResponse>({
+  article: ArticleEq,
+})
+
+export const ArticlesResponseEq = EqClass.struct<ArticlesResponse>({
+  articles: A.getEq(ArticleEq),
+  articlesCount: N.Eq,
+})
 
 export const ArticleJson: t.Type<Article> = t.intersection([
   t.type({

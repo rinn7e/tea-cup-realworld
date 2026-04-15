@@ -4,8 +4,11 @@ import { Link } from './link'
 export const Footer: React.FC = () => {
   return (
     <footer className='border-t border-gray-100 bg-gray-50 py-6'>
-      <div className='mx-auto max-w-6xl px-4 flex flex-col items-center gap-1 text-center sm:flex-row sm:justify-between'>
-        <Link route={{ page: homePage() }} className='text-sm font-bold text-green-600'>
+      <div className='mx-auto flex max-w-6xl flex-col items-center gap-1 px-4 text-center sm:flex-row sm:justify-between'>
+        <Link
+          route={{ page: homePage() }}
+          className='text-sm font-bold text-green-600'
+        >
           conduit
         </Link>
         <span className='text-xs text-gray-400'>
