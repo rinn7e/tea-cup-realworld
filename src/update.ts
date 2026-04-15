@@ -29,7 +29,7 @@ export const init = (location: Location): [Model, Cmd<Msg>] => {
     debugPanel: DebugPanel.init(),
   }
 
-  const [initialModel, initialCmd] = changeRouteHandler(route, false)(model)
+  const [initialModel, initialCmd] = navigate(route, true)(model)
 
   const token = getToken()
   if (token) {
@@ -70,7 +70,14 @@ const navigate =
         ]
       }
       case 'ArticlePage': {
-        const [articleModel, articleCmd] = Article.init(newRoute.page.slug)
+        const articleToken = pipe(
+          model.shared.user,
+          O.map((u: User) => u.token),
+        )
+        const [articleModel, articleCmd] = Article.init(
+          newRoute.page.slug,
+          articleToken,
+        )
         return [
           {
             ...model,
@@ -248,10 +255,26 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
           msg.msg,
           model.page.model,
         )
-        return [
-          { ...model, page: { _tag: 'Article', model: articleModel } },
-          articleCmd.map((msg) => ({ _tag: 'ArticleMsg', msg })),
-        ]
+        return pipe(
+          [
+            {
+              ...model,
+              page: { _tag: 'Article', model: articleModel } as const,
+            },
+            articleCmd.map(
+              (m) => ({ _tag: 'ArticleMsg' as const, msg: m }) as Msg,
+            ),
+          ] as [Model, Cmd<Msg>],
+          updateAndCmd((m) => {
+            if (
+              msg.msg._tag === 'DeleteArticleResponse' &&
+              msg.msg.result.tag === 'Ok'
+            ) {
+              return changeRouteHandler({ page: homePage() }, true)(m)
+            }
+            return [m, Cmd.none()]
+          }),
+        )
       }
       return [model, Cmd.none()]
     case 'AuthMsg': {
