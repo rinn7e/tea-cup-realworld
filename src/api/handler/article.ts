@@ -1,4 +1,4 @@
-import { Option } from 'fp-ts/lib/Option'
+import { type Option } from 'fp-ts/lib/Option'
 import * as TE from 'fp-ts/lib/TaskEither'
 import { pipe } from 'fp-ts/lib/function'
 
@@ -20,6 +20,7 @@ import {
 } from './common'
 
 export const getArticles = (
+  token: Option<string>,
   params: {
     tag?: string
     author?: string
@@ -27,7 +28,6 @@ export const getArticles = (
     offset?: number
     limit?: number
   } = {},
-  token: Option<string>,
 ): TE.TaskEither<HttpErrorString, ArticlesResponse> => {
   const query = new URLSearchParams()
   if (params.tag !== undefined) query.set('tag', params.tag)
@@ -52,8 +52,8 @@ export const getArticles = (
 }
 
 export const getArticlesFeed = (
-  params: { offset?: number; limit?: number } = {},
   token: string,
+  params: { offset?: number; limit?: number } = {},
 ): TE.TaskEither<HttpErrorString, ArticlesResponse> => {
   const query = new URLSearchParams()
   if (params.offset !== undefined) query.set('offset', String(params.offset))
@@ -70,18 +70,24 @@ export const getArticlesFeed = (
 }
 
 export const getArticle = (
+  token: Option<string>,
   slug: string,
 ): TE.TaskEither<HttpErrorString, ArticleResponse> =>
   pipe(
-    fetch(`${API_BASE}/articles/${encodeURIComponent(slug)}`),
+    fetch(
+      `${API_BASE}/articles/${encodeURIComponent(slug)}`,
+      token._tag === 'Some'
+        ? { headers: { Authorization: `Token ${token.value}` } }
+        : undefined,
+    ),
     fetchToTaskEither,
     TE.chainEitherK(decodeSuccess(ArticleResponseJson)),
     TE.mapLeft(decodeError),
   )
 
 export const createArticle = (
-  request: NewArticleRequest,
   token: string,
+  request: NewArticleRequest,
 ): TE.TaskEither<HttpErrorString, ArticleResponse> =>
   pipe(
     fetch(`${API_BASE}/articles`, {
@@ -98,9 +104,9 @@ export const createArticle = (
   )
 
 export const updateArticle = (
+  token: string,
   slug: string,
   request: UpdateArticleRequest,
-  token: string,
 ): TE.TaskEither<HttpErrorString, ArticleResponse> =>
   pipe(
     fetch(`${API_BASE}/articles/${encodeURIComponent(slug)}`, {
@@ -117,8 +123,8 @@ export const updateArticle = (
   )
 
 export const deleteArticle = (
-  slug: string,
   token: string,
+  slug: string,
 ): TE.TaskEither<HttpErrorString, true> =>
   pipe(
     fetch(`${API_BASE}/articles/${encodeURIComponent(slug)}`, {
@@ -131,8 +137,8 @@ export const deleteArticle = (
   )
 
 export const favoriteArticle = (
-  slug: string,
   token: string,
+  slug: string,
 ): TE.TaskEither<HttpErrorString, ArticleResponse> =>
   pipe(
     fetch(`${API_BASE}/articles/${encodeURIComponent(slug)}/favorite`, {
@@ -145,8 +151,8 @@ export const favoriteArticle = (
   )
 
 export const unfavoriteArticle = (
-  slug: string,
   token: string,
+  slug: string,
 ): TE.TaskEither<HttpErrorString, ArticleResponse> =>
   pipe(
     fetch(`${API_BASE}/articles/${encodeURIComponent(slug)}/favorite`, {

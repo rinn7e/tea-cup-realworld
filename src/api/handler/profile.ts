@@ -1,4 +1,4 @@
-import { Option } from 'fp-ts/lib/Option'
+import { type Option } from 'fp-ts/lib/Option'
 import * as TE from 'fp-ts/lib/TaskEither'
 import { pipe } from 'fp-ts/lib/function'
 
@@ -12,8 +12,8 @@ import {
 } from './common'
 
 export const getProfile = (
-  username: string,
   token: Option<string>,
+  username: string,
 ): TE.TaskEither<HttpErrorString, ProfileResponse> =>
   pipe(
     fetch(`${API_BASE}/profiles/${encodeURIComponent(username)}`, {
@@ -26,8 +26,8 @@ export const getProfile = (
   )
 
 export const followUser = (
-  username: string,
   token: string,
+  username: string,
 ): TE.TaskEither<HttpErrorString, ProfileResponse> =>
   pipe(
     fetch(`${API_BASE}/profiles/${encodeURIComponent(username)}/follow`, {
@@ -40,8 +40,8 @@ export const followUser = (
   )
 
 export const unfollowUser = (
-  username: string,
   token: string,
+  username: string,
 ): TE.TaskEither<HttpErrorString, ProfileResponse> =>
   pipe(
     fetch(`${API_BASE}/profiles/${encodeURIComponent(username)}/follow`, {

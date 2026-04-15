@@ -162,7 +162,10 @@ const navigate =
       }
       case 'EditorPage': {
         if (model.shared.user._tag === 'Some') {
-          const [editorModel, editorCmd] = Editor.init(newRoute.page.slug)
+          const [editorModel, editorCmd] = Editor.init(
+            newRoute.page.slug,
+            model.shared.token,
+          )
           return [
             {
               ...model,

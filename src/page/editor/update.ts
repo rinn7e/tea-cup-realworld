@@ -89,7 +89,10 @@ const emptyFormConfig = editorFormConfig({
   tagInput: '',
 })
 
-export const init = (slug: O.Option<string>): [Model, Cmd<Msg>] => {
+export const init = (
+  slug: O.Option<string>,
+  token: O.Option<string> = O.none,
+): [Model, Cmd<Msg>] => {
   const model: Model = {
     slug: slug._tag === 'Some' ? slug.value : null,
     form: Form.init(new Map(emptyFormConfig)),
@@ -102,7 +105,7 @@ export const init = (slug: O.Option<string>): [Model, Cmd<Msg>] => {
     return [
       { ...model, submitting: true },
       attemptTE(
-        getArticle(slug.value),
+        getArticle(token, slug.value),
         (result): Msg => ({ _tag: 'GetArticleResponse', result }),
       ),
     ]
@@ -179,8 +182,8 @@ export const update =
           article: { title, description, body, tagList: model.tagList },
         }
         const task = model.slug
-          ? updateArticle(model.slug, request, token)
-          : createArticle(request, token)
+          ? updateArticle(token, model.slug, request)
+          : createArticle(token, request)
 
         return [
           { ...model, submitting: true, errors: null },

@@ -14,24 +14,17 @@ export const init = (token: Option<string> = O.none): [Model, Cmd<Msg>] => {
     tags: RD.pending,
   }
 
-  const articlesCmd =
-    // token._tag === 'Some'
-    // ? attemptTE(
-    //     getArticlesFeed({}, token.value),
-    //     (result): Msg => ({ _tag: 'GetArticlesResponse', result }),
-    //   )
-    // :
-    attemptTE(
-      getArticles({}, token),
-      (result): Msg => ({ _tag: 'GetArticlesResponse', result }),
-    )
+  const articlesCmd = attemptTE(
+    getArticles(token),
+    (result): Msg => ({ _tag: 'GetArticlesResponse', result }),
+  )
 
   return [
     model,
     Cmd.batch([
       articlesCmd,
       attemptTE(
-        getTags(),
+        getTags(token),
         (result): Msg => ({ _tag: 'GetTagsResponse', result }),
       ),
     ]),
@@ -65,7 +58,7 @@ export const update =
           return [
             model,
             attemptTE(
-              favoriteArticle(msg.slug, token.value),
+              favoriteArticle(token.value, msg.slug),
               (result): Msg => ({ _tag: 'FavoriteArticleResponse', result }),
             ),
           ]
@@ -76,7 +69,7 @@ export const update =
           return [
             model,
             attemptTE(
-              unfavoriteArticle(msg.slug, token.value),
+              unfavoriteArticle(token.value, msg.slug),
               (result): Msg => ({ _tag: 'FavoriteArticleResponse', result }),
             ),
           ]

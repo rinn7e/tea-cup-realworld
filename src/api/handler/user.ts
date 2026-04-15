@@ -29,8 +29,8 @@ export const getCurrentUser = (
   )
 
 export const updateUser = (
-  request: UpdateUserRequest,
   token: string,
+  request: UpdateUserRequest,
 ): TE.TaskEither<HttpErrorString, UserResponse> =>
   pipe(
     fetch(`${API_BASE}/user`, {

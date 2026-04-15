@@ -136,7 +136,7 @@ export const update =
         return [
           { ...model, submitting: true, errors: null },
           attemptTE(
-            updateUser({ user: userUpdate }, token),
+            updateUser(token, { user: userUpdate }),
             (result): Msg => ({ _tag: 'SubmitResponse', result }),
           ),
         ]

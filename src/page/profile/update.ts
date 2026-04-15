@@ -32,13 +32,13 @@ export const init = (
     model,
     Cmd.batch([
       attemptTE(
-        getProfile(username, token),
+        getProfile(token, username),
         (result): Msg => ({ _tag: 'GetProfileResponse', result }),
       ),
       attemptTE(
         getArticles(
-          favorites ? { favorited: username } : { author: username },
           token,
+          favorites ? { favorited: username } : { author: username },
         ),
         (result): Msg => ({ _tag: 'GetArticlesResponse', result }),
       ),
@@ -81,8 +81,8 @@ export const update =
           newModel,
           attemptTE(
             getArticles(
-              msg.show ? { favorited: username } : { author: username },
               token,
+              msg.show ? { favorited: username } : { author: username },
             ),
             (result): Msg => ({ _tag: 'GetArticlesResponse', result }),
           ),
@@ -93,7 +93,7 @@ export const update =
           return [
             model,
             attemptTE(
-              followUser(username, token.value),
+              followUser(token.value, username),
               (result): Msg => ({ _tag: 'GetProfileResponse', result }),
             ),
           ]
@@ -104,7 +104,7 @@ export const update =
           return [
             model,
             attemptTE(
-              unfollowUser(username, token.value),
+              unfollowUser(token.value, username),
               (result): Msg => ({ _tag: 'GetProfileResponse', result }),
             ),
           ]
@@ -115,7 +115,7 @@ export const update =
           return [
             model,
             attemptTE(
-              favoriteArticle(msg.slug, token.value),
+              favoriteArticle(token.value, msg.slug),
               (result): Msg => ({ _tag: 'FavoriteArticleResponse', result }),
             ),
           ]
@@ -126,7 +126,7 @@ export const update =
           return [
             model,
             attemptTE(
-              unfavoriteArticle(msg.slug, token.value),
+              unfavoriteArticle(token.value, msg.slug),
               (result): Msg => ({ _tag: 'FavoriteArticleResponse', result }),
             ),
           ]

@@ -33,11 +33,11 @@ export const init = (
     model,
     Cmd.batch<Msg>([
       attemptTE(
-        getArticle(slug),
+        getArticle(token, slug),
         (result): Msg => ({ _tag: 'GetArticleResponse', result }),
       ),
       attemptTE(
-        getComments(slug, O.toUndefined(token)),
+        getComments(token, slug),
         (result): Msg => ({ _tag: 'GetCommentsResponse', result }),
       ),
     ]),
@@ -74,7 +74,7 @@ export const update =
           return [
             model,
             attemptTE(
-              favoriteArticle(model.slug, token.value),
+              favoriteArticle(token.value, model.slug),
               (result): Msg => ({ _tag: 'FavoriteArticleResponse', result }),
             ),
           ]
@@ -85,7 +85,7 @@ export const update =
           return [
             model,
             attemptTE(
-              unfavoriteArticle(model.slug, token.value),
+              unfavoriteArticle(token.value, model.slug),
               (result): Msg => ({ _tag: 'FavoriteArticleResponse', result }),
             ),
           ]
@@ -104,7 +104,7 @@ export const update =
           return [
             model,
             attemptTE(
-              followUser(msg.username, token.value),
+              followUser(token.value, msg.username),
               (result): Msg => ({ _tag: 'FollowAuthorResponse', result }),
             ),
           ]
@@ -115,7 +115,7 @@ export const update =
           return [
             model,
             attemptTE(
-              unfollowUser(msg.username, token.value),
+              unfollowUser(token.value, msg.username),
               (result): Msg => ({ _tag: 'UnfollowAuthorResponse', result }),
             ),
           ]
@@ -143,7 +143,7 @@ export const update =
           return [
             model,
             attemptTE(
-              deleteArticle(model.slug, token.value),
+              deleteArticle(token.value, model.slug),
               (result): Msg => ({ _tag: 'DeleteArticleResponse', result }),
             ),
           ]
@@ -158,7 +158,7 @@ export const update =
           return [
             { ...model, commentInput: '' },
             attemptTE(
-              createComment(model.slug, model.commentInput, token.value),
+              createComment(token.value, model.slug, model.commentInput),
               (result): Msg => ({ _tag: 'SubmitCommentResponse', result }),
             ),
           ]
@@ -187,7 +187,7 @@ export const update =
           return [
             model,
             attemptTE(
-              deleteComment(model.slug, msg.id, token.value),
+              deleteComment(token.value, model.slug, msg.id),
               (result): Msg => ({
                 _tag: 'DeleteCommentResponse',
                 id: msg.id,

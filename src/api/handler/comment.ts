@@ -1,3 +1,4 @@
+import { type Option } from 'fp-ts/lib/Option'
 import * as TE from 'fp-ts/lib/TaskEither'
 import { pipe } from 'fp-ts/lib/function'
 
@@ -17,12 +18,13 @@ import {
 } from './common'
 
 export const getComments = (
+  token: Option<string>,
   slug: string,
-  token?: string,
 ): TE.TaskEither<HttpErrorString, CommentsResponse> =>
   pipe(
     fetch(`${API_BASE}/articles/${encodeURIComponent(slug)}/comments`, {
-      headers: token ? { Authorization: `Token ${token}` } : {},
+      headers:
+        token._tag === 'Some' ? { Authorization: `Token ${token.value}` } : {},
     }),
     fetchToTaskEither,
     TE.chainEitherK(decodeSuccess(CommentsResponseJson)),
@@ -30,9 +32,9 @@ export const getComments = (
   )
 
 export const createComment = (
+  token: string,
   slug: string,
   body: string,
-  token: string,
 ): TE.TaskEither<HttpErrorString, CommentResponse> =>
   pipe(
     fetch(`${API_BASE}/articles/${encodeURIComponent(slug)}/comments`, {
@@ -49,9 +51,9 @@ export const createComment = (
   )
 
 export const deleteComment = (
+  token: string,
   slug: string,
   id: number,
-  token: string,
 ): TE.TaskEither<HttpErrorString, true> =>
   pipe(
     fetch(`${API_BASE}/articles/${encodeURIComponent(slug)}/comments/${id}`, {

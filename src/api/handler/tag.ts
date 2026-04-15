@@ -1,3 +1,4 @@
+import { type Option } from 'fp-ts/lib/Option'
 import * as TE from 'fp-ts/lib/TaskEither'
 import { pipe } from 'fp-ts/lib/function'
 
@@ -10,9 +11,16 @@ import {
   fetchToTaskEither,
 } from './common'
 
-export const getTags = (): TE.TaskEither<HttpErrorString, TagsResponse> =>
+export const getTags = (
+  token: Option<string>,
+): TE.TaskEither<HttpErrorString, TagsResponse> =>
   pipe(
-    fetch(`${API_BASE}/tags`),
+    fetch(
+      `${API_BASE}/tags`,
+      token._tag === 'Some'
+        ? { headers: { Authorization: `Token ${token.value}` } }
+        : undefined,
+    ),
     fetchToTaskEither,
     TE.chainEitherK(decodeSuccess(TagsResponseJson)),
     TE.mapLeft(decodeError),
