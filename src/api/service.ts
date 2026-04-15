@@ -1,4 +1,5 @@
-import * as TE from 'fp-ts/lib/TaskEither';
+import * as TE from 'fp-ts/lib/TaskEither'
+
 import type {
   ArticleRequest,
   ArticleResponse,
@@ -10,164 +11,222 @@ import type {
   TagsResponse,
   UpdateUserRequest,
   UserResponse,
-} from './type';
+} from './type'
 
-const API_BASE = 'http://localhost:3000/api';
+const API_BASE = 'http://localhost:3000/api'
 
-export const getCurrentUser = (token: string): TE.TaskEither<Error, UserResponse> => {
+export const getCurrentUser = (
+  token: string,
+): TE.TaskEither<Error, UserResponse> => {
   return TE.tryCatch(
-    () => fetch(`${API_BASE}/user`, {
-      headers: { 'Authorization': `Token ${token}` }
-    }).then(res => res.json()),
-    reason => new Error(String(reason))
-  );
-};
+    () =>
+      fetch(`${API_BASE}/user`, {
+        headers: { Authorization: `Token ${token}` },
+      }).then((res) => res.json()),
+    (reason) => new Error(String(reason)),
+  )
+}
 
-export const getArticles = (params: { tag?: string, author?: string, favorited?: string, offset?: number, limit?: number } = {}): TE.TaskEither<Error, ArticlesResponse> => {
-  const query = new URLSearchParams();
-  if (params.tag) query.set('tag', params.tag);
-  if (params.author) query.set('author', params.author);
-  if (params.favorited) query.set('favorited', params.favorited);
-  if (params.offset) query.set('offset', String(params.offset));
-  if (params.limit) query.set('limit', String(params.limit));
+export const getArticles = (
+  params: {
+    tag?: string
+    author?: string
+    favorited?: string
+    offset?: number
+    limit?: number
+  } = {},
+): TE.TaskEither<Error, ArticlesResponse> => {
+  const query = new URLSearchParams()
+  if (params.tag) query.set('tag', params.tag)
+  if (params.author) query.set('author', params.author)
+  if (params.favorited) query.set('favorited', params.favorited)
+  if (params.offset) query.set('offset', String(params.offset))
+  if (params.limit) query.set('limit', String(params.limit))
 
-  const queryString = query.toString();
+  const queryString = query.toString()
   return TE.tryCatch(
-    () => fetch(`${API_BASE}/articles${queryString ? '?' + queryString : ''}`).then(res => res.json()),
-    reason => new Error(String(reason))
-  );
-};
+    () =>
+      fetch(`${API_BASE}/articles${queryString ? '?' + queryString : ''}`).then(
+        (res) => res.json(),
+      ),
+    (reason) => new Error(String(reason)),
+  )
+}
 
-export const getArticle = (slug: string): TE.TaskEither<Error, ArticleResponse> => {
+export const getArticle = (
+  slug: string,
+): TE.TaskEither<Error, ArticleResponse> => {
   return TE.tryCatch(
-    () => fetch(`${API_BASE}/articles/${slug}`).then(res => res.json()),
-    reason => new Error(String(reason))
-  );
-};
+    () => fetch(`${API_BASE}/articles/${slug}`).then((res) => res.json()),
+    (reason) => new Error(String(reason)),
+  )
+}
 
-export const getComments = (slug: string): TE.TaskEither<Error, CommentsResponse> => {
+export const getComments = (
+  slug: string,
+): TE.TaskEither<Error, CommentsResponse> => {
   return TE.tryCatch(
-    () => fetch(`${API_BASE}/articles/${slug}/comments`).then(res => res.json()),
-    reason => new Error(String(reason))
-  );
-};
+    () =>
+      fetch(`${API_BASE}/articles/${slug}/comments`).then((res) => res.json()),
+    (reason) => new Error(String(reason)),
+  )
+}
 
-export const login = (request: LoginRequest): TE.TaskEither<Error, UserResponse> => {
+export const login = (
+  request: LoginRequest,
+): TE.TaskEither<Error, UserResponse> => {
   return TE.tryCatch(
-    () => fetch(`${API_BASE}/users/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(request)
-    }).then(res => res.json()),
-    reason => new Error(String(reason))
-  );
-};
+    () =>
+      fetch(`${API_BASE}/users/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(request),
+      }).then((res) => res.json()),
+    (reason) => new Error(String(reason)),
+  )
+}
 
-export const register = (request: RegisterRequest): TE.TaskEither<Error, UserResponse> => {
+export const register = (
+  request: RegisterRequest,
+): TE.TaskEither<Error, UserResponse> => {
   return TE.tryCatch(
-    () => fetch(`${API_BASE}/users`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(request)
-    }).then(res => res.json()),
-    reason => new Error(String(reason))
-  );
-};
+    () =>
+      fetch(`${API_BASE}/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(request),
+      }).then((res) => res.json()),
+    (reason) => new Error(String(reason)),
+  )
+}
 
-export const updateUser = (request: UpdateUserRequest, token: string): TE.TaskEither<Error, UserResponse> => {
+export const updateUser = (
+  request: UpdateUserRequest,
+  token: string,
+): TE.TaskEither<Error, UserResponse> => {
   return TE.tryCatch(
-    () => fetch(`${API_BASE}/user`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Token ${token}`
-      },
-      body: JSON.stringify(request)
-    }).then(res => res.json()),
-    reason => new Error(String(reason))
-  );
-};
+    () =>
+      fetch(`${API_BASE}/user`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify(request),
+      }).then((res) => res.json()),
+    (reason) => new Error(String(reason)),
+  )
+}
 
-export const getProfile = (username: string, token?: string): TE.TaskEither<Error, ProfileResponse> => {
+export const getProfile = (
+  username: string,
+  token?: string,
+): TE.TaskEither<Error, ProfileResponse> => {
   return TE.tryCatch(
-    () => fetch(`${API_BASE}/profiles/${username}`, {
-      headers: token ? { 'Authorization': `Token ${token}` } : {}
-    }).then(res => res.json()),
-    reason => new Error(String(reason))
-  );
-};
+    () =>
+      fetch(`${API_BASE}/profiles/${username}`, {
+        headers: token ? { Authorization: `Token ${token}` } : {},
+      }).then((res) => res.json()),
+    (reason) => new Error(String(reason)),
+  )
+}
 
-export const createArticle = (request: ArticleRequest, token: string): TE.TaskEither<Error, ArticleResponse> => {
+export const createArticle = (
+  request: ArticleRequest,
+  token: string,
+): TE.TaskEither<Error, ArticleResponse> => {
   return TE.tryCatch(
-    () => fetch(`${API_BASE}/articles`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Token ${token}`
-      },
-      body: JSON.stringify(request)
-    }).then(res => res.json()),
-    reason => new Error(String(reason))
-  );
-};
+    () =>
+      fetch(`${API_BASE}/articles`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify(request),
+      }).then((res) => res.json()),
+    (reason) => new Error(String(reason)),
+  )
+}
 
-export const updateArticle = (slug: string, request: ArticleRequest, token: string): TE.TaskEither<Error, ArticleResponse> => {
+export const updateArticle = (
+  slug: string,
+  request: ArticleRequest,
+  token: string,
+): TE.TaskEither<Error, ArticleResponse> => {
   return TE.tryCatch(
-    () => fetch(`${API_BASE}/articles/${slug}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Token ${token}`
-      },
-      body: JSON.stringify(request)
-    }).then(res => res.json()),
-    reason => new Error(String(reason))
-  );
-};
+    () =>
+      fetch(`${API_BASE}/articles/${slug}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Token ${token}`,
+        },
+        body: JSON.stringify(request),
+      }).then((res) => res.json()),
+    (reason) => new Error(String(reason)),
+  )
+}
 
-export const followUser = (username: string, token: string): TE.TaskEither<Error, ProfileResponse> => {
+export const followUser = (
+  username: string,
+  token: string,
+): TE.TaskEither<Error, ProfileResponse> => {
   return TE.tryCatch(
-    () => fetch(`${API_BASE}/profiles/${username}/follow`, {
-      method: 'POST',
-      headers: { 'Authorization': `Token ${token}` }
-    }).then(res => res.json()),
-    reason => new Error(String(reason))
-  );
-};
+    () =>
+      fetch(`${API_BASE}/profiles/${username}/follow`, {
+        method: 'POST',
+        headers: { Authorization: `Token ${token}` },
+      }).then((res) => res.json()),
+    (reason) => new Error(String(reason)),
+  )
+}
 
-export const unfollowUser = (username: string, token: string): TE.TaskEither<Error, ProfileResponse> => {
+export const unfollowUser = (
+  username: string,
+  token: string,
+): TE.TaskEither<Error, ProfileResponse> => {
   return TE.tryCatch(
-    () => fetch(`${API_BASE}/profiles/${username}/follow`, {
-      method: 'DELETE',
-      headers: { 'Authorization': `Token ${token}` }
-    }).then(res => res.json()),
-    reason => new Error(String(reason))
-  );
-};
+    () =>
+      fetch(`${API_BASE}/profiles/${username}/follow`, {
+        method: 'DELETE',
+        headers: { Authorization: `Token ${token}` },
+      }).then((res) => res.json()),
+    (reason) => new Error(String(reason)),
+  )
+}
 
-export const favoriteArticle = (slug: string, token: string): TE.TaskEither<Error, ArticleResponse> => {
+export const favoriteArticle = (
+  slug: string,
+  token: string,
+): TE.TaskEither<Error, ArticleResponse> => {
   return TE.tryCatch(
-    () => fetch(`${API_BASE}/articles/${slug}/favorite`, {
-      method: 'POST',
-      headers: { 'Authorization': `Token ${token}` }
-    }).then(res => res.json()),
-    reason => new Error(String(reason))
-  );
-};
+    () =>
+      fetch(`${API_BASE}/articles/${slug}/favorite`, {
+        method: 'POST',
+        headers: { Authorization: `Token ${token}` },
+      }).then((res) => res.json()),
+    (reason) => new Error(String(reason)),
+  )
+}
 
-export const unfavoriteArticle = (slug: string, token: string): TE.TaskEither<Error, ArticleResponse> => {
+export const unfavoriteArticle = (
+  slug: string,
+  token: string,
+): TE.TaskEither<Error, ArticleResponse> => {
   return TE.tryCatch(
-    () => fetch(`${API_BASE}/articles/${slug}/favorite`, {
-      method: 'DELETE',
-      headers: { 'Authorization': `Token ${token}` }
-    }).then(res => res.json()),
-    reason => new Error(String(reason))
-  );
-};
+    () =>
+      fetch(`${API_BASE}/articles/${slug}/favorite`, {
+        method: 'DELETE',
+        headers: { Authorization: `Token ${token}` },
+      }).then((res) => res.json()),
+    (reason) => new Error(String(reason)),
+  )
+}
 
 export const getTags = (): TE.TaskEither<Error, TagsResponse> => {
   return TE.tryCatch(
-    () => fetch(`${API_BASE}/tags`).then(res => res.json()),
-    reason => new Error(String(reason))
-  );
-};
+    () => fetch(`${API_BASE}/tags`).then((res) => res.json()),
+    (reason) => new Error(String(reason)),
+  )
+}

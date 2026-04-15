@@ -20,14 +20,9 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "paths": {
-      "@/*": ["./src/*"],
-      "fp-ts-routing": ["./src/package/fp-ts-routing/index"],
-      "fp-ts-routing/*": ["./src/package/fp-ts-routing/*"]
+      "@/*": ["./src/*"]
     }
   },
-  "include": [
-    "node_modules/vite/client.d.ts",
-    "src/**/*",
-    "vite.config.ts"
-  ]
+  "include": ["node_modules/vite/client.d.ts", "src/**/*", "vite.config.ts"],
+  "exclude": ["deprecated"]
 }

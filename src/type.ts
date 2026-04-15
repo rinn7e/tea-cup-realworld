@@ -1,20 +1,20 @@
-import type { Option } from 'fp-ts/lib/Option';
-import type { User } from './api/type';
-import type * as Home from './page/home/type';
-import type * as Article from './page/article/type';
-import type * as Auth from './page/auth/type';
-import type * as Settings from './page/settings/type';
-import type * as Profile from './page/profile/type';
-import type * as Editor from './page/editor/type';
-import type * as DebugPanel from './component/DebugPanel/type';
+import type { Option } from 'fp-ts/lib/Option'
 
-import type { AppRoute } from './data/route';
+import type { User } from './api/type'
+import type * as DebugPanel from './component/debug-panel/type'
+import type { AppRoute } from './data/route'
+import type * as Article from './page/article/type'
+import type * as Auth from './page/auth/type'
+import type * as Editor from './page/editor/type'
+import type * as Home from './page/home/type'
+import type * as Profile from './page/profile/type'
+import type * as Settings from './page/settings/type'
 
-export type Route = AppRoute;
+export type Route = AppRoute
 
 export type Shared = {
-  user: Option<User>;
-};
+  user: Option<User>
+}
 
 export type PageModel =
   | { _tag: 'Home'; model: Home.Model }
@@ -24,15 +24,15 @@ export type PageModel =
   | { _tag: 'Profile'; model: Profile.Model }
   | { _tag: 'Editor'; model: Editor.Model }
   | { _tag: 'NotFound' }
-  | { _tag: 'Loading' };
+  | { _tag: 'Loading' }
 
 export type Model = {
-  route: Route;
-  shared: Shared;
-  page: PageModel;
-  isInternal: boolean;
-  debugPanel: DebugPanel.Model;
-};
+  route: Route
+  shared: Shared
+  page: PageModel
+  isInternal: boolean
+  debugPanel: DebugPanel.Model
+}
 
 export type Msg =
   | { _tag: 'UrlChange'; location: Location }
@@ -45,4 +45,4 @@ export type Msg =
   | { _tag: 'ProfileMsg'; msg: Profile.Msg }
   | { _tag: 'EditorMsg'; msg: Editor.Msg }
   | { _tag: 'DebugPanelMsg'; msg: DebugPanel.Msg }
-  | { _tag: 'None' };
+  | { _tag: 'None' }

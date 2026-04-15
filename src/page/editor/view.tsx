@@ -1,11 +1,12 @@
-import React from "react";
-import type { Model, Msg } from "./type";
-import { FormItemMemo } from "@rinn7e/tea-cup-form";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { XMarkIcon } from '@heroicons/react/24/outline'
+import { FormItemMemo } from '@rinn7e/tea-cup-form/lib/component'
+import React from 'react'
+
+import type { Model, Msg } from './type'
 
 interface Props {
-  model: Model;
-  dispatch: (msg: Msg) => void;
+  model: Model
+  dispatch: (msg: Msg) => void
 }
 
 export const EditorView: React.FC<Props> = ({ model, dispatch }) => {
@@ -22,16 +23,16 @@ export const EditorView: React.FC<Props> = ({ model, dispatch }) => {
   // But wait, our FormFields.tsx calls props.onKeyDown.value(e).
 
   return (
-    <div className="editor-page">
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-wrap justify-center">
-          <div className="w-full md:w-3/4 lg:w-2/3">
+    <div className='editor-page'>
+      <div className='container mx-auto px-4 py-8'>
+        <div className='flex flex-wrap justify-center'>
+          <div className='w-full md:w-3/4 lg:w-2/3'>
             {model.errors && (
-              <ul className="error-messages text-red-500 mb-4 list-disc list-inside">
+              <ul className='error-messages mb-4 list-inside list-disc text-red-500'>
                 {Object.entries(model.errors.errors).map(
                   ([field, messages]) => (
                     <li key={field}>
-                      {field} {(messages as string[]).join(", ")}
+                      {field} {(messages as string[]).join(', ')}
                     </li>
                   ),
                 )}
@@ -40,53 +41,53 @@ export const EditorView: React.FC<Props> = ({ model, dispatch }) => {
 
             <form
               onSubmit={(e) => {
-                e.preventDefault();
-                dispatch({ _tag: "Submit" });
+                e.preventDefault()
+                dispatch({ _tag: 'Submit' })
               }}
             >
               <fieldset>
-                <div className="mb-4">
+                <div className='mb-4'>
                   <FormItemMemo
-                    field="title"
+                    field='title'
                     model={model.form}
-                    dispatch={(msg) => dispatch({ _tag: "FormMsg", msg })}
+                    dispatch={(msg) => dispatch({ _tag: 'FormMsg', msg })}
                   />
                 </div>
-                <div className="mb-4">
+                <div className='mb-4'>
                   <FormItemMemo
-                    field="description"
+                    field='description'
                     model={model.form}
-                    dispatch={(msg) => dispatch({ _tag: "FormMsg", msg })}
+                    dispatch={(msg) => dispatch({ _tag: 'FormMsg', msg })}
                   />
                 </div>
-                <div className="mb-4">
+                <div className='mb-4'>
                   <FormItemMemo
-                    field="body"
+                    field='body'
                     model={model.form}
-                    dispatch={(msg) => dispatch({ _tag: "FormMsg", msg })}
+                    dispatch={(msg) => dispatch({ _tag: 'FormMsg', msg })}
                   />
                 </div>
 
-                <div className="mb-4">
+                <div className='mb-4'>
                   <FormItemMemo
-                    field="tagInput"
+                    field='tagInput'
                     model={model.form}
                     dispatch={(msg) => {
                       // We can intercept messages here, but onKeyDown is not a message in tea-cup-form
-                      dispatch({ _tag: "FormMsg", msg });
+                      dispatch({ _tag: 'FormMsg', msg })
                     }}
                   />
 
-                  <div className="tag-list flex flex-wrap gap-2 mt-2">
+                  <div className='tag-list mt-2 flex flex-wrap gap-2'>
                     {model.tagList.map((tag) => (
                       <span
                         key={tag}
-                        className="tag-default tag-pill bg-gray-500 text-white px-3 py-1 rounded-full text-sm flex items-center"
+                        className='tag-default tag-pill flex items-center rounded-full bg-gray-500 px-3 py-1 text-sm text-white'
                       >
                         {tag}
                         <XMarkIcon
-                          className="w-4 h-4 ml-2 cursor-pointer hover:text-red-300"
-                          onClick={() => dispatch({ _tag: "RemoveTag", tag })}
+                          className='ml-2 h-4 w-4 cursor-pointer hover:text-red-300'
+                          onClick={() => dispatch({ _tag: 'RemoveTag', tag })}
                         />
                       </span>
                     ))}
@@ -94,8 +95,8 @@ export const EditorView: React.FC<Props> = ({ model, dispatch }) => {
                 </div>
 
                 <button
-                  className="btn btn-lg bg-brand-primary text-white px-8 py-3 rounded float-right hover:bg-opacity-90 transition-colors text-xl font-light mt-4"
-                  type="submit"
+                  className='btn btn-lg bg-brand-primary hover:bg-opacity-90 float-right mt-4 rounded px-8 py-3 text-xl font-light text-white transition-colors'
+                  type='submit'
                   disabled={model.submitting}
                 >
                   Publish Article
@@ -106,5 +107,5 @@ export const EditorView: React.FC<Props> = ({ model, dispatch }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}

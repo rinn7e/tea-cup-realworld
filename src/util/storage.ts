@@ -1,13 +1,13 @@
-const TOKEN_KEY = 'realworld_token';
+const TOKEN_KEY = 'realworld_token'
 
 export const saveToken = (token: string): void => {
-  localStorage.setItem(TOKEN_KEY, token);
-};
+  localStorage.setItem(TOKEN_KEY, token)
+}
 
 export const getToken = (): string | null => {
-  return localStorage.getItem(TOKEN_KEY);
-};
+  return localStorage.getItem(TOKEN_KEY)
+}
 
 export const removeToken = (): void => {
-  localStorage.removeItem(TOKEN_KEY);
-};
+  localStorage.removeItem(TOKEN_KEY)
+}
