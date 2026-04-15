@@ -7,7 +7,7 @@ import * as O from 'fp-ts/lib/Option'
 import * as S from 'fp-ts/lib/string'
 import { Cmd } from 'tea-cup-fp'
 
-import { createArticle, getArticle, updateArticle } from '@/api/service'
+import { createArticle, getArticle, updateArticle } from '@/api'
 import type { Errors } from '@/api/type'
 import { standardInputUi } from '@/component/form-fields'
 
@@ -88,7 +88,7 @@ const initialForms = (
     isPassword: O.none,
     isFocus: false,
     onKeyDown: tagOnKeyDown,
-    ui: standardInputUi(false, tagOnKeyDown, false),
+    ui: standardInputUi(false, tagOnKeyDown),
   } as any)(forms)
 
   return forms
@@ -146,7 +146,7 @@ export const update =
                 initialForms(() => {}, {
                   title: a.title,
                   description: a.description,
-                  body: a.body,
+                  body: a.body ?? '',
                   tagInput: '',
                 }),
               ),
@@ -217,9 +217,7 @@ export const update =
             {
               ...model,
               submitting: false,
-              errors: (err as Errors).errors
-                ? (err as Errors)
-                : { errors: { error: [String(err)] } },
+              errors: err,
             },
             Cmd.none(),
           ]

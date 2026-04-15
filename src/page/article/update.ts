@@ -2,7 +2,7 @@ import * as RD from '@devexperts/remote-data-ts'
 import { attemptTE } from '@rinn7e/tea-cup-prelude'
 import { Cmd } from 'tea-cup-fp'
 
-import { getArticle, getComments } from '@/api/service'
+import { getArticle, getComments } from '@/api'
 
 import type { Model, Msg } from './type'
 
@@ -14,14 +14,15 @@ export const init = (slug: string): [Model, Cmd<Msg>] => {
 
   return [
     model,
-    Cmd.batch([
+    Cmd.batch<Msg>([
       attemptTE(
         getArticle(slug),
-        (result): Msg => ({ _tag: 'GetArticleResponse', result }),
+        (result): Msg => ({ _tag: 'GetArticleResponse', result }) satisfies Msg,
       ),
       attemptTE(
         getComments(slug),
-        (result): Msg => ({ _tag: 'GetCommentsResponse', result }),
+        (result): Msg =>
+          ({ _tag: 'GetCommentsResponse', result }) satisfies Msg,
       ),
     ]),
   ]

@@ -6,7 +6,7 @@ import * as O from 'fp-ts/lib/Option'
 import * as S from 'fp-ts/lib/string'
 import { Cmd } from 'tea-cup-fp'
 
-import { updateUser } from '@/api/service'
+import { updateUser } from '@/api'
 import type { Errors, User } from '@/api/type'
 import { standardInputUi } from '@/component/form-fields'
 
@@ -151,9 +151,7 @@ export const update =
             {
               ...model,
               submitting: false,
-              errors: (err as Errors).errors
-                ? (err as Errors)
-                : { errors: { error: [String(err)] } },
+              errors: err,
             },
             Cmd.none(),
           ]

@@ -3,12 +3,7 @@ import { attemptTE } from '@rinn7e/tea-cup-prelude'
 import type { Option } from 'fp-ts/lib/Option'
 import { Cmd } from 'tea-cup-fp'
 
-import {
-  followUser,
-  getArticles,
-  getProfile,
-  unfollowUser,
-} from '@/api/service'
+import { followUser, getArticles, getProfile, unfollowUser } from '@/api'
 import type { User } from '@/api/type'
 
 import type { Model, Msg } from './type'

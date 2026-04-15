@@ -5,7 +5,11 @@ import { Heart, Pencil, Trash2, UserPlus } from 'lucide-react'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 
-import type { ArticleResponse, CommentsResponse } from '@/api/type'
+import type {
+  ArticleResponse,
+  CommentsResponse,
+  HttpErrorString,
+} from '@/api/type'
 import { Link } from '@/component/link'
 
 import type { Model, Msg } from './type'
@@ -21,11 +25,19 @@ export const ArticleView: React.FC<Props> = ({ model }) => {
       {pipe(
         model.article,
         RD.fold(
-          () => <div className='py-6 text-center text-sm text-gray-500'>Loading article...</div>,
-          () => <div className='py-6 text-center text-sm text-gray-500'>Loading article...</div>,
-          (err: Error) => (
+          () => (
+            <div className='py-6 text-center text-sm text-gray-500'>
+              Loading article...
+            </div>
+          ),
+          () => (
+            <div className='py-6 text-center text-sm text-gray-500'>
+              Loading article...
+            </div>
+          ),
+          (err: HttpErrorString) => (
             <div className='py-6 text-center text-sm text-red-500'>
-              Error loading article: {err.message}
+              Error loading article: {err.actualErr}
             </div>
           ),
           (data: ArticleResponse) => (
@@ -44,10 +56,7 @@ export const ArticleView: React.FC<Props> = ({ model }) => {
                       }}
                     >
                       <img
-                        src={
-                          data.article.author.image ||
-                          '/default-avatar.svg'
-                        }
+                        src={data.article.author.image || '/default-avatar.svg'}
                         className='h-9 w-9 rounded-full object-cover'
                         alt=''
                       />
@@ -74,7 +83,8 @@ export const ArticleView: React.FC<Props> = ({ model }) => {
                         type='button'
                         className='flex items-center gap-1 rounded border border-gray-400 px-3 py-1 text-xs text-gray-300 hover:border-white hover:text-white'
                       >
-                        <UserPlus size={13} /> Follow {data.article.author.username}
+                        <UserPlus size={13} /> Follow{' '}
+                        {data.article.author.username}
                       </button>
                       <button
                         type='button'
@@ -133,10 +143,7 @@ export const ArticleView: React.FC<Props> = ({ model }) => {
                     }}
                   >
                     <img
-                      src={
-                        data.article.author.image ||
-                        '/default-avatar.svg'
-                      }
+                      src={data.article.author.image || '/default-avatar.svg'}
                       className='h-9 w-9 rounded-full object-cover'
                       alt=''
                     />
@@ -163,7 +170,8 @@ export const ArticleView: React.FC<Props> = ({ model }) => {
                       type='button'
                       className='flex items-center gap-1 rounded border border-gray-300 px-3 py-1 text-xs text-gray-600 hover:border-gray-500'
                     >
-                      <UserPlus size={13} /> Follow {data.article.author.username}
+                      <UserPlus size={13} /> Follow{' '}
+                      {data.article.author.username}
                     </button>
                     <button
                       type='button'
@@ -179,19 +187,32 @@ export const ArticleView: React.FC<Props> = ({ model }) => {
                   {pipe(
                     model.comments,
                     RD.fold(
-                      () => <div className='text-sm text-gray-500'>Loading comments...</div>,
-                      () => <div className='text-sm text-gray-500'>Loading comments...</div>,
-                      (err: Error) => (
+                      () => (
+                        <div className='text-sm text-gray-500'>
+                          Loading comments...
+                        </div>
+                      ),
+                      () => (
+                        <div className='text-sm text-gray-500'>
+                          Loading comments...
+                        </div>
+                      ),
+                      (err: HttpErrorString) => (
                         <div className='text-sm text-red-500'>
-                          Error loading comments: {err.message}
+                          Error loading comments: {err.actualErr}
                         </div>
                       ),
                       (commentsData: CommentsResponse) => (
                         <div className='space-y-4'>
                           {commentsData.comments.map((comment) => (
-                            <div key={comment.id} className='rounded-lg border border-gray-200'>
+                            <div
+                              key={comment.id}
+                              className='rounded-lg border border-gray-200'
+                            >
                               <div className='p-4'>
-                                <p className='text-sm text-gray-800'>{comment.body}</p>
+                                <p className='text-sm text-gray-800'>
+                                  {comment.body}
+                                </p>
                               </div>
                               <div className='flex items-center gap-2 border-t border-gray-100 bg-gray-50 px-4 py-2 text-xs'>
                                 <Link

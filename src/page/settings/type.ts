@@ -1,16 +1,16 @@
 import * as Form from '@rinn7e/tea-cup-form'
 import type { Result } from 'tea-cup-fp'
 
-import type { Errors, UserResponse } from '@/api/type'
+import type { Errors, HttpErrorString, UserResponse } from '@/api/type'
 
 export type Model = {
   form: Form.Model
-  errors: Errors | null
+  errors: HttpErrorString | null
   submitting: boolean
 }
 
 export type Msg =
   | { _tag: 'FormMsg'; msg: Form.Msg }
   | { _tag: 'Submit' }
-  | { _tag: 'SubmitResponse'; result: Result<Error | Errors, UserResponse> }
+  | { _tag: 'SubmitResponse'; result: Result<HttpErrorString, UserResponse> }
   | { _tag: 'Logout' }

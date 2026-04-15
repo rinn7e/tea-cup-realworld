@@ -5,7 +5,7 @@ import * as O from 'fp-ts/lib/Option'
 import * as S from 'fp-ts/lib/string'
 import { Cmd } from 'tea-cup-fp'
 
-import { login, register } from '@/api/service'
+import { login, register } from '@/api'
 import { standardInputUi } from '@/component/form-fields'
 
 import type { Model, Msg } from './type'

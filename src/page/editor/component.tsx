@@ -13,12 +13,14 @@ export const EditorView: React.FC<Props> = ({ model, dispatch }) => {
   return (
     <div className='mx-auto max-w-3xl px-4 py-8'>
       {model.errors && (
-        <ul className='mb-4 rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700 space-y-1'>
-          {Object.entries(model.errors.errors).map(([field, messages]) => (
-            <li key={field}>
-              {field} {(messages as string[]).join(', ')}
-            </li>
-          ))}
+        <ul className='mb-4 space-y-1 rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700'>
+          {Object.entries({ what: [model.errors.actualErr] }).map(
+            ([field, messages]) => (
+              <li key={field}>
+                {field} {(messages as string[]).join(', ')}
+              </li>
+            ),
+          )}
         </ul>
       )}
 

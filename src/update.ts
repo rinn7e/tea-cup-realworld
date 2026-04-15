@@ -4,7 +4,7 @@ import { pipe } from 'fp-ts/lib/function'
 import { newUrl } from 'react-tea-cup'
 import { Cmd, Task } from 'tea-cup-fp'
 
-import { getCurrentUser } from './api/service'
+import { getCurrentUser } from './api'
 import type { User } from './api/type'
 import * as DebugPanel from './component/debug-panel/type'
 import { homePage, loginPage, parseAppRoute, toUrlString } from './data/route'

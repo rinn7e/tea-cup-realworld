@@ -1,10 +1,14 @@
 import * as RD from '@devexperts/remote-data-ts'
-import { Heart } from 'lucide-react'
 import { pipe } from 'fp-ts/lib/function'
+import { Heart } from 'lucide-react'
 import React from 'react'
 import type { Dispatcher } from 'tea-cup-fp'
 
-import type { ArticlesResponse, TagsResponse } from '@/api/type'
+import type {
+  ArticlesResponse,
+  HttpErrorString,
+  TagsResponse,
+} from '@/api/type'
 import { Link } from '@/component/link'
 import { homePage } from '@/data/route'
 
@@ -21,13 +25,15 @@ export const HomeView: React.FC<Props> = ({ model }) => {
       <div className='bg-green-600 py-12 text-center text-white shadow-inner'>
         <div className='mx-auto max-w-6xl px-4'>
           <h1 className='text-5xl font-bold tracking-tight'>conduit</h1>
-          <p className='mt-2 text-lg font-light opacity-90'>A place to share your knowledge.</p>
+          <p className='mt-2 text-lg font-light opacity-90'>
+            A place to share your knowledge.
+          </p>
         </div>
       </div>
 
       <div className='mx-auto max-w-6xl px-4 py-6'>
         <div className='flex gap-6'>
-          <div className='flex-1 min-w-0'>
+          <div className='min-w-0 flex-1'>
             <div className='flex border-b border-gray-200'>
               <Link
                 className='border-b-2 border-green-600 px-4 py-2 text-sm font-medium text-green-600'
@@ -40,20 +46,33 @@ export const HomeView: React.FC<Props> = ({ model }) => {
             {pipe(
               model.articles,
               RD.fold(
-                () => <div className='py-6 text-sm text-gray-500'>Loading articles...</div>,
-                () => <div className='py-6 text-sm text-gray-500'>Loading articles...</div>,
-                (err: Error) => (
+                () => (
+                  <div className='py-6 text-sm text-gray-500'>
+                    Loading articles...
+                  </div>
+                ),
+                () => (
+                  <div className='py-6 text-sm text-gray-500'>
+                    Loading articles...
+                  </div>
+                ),
+                (err: HttpErrorString) => (
                   <div className='py-6 text-sm text-red-500'>
-                    Error loading articles: {err.message}
+                    Error loading articles: {err.actualErr}
                   </div>
                 ),
                 (data: ArticlesResponse) =>
                   data.articles.length === 0 ? (
-                    <div className='py-6 text-sm text-gray-500'>No articles are here... yet.</div>
+                    <div className='py-6 text-sm text-gray-500'>
+                      No articles are here... yet.
+                    </div>
                   ) : (
                     <>
                       {data.articles.map((article) => (
-                        <div key={article.slug} className='border-b border-gray-200 py-6'>
+                        <div
+                          key={article.slug}
+                          className='border-b border-gray-200 py-6'
+                        >
                           <div className='flex items-center justify-between'>
                             <div className='flex items-center gap-3'>
                               <Link
@@ -109,10 +128,16 @@ export const HomeView: React.FC<Props> = ({ model }) => {
                             }}
                             className='mt-3 block'
                           >
-                            <h1 className='text-xl font-bold text-gray-900'>{article.title}</h1>
-                            <p className='mt-1 text-sm text-gray-500'>{article.description}</p>
+                            <h1 className='text-xl font-bold text-gray-900'>
+                              {article.title}
+                            </h1>
+                            <p className='mt-1 text-sm text-gray-500'>
+                              {article.description}
+                            </p>
                             <div className='mt-3 flex items-center justify-between'>
-                              <span className='text-xs text-gray-400'>Read more...</span>
+                              <span className='text-xs text-gray-400'>
+                                Read more...
+                              </span>
                               <ul className='flex flex-wrap gap-1'>
                                 {article.tagList.map((tag) => (
                                   <li
@@ -135,14 +160,28 @@ export const HomeView: React.FC<Props> = ({ model }) => {
 
           <div className='w-56 shrink-0'>
             <div className='rounded-lg bg-gray-50 p-4'>
-              <p className='mb-3 text-sm font-semibold text-gray-700'>Popular Tags</p>
+              <p className='mb-3 text-sm font-semibold text-gray-700'>
+                Popular Tags
+              </p>
               <div className='flex flex-wrap gap-1'>
                 {pipe(
                   model.tags,
                   RD.fold(
-                    () => <span className='text-xs text-gray-400'>Loading tags...</span>,
-                    () => <span className='text-xs text-gray-400'>Loading tags...</span>,
-                    () => <span className='text-xs text-red-400'>Error loading tags</span>,
+                    () => (
+                      <span className='text-xs text-gray-400'>
+                        Loading tags...
+                      </span>
+                    ),
+                    () => (
+                      <span className='text-xs text-gray-400'>
+                        Loading tags...
+                      </span>
+                    ),
+                    () => (
+                      <span className='text-xs text-red-400'>
+                        Error loading tags
+                      </span>
+                    ),
                     (data: TagsResponse) => (
                       <>
                         {data.tags.map((tag) => (
