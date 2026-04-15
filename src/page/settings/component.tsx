@@ -11,13 +11,13 @@ interface Props {
 export const SettingsView: React.FC<Props> = ({ model, dispatch }) => {
   return (
     <div className='settings-page'>
-      <div className='container mx-auto px-4 py-8'>
-        <div className='flex flex-wrap justify-center'>
-          <div className='w-full md:w-1/2'>
-            <h1 className='mb-6 text-center text-4xl'>Your Settings</h1>
+      <div className='container page'>
+        <div className='row'>
+          <div className='col-md-6 offset-md-3 col-xs-12'>
+            <h1 className='text-xs-center'>Your Settings</h1>
 
             {model.errors && (
-              <ul className='error-messages mb-4 list-inside list-disc text-red-500'>
+              <ul className='error-messages'>
                 {Object.entries(model.errors.errors).map(
                   ([field, messages]) => (
                     <li key={field}>
@@ -61,7 +61,7 @@ export const SettingsView: React.FC<Props> = ({ model, dispatch }) => {
                   dispatch={(msg) => dispatch({ _tag: 'FormMsg', msg })}
                 />
                 <button
-                  className='btn btn-lg bg-brand-primary hover:bg-opacity-90 float-right rounded px-6 py-3 text-lg text-white transition-colors'
+                  className='btn btn-lg btn-primary pull-xs-right'
                   type='submit'
                   disabled={model.submitting}
                 >
@@ -70,11 +70,11 @@ export const SettingsView: React.FC<Props> = ({ model, dispatch }) => {
               </fieldset>
             </form>
 
-            <hr className='my-12 border-gray-200' />
+            <hr />
 
             <button
               type='button'
-              className='btn rounded border border-red-500 px-4 py-2 text-red-500 transition-colors hover:bg-red-500 hover:text-white'
+              className='btn btn-outline-danger'
               onClick={() => dispatch({ _tag: 'Logout' })}
             >
               Or click here to logout.

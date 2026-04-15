@@ -8,18 +8,19 @@ export const standardInputUi =
   (
     isTextarea: boolean,
     onKeyDown: O.Option<(e: React.KeyboardEvent) => void> = O.none,
+    isLarge: boolean = true,
   ) =>
   (props: CustomTextInputProps) => {
     const isError = E.isLeft(props.validationResult) && props.showValidation
-    const commonClasses = `w-full px-4 py-3 border rounded outline-none transition-colors ${
-      isError ? 'border-red-500' : 'border-gray-300 focus:border-brand-primary'
-    }`
+    const sizeClass = isLarge ? 'form-control-lg' : ''
+    const validationClass = isError ? 'is-invalid' : ''
+    const inputClass = `form-control ${sizeClass} ${validationClass}`.trim()
 
     if (isTextarea) {
       return (
-        <fieldset className='form-group mb-4'>
+        <fieldset className='form-group'>
           <textarea
-            className={commonClasses}
+            className={inputClass}
             rows={8}
             placeholder={props.placeholder}
             value={props.currentValue}
@@ -54,9 +55,7 @@ export const standardInputUi =
             pipe(
               props.validationResult,
               E.fold(
-                (err) => (
-                  <span className='mt-1 block text-sm text-red-500'>{err}</span>
-                ),
+                (err) => <div className='error-messages'>{err}</div>,
                 () => null,
               ),
             )}
@@ -65,9 +64,9 @@ export const standardInputUi =
     }
 
     return (
-      <fieldset className='form-group mb-4'>
+      <fieldset className='form-group'>
         <input
-          className={commonClasses}
+          className={inputClass}
           type={
             props.isPassword._tag === 'Some'
               ? props.isPassword.value.revealPassword
@@ -108,9 +107,7 @@ export const standardInputUi =
           pipe(
             props.validationResult,
             E.fold(
-              (err) => (
-                <span className='mt-1 block text-sm text-red-500'>{err}</span>
-              ),
+              (err) => <div className='error-messages'>{err}</div>,
               () => null,
             ),
           )}

@@ -20,21 +20,16 @@ export const AuthView: React.FC<Props> = ({ model, dispatch }) => {
 
   return (
     <div className='auth-page'>
-      <div className='container mx-auto px-4 py-8'>
-        <div className='flex flex-wrap justify-center'>
-          <div className='w-full md:w-1/2 lg:w-1/3'>
-            <h1 className='mb-2 text-center text-4xl'>{title}</h1>
-            <p className='mb-6 text-center'>
-              <Link
-                route={route}
-                className='text-brand-primary hover:underline'
-              >
-                {linkText}
-              </Link>
+      <div className='container page'>
+        <div className='row'>
+          <div className='col-md-6 offset-md-3 col-xs-12'>
+            <h1 className='text-xs-center'>{title}</h1>
+            <p className='text-xs-center'>
+              <Link route={route}>{linkText}</Link>
             </p>
 
             {model.errors && (
-              <ul className='error-messages mb-4 list-inside list-disc text-red-500'>
+              <ul className='error-messages'>
                 {Object.entries(model.errors.errors).map(
                   ([field, messages]) => (
                     <li key={field}>
@@ -70,7 +65,7 @@ export const AuthView: React.FC<Props> = ({ model, dispatch }) => {
                   dispatch={(msg) => dispatch({ _tag: 'FormMsg', msg })}
                 />
                 <button
-                  className='btn btn-lg bg-brand-primary hover:bg-opacity-90 float-right mt-4 rounded px-6 py-3 text-xl font-light text-white transition-colors'
+                  className='btn btn-lg btn-primary pull-xs-right'
                   type='submit'
                   disabled={model.submitting}
                 >

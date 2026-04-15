@@ -1,4 +1,5 @@
 import * as RD from '@devexperts/remote-data-ts'
+import * as O from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/function'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
@@ -19,21 +20,19 @@ export const ArticleView: React.FC<Props> = ({ model }) => {
       {pipe(
         model.article,
         RD.fold(
-          () => <div className='p-8 text-center'>Loading article...</div>,
-          () => <div className='p-8 text-center'>Loading article...</div>,
+          () => <div className='article-preview'>Loading article...</div>,
+          () => <div className='article-preview'>Loading article...</div>,
           (err: Error) => (
-            <div className='p-8 text-center text-red-500'>
+            <div className='article-preview'>
               Error loading article: {err.message}
             </div>
           ),
           (data: ArticleResponse) => (
             <>
-              <div className='banner mb-8 bg-[#333] py-8 text-white'>
-                <div className='container mx-auto px-4'>
-                  <h1 className='mb-6 text-4xl font-bold'>
-                    {data.article.title}
-                  </h1>
-                  <div className='article-meta flex items-center'>
+              <div className='banner'>
+                <div className='container'>
+                  <h1>{data.article.title}</h1>
+                  <div className='article-meta'>
                     <Link
                       route={{
                         page: {
@@ -48,11 +47,10 @@ export const ArticleView: React.FC<Props> = ({ model }) => {
                           data.article.author.image ||
                           'https://api.realworld.io/images/smiley-cyrus.jpeg'
                         }
-                        className='h-8 w-8 rounded-full'
                         alt=''
                       />
                     </Link>
-                    <div className='info ml-2'>
+                    <div className='info'>
                       <Link
                         route={{
                           page: {
@@ -61,58 +59,152 @@ export const ArticleView: React.FC<Props> = ({ model }) => {
                             favorites: false,
                           },
                         }}
-                        className='block font-medium text-white hover:underline'
+                        className='author'
                       >
                         {data.article.author.username}
                       </Link>
-                      <span className='text-xs text-gray-400'>
+                      <span className='date'>
                         {new Date(data.article.createdAt).toDateString()}
                       </span>
                     </div>
+                    {/* TODO: show follow/favorite for non-owners, edit/delete for owner — ArticleView needs an isOwner prop */}
+                    <button
+                      type='button'
+                      className='btn btn-sm btn-outline-secondary'
+                    >
+                      <i className='ion-plus-round' /> Follow{' '}
+                      {data.article.author.username}
+                    </button>
+                    &nbsp;&nbsp;
+                    <button
+                      type='button'
+                      className='btn btn-sm btn-outline-primary'
+                    >
+                      <i className='ion-heart' /> Favorite Post{' '}
+                      <span className='counter'>
+                        ({data.article.favoritesCount})
+                      </span>
+                    </button>
+                    &nbsp;&nbsp;
+                    {/* TODO: only show Edit/Delete to article owner */}
+                    <Link
+                      route={{
+                        page: {
+                          _tag: 'EditorPage',
+                          slug: O.some(data.article.slug),
+                        },
+                      }}
+                      className='btn btn-sm btn-outline-secondary'
+                    >
+                      <i className='ion-edit' /> Edit Article
+                    </Link>
+                    &nbsp;
+                    <button
+                      type='button'
+                      className='btn btn-sm btn-outline-danger'
+                    >
+                      <i className='ion-trash-a' /> Delete Article
+                    </button>
                   </div>
                 </div>
               </div>
 
-              <div className='container mx-auto px-4'>
-                <div className='article-content prose mb-12 max-w-none'>
-                  <ReactMarkdown>{data.article.body}</ReactMarkdown>
+              <div className='container page'>
+                <div className='row article-content'>
+                  <div className='col-xs-12'>
+                    <ReactMarkdown>{data.article.body}</ReactMarkdown>
+                    <ul className='tag-list'>
+                      {data.article.tagList.map((tag) => (
+                        <li
+                          key={tag}
+                          className='tag-default tag-pill tag-outline'
+                        >
+                          {tag}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
 
-                <hr className='my-12 border-gray-200' />
+                <hr />
 
-                <div className='article-actions mb-12 flex justify-center'>
-                  {/* Meta again for the bottom */}
+                <div className='article-actions'>
+                  {/* TODO: extract article-meta + action buttons into a shared helper to avoid duplication */}
+                  <div className='article-meta'>
+                    <Link
+                      route={{
+                        page: {
+                          _tag: 'ProfilePage',
+                          username: data.article.author.username,
+                          favorites: false,
+                        },
+                      }}
+                    >
+                      <img
+                        src={
+                          data.article.author.image ||
+                          'https://api.realworld.io/images/smiley-cyrus.jpeg'
+                        }
+                        alt=''
+                      />
+                    </Link>
+                    <div className='info'>
+                      <Link
+                        route={{
+                          page: {
+                            _tag: 'ProfilePage',
+                            username: data.article.author.username,
+                            favorites: false,
+                          },
+                        }}
+                        className='author'
+                      >
+                        {data.article.author.username}
+                      </Link>
+                      <span className='date'>
+                        {new Date(data.article.createdAt).toDateString()}
+                      </span>
+                    </div>
+                    <button
+                      type='button'
+                      className='btn btn-sm btn-outline-secondary'
+                    >
+                      <i className='ion-plus-round' /> Follow{' '}
+                      {data.article.author.username}
+                    </button>
+                    &nbsp;&nbsp;
+                    <button
+                      type='button'
+                      className='btn btn-sm btn-outline-primary'
+                    >
+                      <i className='ion-heart' /> Favorite Post{' '}
+                      <span className='counter'>
+                        ({data.article.favoritesCount})
+                      </span>
+                    </button>
+                  </div>
                 </div>
 
-                <div className='flex flex-wrap justify-center'>
-                  <div className='w-full md:w-3/5'>
+                <div className='row'>
+                  <div className='col-xs-12 col-md-8 offset-md-2'>
+                    {/* TODO: comment form — requires auth user + PostComment dispatch, not yet wired in model */}
+
                     {pipe(
                       model.comments,
                       RD.fold(
-                        () => (
-                          <div className='text-center'>Loading comments...</div>
-                        ),
-                        () => (
-                          <div className='text-center'>Loading comments...</div>
-                        ),
+                        () => <div>Loading comments...</div>,
+                        () => <div>Loading comments...</div>,
                         (err: Error) => (
-                          <div className='text-center text-red-500'>
-                            Error loading comments: {err.message}
-                          </div>
+                          <div>Error loading comments: {err.message}</div>
                         ),
                         (commentsData: CommentsResponse) => (
-                          <div className='comments-list space-y-4'>
+                          <div>
                             {commentsData.comments.map((comment) => (
-                              <div
-                                key={comment.id}
-                                className='card rounded border border-gray-200'
-                              >
-                                <div className='card-block p-4'>
-                                  <p className='card-text text-gray-700'>
-                                    {comment.body}
-                                  </p>
+                              <div key={comment.id} className='card'>
+                                <div className='card-block'>
+                                  <p className='card-text'>{comment.body}</p>
                                 </div>
-                                <div className='card-footer flex items-center border-t border-gray-200 bg-gray-50 p-3 text-xs text-gray-400'>
+                                <div className='card-footer'>
                                   <Link
                                     route={{
                                       page: {
@@ -128,10 +220,11 @@ export const ArticleView: React.FC<Props> = ({ model }) => {
                                         comment.author.image ||
                                         'https://api.realworld.io/images/smiley-cyrus.jpeg'
                                       }
-                                      className='mr-2 h-5 w-5 rounded-full'
+                                      className='comment-author-img'
                                       alt=''
                                     />
                                   </Link>
+                                  &nbsp;
                                   <Link
                                     route={{
                                       page: {
@@ -140,13 +233,14 @@ export const ArticleView: React.FC<Props> = ({ model }) => {
                                         favorites: false,
                                       },
                                     }}
-                                    className='text-brand-primary mr-2 font-medium hover:underline'
+                                    className='comment-author'
                                   >
                                     {comment.author.username}
                                   </Link>
-                                  <span>
+                                  <span className='date-posted'>
                                     {new Date(comment.createdAt).toDateString()}
                                   </span>
+                                  {/* TODO: show mod-options (delete icon) for own comments — needs auth user in ArticleView */}
                                 </div>
                               </div>
                             ))}

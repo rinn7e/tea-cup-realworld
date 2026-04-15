@@ -36,7 +36,7 @@ const initialForms = (
     isPassword: O.none,
     isFocus: false,
     onKeyDown: O.none,
-    ui: standardInputUi(false),
+    ui: standardInputUi(false, O.none, true),
   } as any)(forms)
 
   forms = Map.upsertAt(S.Eq)('description', {
@@ -51,7 +51,7 @@ const initialForms = (
     isPassword: O.none,
     isFocus: false,
     onKeyDown: O.none,
-    ui: standardInputUi(false),
+    ui: standardInputUi(false, O.none, false),
   } as any)(forms)
 
   forms = Map.upsertAt(S.Eq)('body', {
@@ -66,7 +66,7 @@ const initialForms = (
     isPassword: O.none,
     isFocus: false,
     onKeyDown: O.none,
-    ui: standardInputUi(true),
+    ui: standardInputUi(true, O.none, false),
   } as any)(forms)
 
   const tagOnKeyDown = O.some((e: React.KeyboardEvent) => {
@@ -88,7 +88,7 @@ const initialForms = (
     isPassword: O.none,
     isFocus: false,
     onKeyDown: tagOnKeyDown,
-    ui: standardInputUi(false, tagOnKeyDown),
+    ui: standardInputUi(false, tagOnKeyDown, false),
   } as any)(forms)
 
   return forms

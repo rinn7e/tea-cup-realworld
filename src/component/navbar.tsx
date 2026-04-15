@@ -1,4 +1,3 @@
-import { Cog6ToothIcon, PencilSquareIcon } from '@heroicons/react/24/outline'
 import * as O from 'fp-ts/lib/Option'
 import type { Option } from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/function'
@@ -15,46 +14,52 @@ interface Props {
 
 export const Navbar: React.FC<Props> = ({ model }) => {
   const user = model.shared.user
+  const pageTag = model.page._tag
+
+  const isHome = pageTag === 'Home'
+  const isEditor = pageTag === 'Editor'
+  const isSettings = pageTag === 'Settings'
+  const isProfile = pageTag === 'Profile'
 
   return (
-    <nav className='navbar navbar-light flex items-center justify-between border-b px-4 py-2'>
-      <div className='container mx-auto flex items-center justify-between'>
-        <Link
-          className='text-brand-primary font-sans text-2xl font-bold'
-          route={{ page: homePage() }}
-        >
+    <nav className='navbar navbar-light'>
+      <div className='container'>
+        <Link className='navbar-brand' route={{ page: homePage() }}>
           conduit
         </Link>
-        <ul className='flex space-x-4 text-gray-500'>
-          <li>
-            <Link className='hover:text-gray-800' route={{ page: homePage() }}>
+        <ul className='nav navbar-nav pull-xs-right'>
+          <li className='nav-item'>
+            <Link
+              className={`nav-link${isHome ? ' active' : ''}`}
+              route={{ page: homePage() }}
+            >
               Home
             </Link>
           </li>
           {pipe(user, (optUser: Option<User>) =>
             optUser._tag === 'Some' ? (
               <>
-                <li>
+                <li className='nav-item'>
                   <Link
-                    className='flex items-center gap-1 hover:text-gray-800'
+                    className={`nav-link${isEditor ? ' active' : ''}`}
                     route={{ page: { _tag: 'EditorPage', slug: O.none } }}
                   >
-                    <PencilSquareIcon className='h-4 w-4' />
-                    <span>New Article</span>
+                    <i className='ion-compose' />
+                    &nbsp;New Article
                   </Link>
                 </li>
-                <li>
+                <li className='nav-item'>
                   <Link
-                    className='flex items-center gap-1 hover:text-gray-800'
+                    className={`nav-link${isSettings ? ' active' : ''}`}
                     route={{ page: { _tag: 'SettingsPage' } }}
                   >
-                    <Cog6ToothIcon className='h-4 w-4' />
-                    <span>Settings</span>
+                    <i className='ion-gear-a' />
+                    &nbsp;Settings
                   </Link>
                 </li>
-                <li>
+                <li className='nav-item'>
                   <Link
-                    className='flex items-center gap-1 hover:text-gray-800'
+                    className={`nav-link${isProfile ? ' active' : ''}`}
                     route={{
                       page: {
                         _tag: 'ProfilePage',
@@ -68,26 +73,26 @@ export const Navbar: React.FC<Props> = ({ model }) => {
                         optUser.value.image ||
                         'https://api.realworld.io/images/smiley-cyrus.jpeg'
                       }
-                      className='h-6 w-6 rounded-full'
+                      className='user-pic'
                       alt=''
-                    />
-                    <span>{optUser.value.username}</span>
+                    />{' '}
+                    {optUser.value.username}
                   </Link>
                 </li>
               </>
             ) : (
               <>
-                <li>
+                <li className='nav-item'>
                   <Link
-                    className='hover:text-gray-800'
+                    className='nav-link'
                     route={{ page: { _tag: 'LoginPage' } }}
                   >
                     Sign in
                   </Link>
                 </li>
-                <li>
+                <li className='nav-item'>
                   <Link
-                    className='hover:text-gray-800'
+                    className='nav-link'
                     route={{ page: { _tag: 'RegisterPage' } }}
                   >
                     Sign up

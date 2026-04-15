@@ -27,7 +27,7 @@ export const init = (user: User): [Model, Cmd<Msg>] => {
     isPassword: O.none,
     isFocus: false,
     onKeyDown: O.none,
-    ui: standardInputUi(false),
+    ui: standardInputUi(false, O.none, false),
   } as any)(forms)
 
   forms = Map.upsertAt(S.Eq)('username', {
