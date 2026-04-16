@@ -2,10 +2,14 @@
 
 - [x] Update all api handlers to accept token: Option<string> instead of token?: string or no token at all
 
-- [ ] Make mobile view looks good
+- [x] Make mobile view looks good
 
-- [ ] Fix all errors
+- [x] Fix all errors
 
-- [ ] Implement this in miso or other TEA frameworks
+- [ ] Port to elm
+
+- [ ] Port to miso
+
+- [ ] Port to other frameworkd
 
 - [ ] Implement haskell BE to connect with this
