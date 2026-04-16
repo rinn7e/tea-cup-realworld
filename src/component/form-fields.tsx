@@ -102,7 +102,9 @@ export const standardInputUi =
           pipe(
             props.validationResult,
             E.fold(
-              (err) => <div className='text-xs text-red-600 px-[4px]'>{err}</div>,
+              (err) => (
+                <div className='px-[4px] text-xs text-red-600'>{err}</div>
+              ),
               () => null,
             ),
           )}

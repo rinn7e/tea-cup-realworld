@@ -1,4 +1,3 @@
-import { cn } from '@rinn7e/tea-cup-prelude'
 import { FormItemMemo } from '@rinn7e/tea-cup-form/lib/component'
 import React from 'react'
 
@@ -17,7 +16,7 @@ function AuthView({ model, dispatch }: Props) {
 
   return (
     <div className='flex min-h-full items-start justify-center px-[16px] pt-[64px] pb-[32px]'>
-      <div className='w-full max-w-[448px] flex flex-col gap-[24px]'>
+      <div className='flex w-full max-w-[448px] flex-col gap-[24px]'>
         <div className='flex flex-col gap-[8px]'>
           <h1 className='text-center text-3xl font-bold text-gray-900'>
             {title}
@@ -68,7 +67,7 @@ function AuthView({ model, dispatch }: Props) {
             />
             <div className='pt-[16px]'>
               <button
-                className='w-full rounded bg-green-600 px-[16px] py-[10px] text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-60 transition-colors'
+                className='w-full rounded bg-green-600 px-[16px] py-[10px] text-sm font-semibold text-white transition-colors hover:bg-green-700 disabled:opacity-60'
                 type='submit'
                 disabled={model.submitting}
               >

@@ -130,7 +130,10 @@ const navigate =
               isInternal,
               route: newRoute,
               page: { _tag: 'Settings', model: settingsModel },
-              navbarMobileOpen: { internal: null, state: { _tag: 'Invisible' } },
+              navbarMobileOpen: {
+                internal: null,
+                state: { _tag: 'Invisible' },
+              },
             },
             Cmd.batch([
               urlCmd,
@@ -179,7 +182,10 @@ const navigate =
               isInternal,
               route: newRoute,
               page: { _tag: 'Editor', model: editorModel },
-              navbarMobileOpen: { internal: null, state: { _tag: 'Invisible' } },
+              navbarMobileOpen: {
+                internal: null,
+                state: { _tag: 'Invisible' },
+              },
             },
             Cmd.batch([
               urlCmd,

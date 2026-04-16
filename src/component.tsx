@@ -19,14 +19,14 @@ interface Props {
   dispatch: Dispatcher<Msg>
 }
 
-export const View: React.FC<Props> = ({ model, dispatch }) => {
+export const App: React.FC<Props> = ({ model, dispatch }) => {
   const isNavOpen = model.navbarMobileOpen.state._tag !== 'Invisible'
 
   return (
     <SetGlobalMsgContext value={dispatch}>
       <div
         className={cn(
-          'flex flex-col min-h-dvh',
+          'flex min-h-dvh flex-col',
           isNavOpen && 'h-dvh overflow-hidden',
         )}
       >

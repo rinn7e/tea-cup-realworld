@@ -1,4 +1,4 @@
-import { cn, updateAndCmd } from '@rinn7e/tea-cup-prelude'
+import { cn } from '@rinn7e/tea-cup-prelude'
 import * as O from 'fp-ts/lib/Option'
 import type { Option } from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/function'
@@ -20,7 +20,6 @@ interface Props {
 export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
   const user = model.shared.user
   const pageTag = model.page._tag
-  const isOpen = model.navbarMobileOpen
 
   const isHome = pageTag === 'Home'
   const isEditor = pageTag === 'Editor'
@@ -30,13 +29,13 @@ export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
   const activeCls = 'font-semibold text-green-600'
   const inactiveCls = 'text-gray-500 hover:text-gray-900'
 
-  const links = (isSidebar: boolean) => (
+  const links = (_isSidebar: boolean) => (
     <>
       <li>
         <Link
           className={cn(
             // shared
-            'rounded px-[12px] py-[6px] text-sm block',
+            'block rounded px-[12px] py-[6px] text-sm',
             // state
             isHome ? activeCls : inactiveCls,
           )}
@@ -105,7 +104,10 @@ export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
           <>
             <li>
               <Link
-                className={cn('rounded px-[12px] py-[6px] text-sm', inactiveCls)}
+                className={cn(
+                  'rounded px-[12px] py-[6px] text-sm',
+                  inactiveCls,
+                )}
                 route={{ page: { _tag: 'LoginPage' } }}
               >
                 Sign in
@@ -113,7 +115,10 @@ export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
             </li>
             <li>
               <Link
-                className={cn('rounded px-[12px] py-[6px] text-sm', inactiveCls)}
+                className={cn(
+                  'rounded px-[12px] py-[6px] text-sm',
+                  inactiveCls,
+                )}
                 route={{ page: { _tag: 'RegisterPage' } }}
               >
                 Sign up
@@ -142,7 +147,7 @@ export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
   )
 
   return (
-    <nav className='border-b border-gray-100 bg-white shadow-sm sticky top-0 z-20'>
+    <nav className='sticky top-0 z-20 border-b border-gray-100 bg-white shadow-sm'>
       <div className='mx-auto max-w-[1152px] px-[16px]'>
         <div className='flex h-[56px] items-center justify-between'>
           <Link
@@ -155,7 +160,7 @@ export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
           {/* mobile hamburger button */}
           <button
             type='button'
-            className='lg:hidden p-[8px] text-gray-500 hover:text-gray-900 focus:outline-none'
+            className='p-[8px] text-gray-500 hover:text-gray-900 focus:outline-none lg:hidden'
             onClick={() => dispatch({ _tag: 'ToggleNavbarMobile', open: true })}
           >
             <Menu size={24} />
@@ -196,9 +201,7 @@ export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
                     <X size={24} />
                   </button>
                 </div>
-                <ul className='flex flex-col gap-[8px]'>
-                  {links(true)}
-                </ul>
+                <ul className='flex flex-col gap-[8px]'>{links(true)}</ul>
               </div>
             </div>
           </div>,

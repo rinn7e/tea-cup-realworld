@@ -10,7 +10,7 @@ export const Footer: React.FC = () => {
       <div
         className={cn(
           // shared
-          'mx-auto max-w-[1152px] px-[16px] flex flex-col items-center gap-[4px] text-center',
+          'mx-auto flex max-w-[1152px] flex-col items-center gap-[4px] px-[16px] text-center',
           // desktop
           'lg:flex-row lg:justify-between lg:text-left',
         )}

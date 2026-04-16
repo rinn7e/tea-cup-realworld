@@ -9,4 +9,3 @@
 - [ ] Implement this in miso or other TEA frameworks
 
 - [ ] Implement haskell BE to connect with this
-

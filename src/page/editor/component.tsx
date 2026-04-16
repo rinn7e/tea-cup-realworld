@@ -1,4 +1,3 @@
-import { cn } from '@rinn7e/tea-cup-prelude'
 import { FormItemMemo } from '@rinn7e/tea-cup-form/lib/component'
 import { X } from 'lucide-react'
 import React from 'react'
@@ -9,7 +8,7 @@ import { Props, PropsEq } from './type'
 
 function EditorView({ model, dispatch }: Props) {
   return (
-    <div className='mx-auto max-w-[768px] w-full px-[16px] py-[32px] flex flex-col gap-[24px]'>
+    <div className='mx-auto flex w-full max-w-[768px] flex-col gap-[24px] px-[16px] py-[32px]'>
       {model.errors && (
         <ul className='flex flex-col gap-[4px] rounded border border-red-200 bg-red-50 p-[12px] text-sm text-red-700'>
           {Object.entries({ what: [model.errors.actualErr] }).map(
@@ -72,7 +71,7 @@ function EditorView({ model, dispatch }: Props) {
 
           <div className='flex justify-end pt-[24px]'>
             <button
-              className='rounded bg-green-600 px-[20px] py-[10px] text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-60 transition-colors'
+              className='rounded bg-green-600 px-[20px] py-[10px] text-sm font-semibold text-white transition-colors hover:bg-green-700 disabled:opacity-60'
               type='submit'
               disabled={model.submitting}
             >

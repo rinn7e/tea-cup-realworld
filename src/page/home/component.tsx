@@ -17,21 +17,21 @@ import { Props, PropsEq } from './type'
 
 function HomeView({ model, dispatch }: Props) {
   return (
-    <div className='flex flex-col min-h-full'>
+    <div className='flex min-h-full flex-col'>
       {/* Hero Section */}
       <div className='bg-green-600 py-[48px] text-center text-white shadow-inner'>
-        <div className='mx-auto max-w-[1152px] px-[16px] flex flex-col gap-[8px]'>
-          <h1 className='text-4xl lg:text-5xl font-bold tracking-tight'>
+        <div className='mx-auto flex max-w-[1152px] flex-col gap-[8px] px-[16px]'>
+          <h1 className='text-4xl font-bold tracking-tight lg:text-5xl'>
             conduit
           </h1>
-          <p className='text-base lg:text-lg font-light opacity-90'>
+          <p className='text-base font-light opacity-90 lg:text-lg'>
             A place to share your knowledge.
           </p>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className='mx-auto max-w-[1152px] w-full px-[16px] py-[24px]'>
+      <div className='mx-auto w-full max-w-[1152px] px-[16px] py-[24px]'>
         <div
           className={cn(
             // shared
@@ -41,7 +41,7 @@ function HomeView({ model, dispatch }: Props) {
           )}
         >
           {/* Article List */}
-          <div className='min-w-0 flex-1 flex flex-col'>
+          <div className='flex min-w-0 flex-1 flex-col'>
             <div className='flex border-b border-gray-200'>
               <Link
                 className='border-b-2 border-green-600 px-[16px] py-[8px] text-sm font-medium text-green-600'
@@ -80,7 +80,7 @@ function HomeView({ model, dispatch }: Props) {
                         {data.articles.map((article) => (
                           <div
                             key={article.slug}
-                            className='border-b border-gray-200 py-[24px] flex flex-col gap-[12px]'
+                            className='flex flex-col gap-[12px] border-b border-gray-200 py-[24px]'
                           >
                             <div className='flex items-center justify-between'>
                               <div className='flex items-center gap-[12px]'>
@@ -146,10 +146,10 @@ function HomeView({ model, dispatch }: Props) {
                               className='flex flex-col gap-[12px]'
                             >
                               <div className='flex flex-col gap-[4px]'>
-                                <h1 className='text-xl font-bold text-gray-900 line-clamp-2'>
+                                <h1 className='line-clamp-2 text-xl font-bold text-gray-900'>
                                   {article.title}
                                 </h1>
-                                <p className='text-sm text-gray-500 line-clamp-3'>
+                                <p className='line-clamp-3 text-sm text-gray-500'>
                                   {article.description}
                                 </p>
                               </div>
@@ -179,8 +179,8 @@ function HomeView({ model, dispatch }: Props) {
           </div>
 
           {/* Popular Tags */}
-          <div className='w-full lg:w-[224px] shrink-0'>
-            <div className='rounded-lg bg-gray-50 p-[16px] flex flex-col gap-[12px]'>
+          <div className='w-full shrink-0 lg:w-[224px]'>
+            <div className='flex flex-col gap-[12px] rounded-lg bg-gray-50 p-[16px]'>
               <p className='text-sm font-semibold text-gray-700'>
                 Popular Tags
               </p>

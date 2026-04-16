@@ -1,4 +1,3 @@
-import { cn } from '@rinn7e/tea-cup-prelude'
 import { FormItemMemo } from '@rinn7e/tea-cup-form/lib/component'
 import React from 'react'
 
@@ -9,7 +8,7 @@ import { Props, PropsEq } from './type'
 function SettingsView({ model, dispatch }: Props) {
   return (
     <div className='flex min-h-full items-start justify-center px-[16px] pt-[64px] pb-[32px]'>
-      <div className='w-full max-w-[448px] flex flex-col gap-[24px]'>
+      <div className='flex w-full max-w-[448px] flex-col gap-[24px]'>
         <h1 className='text-center text-3xl font-bold text-gray-900'>
           Your Settings
         </h1>
@@ -61,7 +60,7 @@ function SettingsView({ model, dispatch }: Props) {
             />
             <div className='flex justify-end pt-[16px]'>
               <button
-                className='rounded bg-green-600 px-[20px] py-[10px] text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-60 transition-colors'
+                className='rounded bg-green-600 px-[20px] py-[10px] text-sm font-semibold text-white transition-colors hover:bg-green-700 disabled:opacity-60'
                 type='submit'
                 disabled={model.submitting}
               >
@@ -76,7 +75,7 @@ function SettingsView({ model, dispatch }: Props) {
         <div className='flex flex-col'>
           <button
             type='button'
-            className='rounded border border-red-400 px-[16px] py-[8px] text-sm text-red-500 hover:bg-red-50 transition-colors self-start'
+            className='self-start rounded border border-red-400 px-[16px] py-[8px] text-sm text-red-500 transition-colors hover:bg-red-50'
             onClick={() => dispatch({ _tag: 'Logout' })}
           >
             Or click here to logout.

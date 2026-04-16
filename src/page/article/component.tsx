@@ -18,7 +18,7 @@ import { Props, PropsEq } from './type'
 
 function ArticleView({ model, token, dispatch }: Props) {
   return (
-    <div className='flex flex-col min-h-full'>
+    <div className='flex min-h-full flex-col'>
       {pipe(
         model.article,
         RD.fold(
@@ -174,11 +174,11 @@ function ArticleView({ model, token, dispatch }: Props) {
             )
 
             return (
-              <div className='flex flex-col min-h-full'>
+              <div className='flex min-h-full flex-col'>
                 {/* Article Header */}
                 <div className='bg-gray-900 py-[40px] text-white shadow-inner'>
-                  <div className='mx-auto max-w-[1152px] px-[16px] flex flex-col gap-[16px]'>
-                    <h1 className='text-3xl lg:text-4xl font-bold leading-tight'>
+                  <div className='mx-auto flex max-w-[1152px] flex-col gap-[16px] px-[16px]'>
+                    <h1 className='text-3xl leading-tight font-bold lg:text-4xl'>
                       {data.article.title}
                     </h1>
                     {articleMeta(true)}
@@ -186,9 +186,9 @@ function ArticleView({ model, token, dispatch }: Props) {
                 </div>
 
                 {/* Article Body */}
-                <div className='mx-auto max-w-[1152px] w-full px-[16px] py-[32px] flex flex-col gap-[32px]'>
+                <div className='mx-auto flex w-full max-w-[1152px] flex-col gap-[32px] px-[16px] py-[32px]'>
                   <div className='flex flex-col gap-[16px]'>
-                    <div className='prose prose-gray max-w-none prose-img:rounded-lg'>
+                    <div className='prose prose-gray prose-img:rounded-lg max-w-none'>
                       <ReactMarkdown>{data.article.body ?? ''}</ReactMarkdown>
                     </div>
                     <ul className='flex flex-wrap gap-[4px]'>
@@ -208,17 +208,17 @@ function ArticleView({ model, token, dispatch }: Props) {
                   <div className='flex flex-col items-center gap-[32px]'>
                     {articleMeta(false)}
 
-                    <div className='w-full max-w-[700px] flex flex-col gap-[24px]'>
+                    <div className='flex w-full max-w-[700px] flex-col gap-[24px]'>
                       {isLoggedIn && (
                         <form
-                          className='flex flex-col rounded border border-gray-200 overflow-hidden'
+                          className='flex flex-col overflow-hidden rounded border border-gray-200'
                           onSubmit={(e) => {
                             e.preventDefault()
                             dispatch({ _tag: 'SubmitComment' })
                           }}
                         >
                           <textarea
-                            className='w-full resize-none p-[12px] text-sm text-gray-800 outline-none min-h-[100px]'
+                            className='min-h-[100px] w-full resize-none p-[12px] text-sm text-gray-800 outline-none'
                             rows={3}
                             placeholder='Write a comment...'
                             value={model.commentInput}
@@ -232,7 +232,7 @@ function ArticleView({ model, token, dispatch }: Props) {
                           <div className='flex justify-end border-t border-gray-100 bg-gray-50 px-[12px] py-[8px]'>
                             <button
                               type='submit'
-                              className='rounded bg-green-600 px-[12px] py-[4px] text-xs text-white hover:bg-green-700 transition-colors'
+                              className='rounded bg-green-600 px-[12px] py-[4px] text-xs text-white transition-colors hover:bg-green-700'
                             >
                               Post Comment
                             </button>
@@ -244,17 +244,17 @@ function ArticleView({ model, token, dispatch }: Props) {
                         model.comments,
                         RD.fold(
                           () => (
-                            <div className='text-sm text-gray-500 py-[12px]'>
+                            <div className='py-[12px] text-sm text-gray-500'>
                               Loading comments...
                             </div>
                           ),
                           () => (
-                            <div className='text-sm text-gray-500 py-[12px]'>
+                            <div className='py-[12px] text-sm text-gray-500'>
                               Loading comments...
                             </div>
                           ),
                           (err: HttpErrorString) => (
-                            <div className='text-sm text-red-500 py-[12px]'>
+                            <div className='py-[12px] text-sm text-red-500'>
                               Error loading comments: {err.actualErr}
                             </div>
                           ),
@@ -263,10 +263,10 @@ function ArticleView({ model, token, dispatch }: Props) {
                               {commentsData.comments.map((comment) => (
                                 <div
                                   key={comment.id}
-                                  className='rounded border border-gray-200 overflow-hidden'
+                                  className='overflow-hidden rounded border border-gray-200'
                                 >
                                   <div className='p-[16px]'>
-                                    <p className='text-sm text-gray-800 whitespace-pre-wrap'>
+                                    <p className='text-sm whitespace-pre-wrap text-gray-800'>
                                       {comment.body}
                                     </p>
                                   </div>
@@ -315,7 +315,7 @@ function ArticleView({ model, token, dispatch }: Props) {
                                             id: comment.id,
                                           })
                                         }
-                                        className='ml-auto text-gray-400 hover:text-red-500 transition-colors'
+                                        className='ml-auto text-gray-400 transition-colors hover:text-red-500'
                                       >
                                         <Trash2 size={12} />
                                       </button>

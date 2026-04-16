@@ -4,7 +4,7 @@ import { createRoot } from 'react-dom/client'
 import { ProgramWithNav } from 'react-tea-cup'
 import { Sub } from 'tea-cup-fp'
 
-import { View } from './component'
+import { App } from './component'
 import './index.css'
 import type { Model, Msg } from './type'
 import { init, update } from './update'
@@ -19,9 +19,7 @@ if (container) {
         onUrlChange={(location) => ({ _tag: 'UrlChange', location })}
         init={init}
         update={update}
-        view={(dispatch, model) =>
-          model ? <View model={model} dispatch={dispatch} /> : null
-        }
+        view={(dispatch, model) => <App model={model} dispatch={dispatch} />}
         subscriptions={() => Sub.none()}
         {...devTools<Model, Msg>().getProgramProps()}
       />

@@ -16,7 +16,7 @@ import { Props, PropsEq } from './type'
 
 function ProfileView({ model, dispatch, isCurrentUser }: Props) {
   return (
-    <div className='flex flex-col min-h-full'>
+    <div className='flex min-h-full flex-col'>
       {pipe(
         model.profile,
         RD.fold(
@@ -39,7 +39,7 @@ function ProfileView({ model, dispatch, isCurrentUser }: Props) {
             <>
               {/* Header Banner */}
               <div className='border-b border-gray-200 bg-gray-50 py-[40px] text-center shadow-inner'>
-                <div className='mx-auto max-w-[1152px] px-[16px] flex flex-col items-center gap-[12px]'>
+                <div className='mx-auto flex max-w-[1152px] flex-col items-center gap-[12px] px-[16px]'>
                   <img
                     src={data.profile.image || '/default-avatar.svg'}
                     className='h-[96px] w-[96px] rounded-full border-[4px] border-white object-cover shadow-sm'
@@ -50,7 +50,7 @@ function ProfileView({ model, dispatch, isCurrentUser }: Props) {
                       {data.profile.username}
                     </h4>
                     {data.profile.bio && (
-                      <p className='text-sm text-gray-500 max-w-[600px]'>
+                      <p className='max-w-[600px] text-sm text-gray-500'>
                         {data.profile.bio}
                       </p>
                     )}
@@ -60,17 +60,19 @@ function ProfileView({ model, dispatch, isCurrentUser }: Props) {
                     {isCurrentUser ? (
                       <Link
                         route={{ page: { _tag: 'SettingsPage' } }}
-                        className='inline-flex items-center gap-[6px] rounded border border-gray-400 px-[12px] py-[6px] text-sm text-gray-600 hover:border-gray-600 transition-colors'
+                        className='inline-flex items-center gap-[6px] rounded border border-gray-400 px-[12px] py-[6px] text-sm text-gray-600 transition-colors hover:border-gray-600'
                       >
                         <Settings size={13} /> Edit Profile Settings
                       </Link>
                     ) : (
                       <button
                         type='button'
-                        className='inline-flex items-center gap-[6px] rounded border border-gray-400 px-[12px] py-[6px] text-sm text-gray-600 hover:border-gray-600 transition-colors'
+                        className='inline-flex items-center gap-[6px] rounded border border-gray-400 px-[12px] py-[6px] text-sm text-gray-600 transition-colors hover:border-gray-600'
                         onClick={() =>
                           dispatch({
-                            _tag: data.profile.following ? 'Unfollow' : 'Follow',
+                            _tag: data.profile.following
+                              ? 'Unfollow'
+                              : 'Follow',
                           })
                         }
                       >
@@ -85,7 +87,7 @@ function ProfileView({ model, dispatch, isCurrentUser }: Props) {
               </div>
 
               {/* Main Content */}
-              <div className='mx-auto max-w-[1152px] w-full px-[16px] py-[24px] flex flex-col gap-[24px]'>
+              <div className='mx-auto flex w-full max-w-[1152px] flex-col gap-[24px] px-[16px] py-[24px]'>
                 <div className='flex border-b border-gray-200'>
                   <button
                     type='button'
@@ -146,7 +148,7 @@ function ProfileView({ model, dispatch, isCurrentUser }: Props) {
                             {articlesData.articles.map((article) => (
                               <div
                                 key={article.slug}
-                                className='border-b border-gray-200 py-[24px] flex flex-col gap-[12px]'
+                                className='flex flex-col gap-[12px] border-b border-gray-200 py-[24px]'
                               >
                                 <div className='flex items-center justify-between'>
                                   <div className='flex items-center gap-[12px]'>
