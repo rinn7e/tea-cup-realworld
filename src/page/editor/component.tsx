@@ -1,5 +1,7 @@
+import { cn } from '@rinn7e/tea-cup-prelude'
 import { FormItemMemo } from '@rinn7e/tea-cup-form/lib/component'
 import { X } from 'lucide-react'
+import React from 'react'
 
 import { memoStrategy } from '@/util/memo-strategy'
 
@@ -7,9 +9,9 @@ import { Props, PropsEq } from './type'
 
 function EditorView({ model, dispatch }: Props) {
   return (
-    <div className='mx-auto max-w-3xl px-4 py-8'>
+    <div className='mx-auto max-w-[768px] w-full px-[16px] py-[32px] flex flex-col gap-[24px]'>
       {model.errors && (
-        <ul className='mb-4 space-y-1 rounded border border-red-200 bg-red-50 p-3 text-sm text-red-700'>
+        <ul className='flex flex-col gap-[4px] rounded border border-red-200 bg-red-50 p-[12px] text-sm text-red-700'>
           {Object.entries({ what: [model.errors.actualErr] }).map(
             ([field, messages]) => (
               <li key={field}>
@@ -26,7 +28,7 @@ function EditorView({ model, dispatch }: Props) {
           dispatch({ _tag: 'Submit' })
         }}
       >
-        <fieldset className='space-y-0'>
+        <fieldset className='flex flex-col gap-[0px]'>
           <FormItemMemo
             field='title'
             model={model.form}
@@ -43,21 +45,21 @@ function EditorView({ model, dispatch }: Props) {
             dispatch={(msg) => dispatch({ _tag: 'FormMsg', msg })}
           />
 
-          <div className='mb-4'>
+          <div className='flex flex-col gap-[8px]'>
             <FormItemMemo
               field='tagInput'
               model={model.form}
               dispatch={(msg) => dispatch({ _tag: 'FormMsg', msg })}
             />
-            <div className='flex flex-wrap gap-1'>
+            <div className='flex flex-wrap gap-[4px] px-[12px]'>
               {model.tagList.map((tag) => (
                 <span
                   key={tag}
-                  className='inline-flex items-center gap-1 rounded-full bg-green-100 px-2 py-0.5 text-xs text-green-800'
+                  className='inline-flex items-center gap-[4px] rounded-full bg-green-100 px-[8px] py-[2px] text-xs text-green-800'
                 >
                   <button
                     type='button'
-                    className='cursor-pointer hover:text-green-600'
+                    className='cursor-pointer hover:text-green-600 focus:outline-none'
                     onClick={() => dispatch({ _tag: 'RemoveTag', tag })}
                   >
                     <X size={12} />
@@ -68,9 +70,9 @@ function EditorView({ model, dispatch }: Props) {
             </div>
           </div>
 
-          <div className='flex justify-end'>
+          <div className='flex justify-end pt-[24px]'>
             <button
-              className='rounded bg-green-600 px-5 py-2 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-60'
+              className='rounded bg-green-600 px-[20px] py-[10px] text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-60 transition-colors'
               type='submit'
               disabled={model.submitting}
             >

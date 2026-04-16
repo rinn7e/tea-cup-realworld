@@ -1,4 +1,4 @@
-import { taskFromTE, updateAndCmd } from '@rinn7e/tea-cup-prelude'
+import { delayCmd, taskFromTE, updateAndCmd } from '@rinn7e/tea-cup-prelude'
 import * as O from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/function'
 import { newUrl } from 'react-tea-cup'
@@ -28,6 +28,7 @@ export const init = (location: Location): [Model, Cmd<Msg>] => {
     page: { _tag: 'Loading' },
     isInternal: false,
     debugPanel: DebugPanel.init(),
+    navbarMobileOpen: { internal: null, state: { _tag: 'Invisible' } },
   }
 
   const [initialModel, initialCmd] = navigate(route, true)(model)
@@ -68,6 +69,7 @@ const navigate =
             isInternal,
             route: newRoute,
             page: { _tag: 'Home', model: homeModel },
+            navbarMobileOpen: { internal: null, state: { _tag: 'Invisible' } },
           },
           Cmd.batch([urlCmd, homeCmd.map((msg) => ({ _tag: 'HomeMsg', msg }))]),
         ]
@@ -83,6 +85,7 @@ const navigate =
             isInternal,
             route: newRoute,
             page: { _tag: 'Article', model: articleModel },
+            navbarMobileOpen: { internal: null, state: { _tag: 'Invisible' } },
           },
           Cmd.batch([
             urlCmd,
@@ -98,6 +101,7 @@ const navigate =
             isInternal,
             route: newRoute,
             page: { _tag: 'Auth', model: authModel },
+            navbarMobileOpen: { internal: null, state: { _tag: 'Invisible' } },
           },
           Cmd.batch([urlCmd, authCmd.map((msg) => ({ _tag: 'AuthMsg', msg }))]),
         ]
@@ -110,6 +114,7 @@ const navigate =
             isInternal,
             route: newRoute,
             page: { _tag: 'Auth', model: authModel },
+            navbarMobileOpen: { internal: null, state: { _tag: 'Invisible' } },
           },
           Cmd.batch([urlCmd, authCmd.map((msg) => ({ _tag: 'AuthMsg', msg }))]),
         ]
@@ -125,6 +130,7 @@ const navigate =
               isInternal,
               route: newRoute,
               page: { _tag: 'Settings', model: settingsModel },
+              navbarMobileOpen: { internal: null, state: { _tag: 'Invisible' } },
             },
             Cmd.batch([
               urlCmd,
@@ -153,6 +159,7 @@ const navigate =
             isInternal,
             route: newRoute,
             page: { _tag: 'Profile', model: profileModel },
+            navbarMobileOpen: { internal: null, state: { _tag: 'Invisible' } },
           },
           Cmd.batch([
             urlCmd,
@@ -172,6 +179,7 @@ const navigate =
               isInternal,
               route: newRoute,
               page: { _tag: 'Editor', model: editorModel },
+              navbarMobileOpen: { internal: null, state: { _tag: 'Invisible' } },
             },
             Cmd.batch([
               urlCmd,
@@ -190,7 +198,13 @@ const navigate =
       }
       default:
         return [
-          { ...model, isInternal, route: newRoute, page: { _tag: 'NotFound' } },
+          {
+            ...model,
+            isInternal,
+            route: newRoute,
+            page: { _tag: 'NotFound' },
+            navbarMobileOpen: { internal: null, state: { _tag: 'Invisible' } },
+          },
           urlCmd,
         ]
     }
@@ -220,7 +234,14 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
   switch (msg._tag) {
     case 'UrlChange': {
       if (model.isInternal) {
-        return [{ ...model, isInternal: false }, Cmd.none()]
+        return [
+          {
+            ...model,
+            isInternal: false,
+            navbarMobileOpen: { internal: null, state: { _tag: 'Invisible' } },
+          },
+          Cmd.none(),
+        ]
       } else {
         const route = parseAppRoute('', msg.location.href)
         return changeRouteHandler(route, false)(model)
@@ -422,6 +443,42 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
     case 'DebugPanelMsg':
       return [
         { ...model, debugPanel: DebugPanel.update(msg.msg, model.debugPanel) },
+        Cmd.none(),
+      ]
+    case 'ToggleNavbarMobile': {
+      if (msg.open) {
+        return [
+          {
+            ...model,
+            navbarMobileOpen: { internal: null, state: { _tag: 'AnimateIn' } },
+          },
+          delayCmd(150, {
+            _tag: 'SetNavbarMobileState',
+            state: { _tag: 'Visible' },
+          }),
+        ]
+      } else {
+        return [
+          {
+            ...model,
+            navbarMobileOpen: {
+              ...model.navbarMobileOpen,
+              state: { _tag: 'AnimateOut' },
+            },
+          },
+          delayCmd(150, {
+            _tag: 'SetNavbarMobileState',
+            state: { _tag: 'Invisible' },
+          }),
+        ]
+      }
+    }
+    case 'SetNavbarMobileState':
+      return [
+        {
+          ...model,
+          navbarMobileOpen: { ...model.navbarMobileOpen, state: msg.state },
+        },
         Cmd.none(),
       ]
   }

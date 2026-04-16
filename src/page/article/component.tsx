@@ -1,4 +1,5 @@
 import * as RD from '@devexperts/remote-data-ts'
+import { cn } from '@rinn7e/tea-cup-prelude'
 import * as O from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/function'
 import { Heart, Pencil, Trash2, UserMinus, UserPlus } from 'lucide-react'
@@ -17,355 +18,319 @@ import { Props, PropsEq } from './type'
 
 function ArticleView({ model, token, dispatch }: Props) {
   return (
-    <div>
+    <div className='flex flex-col min-h-full'>
       {pipe(
         model.article,
         RD.fold(
           () => (
-            <div className='py-6 text-center text-sm text-gray-500'>
+            <div className='py-[24px] text-center text-sm text-gray-500'>
               Loading article...
             </div>
           ),
           () => (
-            <div className='py-6 text-center text-sm text-gray-500'>
+            <div className='py-[24px] text-center text-sm text-gray-500'>
               Loading article...
             </div>
           ),
           (err: HttpErrorString) => (
-            <div className='py-6 text-center text-sm text-red-500'>
+            <div className='py-[24px] text-center text-sm text-red-500'>
               Error loading article: {err.actualErr}
             </div>
           ),
           (data: ArticleResponse) => {
             const isLoggedIn = O.isSome(token)
             const author = data.article.author
-            return (
-              <>
-                <div className='bg-gray-900 py-10 text-white'>
-                  <div className='mx-auto max-w-6xl px-4'>
-                    <h1 className='text-3xl font-bold'>{data.article.title}</h1>
-                    <div className='mt-4 flex flex-wrap items-center gap-3'>
-                      <Link
-                        route={{
-                          page: {
-                            _tag: 'ProfilePage',
-                            username: author.username,
-                            favorites: false,
-                          },
-                        }}
-                      >
-                        <img
-                          src={author.image || '/default-avatar.svg'}
-                          className='h-9 w-9 rounded-full object-cover'
-                          alt=''
-                        />
-                      </Link>
-                      <div>
-                        <Link
-                          route={{
-                            page: {
-                              _tag: 'ProfilePage',
-                              username: author.username,
-                              favorites: false,
-                            },
-                          }}
-                          className='block text-sm font-medium text-green-400 hover:underline'
-                        >
-                          {author.username}
-                        </Link>
-                        <span className='text-xs text-gray-400'>
-                          {new Date(data.article.createdAt).toDateString()}
-                        </span>
-                      </div>
-                      <div className='flex flex-wrap items-center gap-2'>
-                        {isLoggedIn &&
-                          (author.following ? (
-                            <button
-                              type='button'
-                              onClick={() =>
-                                dispatch({
-                                  _tag: 'UnfollowAuthor',
-                                  username: author.username,
-                                })
-                              }
-                              className='flex items-center gap-1 rounded border border-gray-400 px-3 py-1 text-xs text-gray-300 hover:border-white hover:text-white'
-                            >
-                              <UserMinus size={13} /> Unfollow {author.username}
-                            </button>
-                          ) : (
-                            <button
-                              type='button'
-                              onClick={() =>
-                                dispatch({
-                                  _tag: 'FollowAuthor',
-                                  username: author.username,
-                                })
-                              }
-                              className='flex items-center gap-1 rounded border border-gray-400 px-3 py-1 text-xs text-gray-300 hover:border-white hover:text-white'
-                            >
-                              <UserPlus size={13} /> Follow {author.username}
-                            </button>
-                          ))}
-                        <button
-                          type='button'
-                          onClick={() =>
-                            isLoggedIn &&
-                            dispatch({
-                              _tag: data.article.favorited
-                                ? 'UnfavoriteArticle'
-                                : 'FavoriteArticle',
-                            })
-                          }
-                          className='flex items-center gap-1 rounded border border-green-500 px-3 py-1 text-xs text-green-400 hover:bg-green-900'
-                        >
-                          <Heart size={13} /> Favorite Post{' '}
-                          <span>({data.article.favoritesCount})</span>
-                        </button>
-                        {isLoggedIn && (
-                          <>
-                            <Link
-                              route={{
-                                page: {
-                                  _tag: 'EditorPage',
-                                  slug: O.some(data.article.slug),
-                                },
-                              }}
-                              className='flex items-center gap-1 rounded border border-gray-400 px-3 py-1 text-xs text-gray-300 hover:border-white hover:text-white'
-                            >
-                              <Pencil size={13} /> Edit Article
-                            </Link>
-                            <button
-                              type='button'
-                              onClick={() =>
-                                dispatch({ _tag: 'DeleteArticle' })
-                              }
-                              className='flex items-center gap-1 rounded border border-red-500 px-3 py-1 text-xs text-red-400 hover:bg-red-900'
-                            >
-                              <Trash2 size={13} /> Delete Article
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </div>
+
+            const articleMeta = (isLight: boolean) => (
+              <div className='flex flex-wrap items-center gap-[12px]'>
+                <Link
+                  route={{
+                    page: {
+                      _tag: 'ProfilePage',
+                      username: author.username,
+                      favorites: false,
+                    },
+                  }}
+                >
+                  <img
+                    src={author.image || '/default-avatar.svg'}
+                    className='h-[36px] w-[36px] rounded-full object-cover'
+                    alt=''
+                  />
+                </Link>
+                <div className='flex flex-col'>
+                  <Link
+                    route={{
+                      page: {
+                        _tag: 'ProfilePage',
+                        username: author.username,
+                        favorites: false,
+                      },
+                    }}
+                    className={cn(
+                      'block text-sm font-medium hover:underline',
+                      isLight ? 'text-green-400' : 'text-green-600',
+                    )}
+                  >
+                    {author.username}
+                  </Link>
+                  <span className='text-xs text-gray-400'>
+                    {new Date(data.article.createdAt).toDateString()}
+                  </span>
                 </div>
-
-                <div className='mx-auto max-w-6xl px-4 py-8'>
-                  <div className='prose prose-gray max-w-none'>
-                    <ReactMarkdown>{data.article.body ?? ''}</ReactMarkdown>
-                  </div>
-                  <ul className='mt-4 flex flex-wrap gap-1'>
-                    {data.article.tagList.map((tag) => (
-                      <li
-                        key={tag}
-                        className='rounded-full border border-gray-300 px-2 py-0.5 text-xs text-gray-400'
-                      >
-                        {tag}
-                      </li>
-                    ))}
-                  </ul>
-
-                  <hr className='my-8 border-gray-200' />
-
-                  <div className='flex flex-wrap items-center gap-3'>
-                    <Link
-                      route={{
-                        page: {
-                          _tag: 'ProfilePage',
-                          username: author.username,
-                          favorites: false,
-                        },
-                      }}
-                    >
-                      <img
-                        src={author.image || '/default-avatar.svg'}
-                        className='h-9 w-9 rounded-full object-cover'
-                        alt=''
-                      />
-                    </Link>
-                    <div>
-                      <Link
-                        route={{
-                          page: {
-                            _tag: 'ProfilePage',
-                            username: author.username,
-                            favorites: false,
-                          },
-                        }}
-                        className='block text-sm font-medium text-green-600 hover:underline'
-                      >
-                        {author.username}
-                      </Link>
-                      <span className='text-xs text-gray-400'>
-                        {new Date(data.article.createdAt).toDateString()}
-                      </span>
-                    </div>
-                    <div className='flex flex-wrap items-center gap-2'>
-                      {isLoggedIn &&
-                        (author.following ? (
-                          <button
-                            type='button'
-                            onClick={() =>
-                              dispatch({
-                                _tag: 'UnfollowAuthor',
-                                username: author.username,
-                              })
-                            }
-                            className='flex items-center gap-1 rounded border border-gray-300 px-3 py-1 text-xs text-gray-600 hover:border-gray-500'
-                          >
-                            <UserMinus size={13} /> Unfollow {author.username}
-                          </button>
-                        ) : (
-                          <button
-                            type='button'
-                            onClick={() =>
-                              dispatch({
-                                _tag: 'FollowAuthor',
-                                username: author.username,
-                              })
-                            }
-                            className='flex items-center gap-1 rounded border border-gray-300 px-3 py-1 text-xs text-gray-600 hover:border-gray-500'
-                          >
-                            <UserPlus size={13} /> Follow {author.username}
-                          </button>
-                        ))}
+                <div className='flex flex-wrap items-center gap-[8px]'>
+                  {isLoggedIn &&
+                    (author.following ? (
                       <button
                         type='button'
                         onClick={() =>
-                          isLoggedIn &&
                           dispatch({
-                            _tag: data.article.favorited
-                              ? 'UnfavoriteArticle'
-                              : 'FavoriteArticle',
+                            _tag: 'UnfollowAuthor',
+                            username: author.username,
                           })
                         }
-                        className='flex items-center gap-1 rounded border border-green-500 px-3 py-1 text-xs text-green-600 hover:bg-green-50'
+                        className={cn(
+                          'flex items-center gap-[4px] rounded border px-[12px] py-[4px] text-xs transition-colors',
+                          isLight
+                            ? 'border-gray-400 text-gray-300 hover:border-white hover:text-white'
+                            : 'border-gray-300 text-gray-600 hover:border-gray-500',
+                        )}
                       >
-                        <Heart size={13} /> Favorite Post{' '}
-                        <span>({data.article.favoritesCount})</span>
+                        <UserMinus size={13} /> Unfollow {author.username}
                       </button>
-                    </div>
-                  </div>
-
-                  <div className='mx-auto mt-8 max-w-2xl'>
-                    {isLoggedIn && (
-                      <form
-                        className='mb-6 rounded border border-gray-200'
-                        onSubmit={(e) => {
-                          e.preventDefault()
-                          dispatch({ _tag: 'SubmitComment' })
-                        }}
+                    ) : (
+                      <button
+                        type='button'
+                        onClick={() =>
+                          dispatch({
+                            _tag: 'FollowAuthor',
+                            username: author.username,
+                          })
+                        }
+                        className={cn(
+                          'flex items-center gap-[4px] rounded border px-[12px] py-[4px] text-xs transition-colors',
+                          isLight
+                            ? 'border-gray-400 text-gray-300 hover:border-white hover:text-white'
+                            : 'border-gray-300 text-gray-600 hover:border-gray-500',
+                        )}
                       >
-                        <textarea
-                          className='w-full resize-none p-3 text-sm text-gray-800 outline-none'
-                          rows={3}
-                          placeholder='Write a comment...'
-                          value={model.commentInput}
-                          onChange={(e) =>
-                            dispatch({
-                              _tag: 'SetCommentInput',
-                              value: e.target.value,
-                            })
-                          }
-                        />
-                        <div className='flex justify-end border-t border-gray-100 bg-gray-50 px-3 py-2'>
-                          <button
-                            type='submit'
-                            className='rounded bg-green-600 px-3 py-1 text-xs text-white hover:bg-green-700'
-                          >
-                            Post Comment
-                          </button>
-                        </div>
-                      </form>
+                        <UserPlus size={13} /> Follow {author.username}
+                      </button>
+                    ))}
+                  <button
+                    type='button'
+                    onClick={() =>
+                      isLoggedIn &&
+                      dispatch({
+                        _tag: data.article.favorited
+                          ? 'UnfavoriteArticle'
+                          : 'FavoriteArticle',
+                      })
+                    }
+                    className={cn(
+                      'flex items-center gap-[4px] rounded border px-[12px] py-[4px] text-xs transition-colors',
+                      isLight
+                        ? 'border-green-500 text-green-400 hover:bg-green-900'
+                        : 'border-green-500 text-green-600 hover:bg-green-50',
                     )}
-                    {pipe(
-                      model.comments,
-                      RD.fold(
-                        () => (
-                          <div className='text-sm text-gray-500'>
-                            Loading comments...
-                          </div>
-                        ),
-                        () => (
-                          <div className='text-sm text-gray-500'>
-                            Loading comments...
-                          </div>
-                        ),
-                        (err: HttpErrorString) => (
-                          <div className='text-sm text-red-500'>
-                            Error loading comments: {err.actualErr}
-                          </div>
-                        ),
-                        (commentsData: CommentsResponse) => (
-                          <div className='space-y-4'>
-                            {commentsData.comments.map((comment) => (
-                              <div
-                                key={comment.id}
-                                className='rounded-lg border border-gray-200'
-                              >
-                                <div className='p-4'>
-                                  <p className='text-sm text-gray-800'>
-                                    {comment.body}
-                                  </p>
-                                </div>
-                                <div className='flex items-center gap-2 border-t border-gray-100 bg-gray-50 px-4 py-2 text-xs'>
-                                  <Link
-                                    route={{
-                                      page: {
-                                        _tag: 'ProfilePage',
-                                        username: comment.author.username,
-                                        favorites: false,
-                                      },
-                                    }}
-                                  >
-                                    <img
-                                      src={
-                                        comment.author.image ||
-                                        '/default-avatar.svg'
-                                      }
-                                      className='h-5 w-5 rounded-full object-cover'
-                                      alt=''
-                                    />
-                                  </Link>
-                                  <Link
-                                    route={{
-                                      page: {
-                                        _tag: 'ProfilePage',
-                                        username: comment.author.username,
-                                        favorites: false,
-                                      },
-                                    }}
-                                    className='font-medium text-green-600 hover:underline'
-                                  >
-                                    {comment.author.username}
-                                  </Link>
-                                  <span className='text-gray-400'>
-                                    {new Date(comment.createdAt).toDateString()}
-                                  </span>
-                                  {isLoggedIn && (
-                                    <button
-                                      type='button'
-                                      onClick={() =>
-                                        dispatch({
-                                          _tag: 'DeleteComment',
-                                          id: comment.id,
-                                        })
-                                      }
-                                      className='ml-auto text-gray-400 hover:text-red-500'
-                                    >
-                                      <Trash2 size={12} />
-                                    </button>
-                                  )}
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        ),
-                      ),
-                    )}
+                  >
+                    <Heart size={13} /> Favorite Post{' '}
+                    <span>({data.article.favoritesCount})</span>
+                  </button>
+                  {isLoggedIn && (
+                    <>
+                      <Link
+                        route={{
+                          page: {
+                            _tag: 'EditorPage',
+                            slug: O.some(data.article.slug),
+                          },
+                        }}
+                        className={cn(
+                          'flex items-center gap-[4px] rounded border px-[12px] py-[4px] text-xs transition-colors',
+                          isLight
+                            ? 'border-gray-400 text-gray-300 hover:border-white hover:text-white'
+                            : 'border-gray-300 text-gray-600 hover:border-gray-500',
+                        )}
+                      >
+                        <Pencil size={13} /> Edit Article
+                      </Link>
+                      <button
+                        type='button'
+                        onClick={() => dispatch({ _tag: 'DeleteArticle' })}
+                        className={cn(
+                          'flex items-center gap-[4px] rounded border px-[12px] py-[4px] text-xs transition-colors',
+                          isLight
+                            ? 'border-red-500 text-red-400 hover:bg-red-900'
+                            : 'border-red-500 text-red-600 hover:bg-red-50',
+                        )}
+                      >
+                        <Trash2 size={13} /> Delete Article
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            )
+
+            return (
+              <div className='flex flex-col min-h-full'>
+                {/* Article Header */}
+                <div className='bg-gray-900 py-[40px] text-white shadow-inner'>
+                  <div className='mx-auto max-w-[1152px] px-[16px] flex flex-col gap-[16px]'>
+                    <h1 className='text-3xl lg:text-4xl font-bold leading-tight'>
+                      {data.article.title}
+                    </h1>
+                    {articleMeta(true)}
                   </div>
                 </div>
-              </>
+
+                {/* Article Body */}
+                <div className='mx-auto max-w-[1152px] w-full px-[16px] py-[32px] flex flex-col gap-[32px]'>
+                  <div className='flex flex-col gap-[16px]'>
+                    <div className='prose prose-gray max-w-none prose-img:rounded-lg'>
+                      <ReactMarkdown>{data.article.body ?? ''}</ReactMarkdown>
+                    </div>
+                    <ul className='flex flex-wrap gap-[4px]'>
+                      {data.article.tagList.map((tag) => (
+                        <li
+                          key={tag}
+                          className='rounded-full border border-gray-300 px-[8px] py-[2px] text-xs text-gray-400'
+                        >
+                          {tag}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <hr className='border-gray-200' />
+
+                  <div className='flex flex-col items-center gap-[32px]'>
+                    {articleMeta(false)}
+
+                    <div className='w-full max-w-[700px] flex flex-col gap-[24px]'>
+                      {isLoggedIn && (
+                        <form
+                          className='flex flex-col rounded border border-gray-200 overflow-hidden'
+                          onSubmit={(e) => {
+                            e.preventDefault()
+                            dispatch({ _tag: 'SubmitComment' })
+                          }}
+                        >
+                          <textarea
+                            className='w-full resize-none p-[12px] text-sm text-gray-800 outline-none min-h-[100px]'
+                            rows={3}
+                            placeholder='Write a comment...'
+                            value={model.commentInput}
+                            onChange={(e) =>
+                              dispatch({
+                                _tag: 'SetCommentInput',
+                                value: e.target.value,
+                              })
+                            }
+                          />
+                          <div className='flex justify-end border-t border-gray-100 bg-gray-50 px-[12px] py-[8px]'>
+                            <button
+                              type='submit'
+                              className='rounded bg-green-600 px-[12px] py-[4px] text-xs text-white hover:bg-green-700 transition-colors'
+                            >
+                              Post Comment
+                            </button>
+                          </div>
+                        </form>
+                      )}
+
+                      {pipe(
+                        model.comments,
+                        RD.fold(
+                          () => (
+                            <div className='text-sm text-gray-500 py-[12px]'>
+                              Loading comments...
+                            </div>
+                          ),
+                          () => (
+                            <div className='text-sm text-gray-500 py-[12px]'>
+                              Loading comments...
+                            </div>
+                          ),
+                          (err: HttpErrorString) => (
+                            <div className='text-sm text-red-500 py-[12px]'>
+                              Error loading comments: {err.actualErr}
+                            </div>
+                          ),
+                          (commentsData: CommentsResponse) => (
+                            <div className='flex flex-col gap-[16px]'>
+                              {commentsData.comments.map((comment) => (
+                                <div
+                                  key={comment.id}
+                                  className='rounded border border-gray-200 overflow-hidden'
+                                >
+                                  <div className='p-[16px]'>
+                                    <p className='text-sm text-gray-800 whitespace-pre-wrap'>
+                                      {comment.body}
+                                    </p>
+                                  </div>
+                                  <div className='flex items-center gap-[8px] border-t border-gray-100 bg-gray-50 px-[16px] py-[8px] text-xs'>
+                                    <Link
+                                      route={{
+                                        page: {
+                                          _tag: 'ProfilePage',
+                                          username: comment.author.username,
+                                          favorites: false,
+                                        },
+                                      }}
+                                    >
+                                      <img
+                                        src={
+                                          comment.author.image ||
+                                          '/default-avatar.svg'
+                                        }
+                                        className='h-[20px] w-[20px] rounded-full object-cover'
+                                        alt=''
+                                      />
+                                    </Link>
+                                    <Link
+                                      route={{
+                                        page: {
+                                          _tag: 'ProfilePage',
+                                          username: comment.author.username,
+                                          favorites: false,
+                                        },
+                                      }}
+                                      className='font-medium text-green-600 hover:underline'
+                                    >
+                                      {comment.author.username}
+                                    </Link>
+                                    <span className='text-gray-400'>
+                                      {new Date(
+                                        comment.createdAt,
+                                      ).toDateString()}
+                                    </span>
+                                    {isLoggedIn && (
+                                      <button
+                                        type='button'
+                                        onClick={() =>
+                                          dispatch({
+                                            _tag: 'DeleteComment',
+                                            id: comment.id,
+                                          })
+                                        }
+                                        className='ml-auto text-gray-400 hover:text-red-500 transition-colors'
+                                      >
+                                        <Trash2 size={12} />
+                                      </button>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          ),
+                        ),
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
             )
           },
         ),

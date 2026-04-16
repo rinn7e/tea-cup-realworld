@@ -1,10 +1,20 @@
+import { cn } from '@rinn7e/tea-cup-prelude'
+import React from 'react'
+
 import { homePage } from '../data/route'
 import { Link } from './link'
 
 export const Footer: React.FC = () => {
   return (
-    <footer className='border-t border-gray-100 bg-gray-50 py-6'>
-      <div className='mx-auto flex max-w-6xl flex-col items-center gap-1 px-4 text-center sm:flex-row sm:justify-between'>
+    <footer className='border-t border-gray-100 bg-gray-50 py-[24px]'>
+      <div
+        className={cn(
+          // shared
+          'mx-auto max-w-[1152px] px-[16px] flex flex-col items-center gap-[4px] text-center',
+          // desktop
+          'lg:flex-row lg:justify-between lg:text-left',
+        )}
+      >
         <Link
           route={{ page: homePage() }}
           className='text-sm font-bold text-green-600'

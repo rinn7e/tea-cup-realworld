@@ -1,3 +1,4 @@
+import { cn } from '@rinn7e/tea-cup-prelude'
 import React from 'react'
 import type { Dispatcher } from 'tea-cup-fp'
 
@@ -19,10 +20,17 @@ interface Props {
 }
 
 export const View: React.FC<Props> = ({ model, dispatch }) => {
+  const isNavOpen = model.navbarMobileOpen.state._tag !== 'Invisible'
+
   return (
     <SetGlobalMsgContext value={dispatch}>
-      <div className='flex min-h-screen flex-col'>
-        <Navbar model={model} />
+      <div
+        className={cn(
+          'flex flex-col min-h-dvh',
+          isNavOpen && 'h-dvh overflow-hidden',
+        )}
+      >
+        <Navbar model={model} dispatch={dispatch} />
         <main className='flex-grow'>{renderPage(model, dispatch)}</main>
         <Footer />
       </div>
@@ -95,8 +103,8 @@ const renderPage = (model: Model, dispatch: Dispatcher<Msg>) => {
         </div>
       )
     case 'NotFound':
-      return <div className='p-4'>404 - Not Found</div>
+      return <div className='p-[16px]'>404 - Not Found</div>
     default:
-      return <div className='p-4'>Unknown page</div>
+      return <div className='p-[16px]'>Unknown page</div>
   }
 }

@@ -1,21 +1,26 @@
+import { cn, updateAndCmd } from '@rinn7e/tea-cup-prelude'
 import * as O from 'fp-ts/lib/Option'
 import type { Option } from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/function'
-import { Pencil, Settings } from 'lucide-react'
+import { Menu, Pencil, Settings, X } from 'lucide-react'
 import React from 'react'
+import { createPortal } from 'react-dom'
+import type { Dispatcher } from 'tea-cup-fp'
 
 import type { User } from '../api/type'
 import { homePage } from '../data/route'
-import type { Model } from '../type'
+import type { Model, Msg } from '../type'
 import { Link } from './link'
 
 interface Props {
   model: Model
+  dispatch: Dispatcher<Msg>
 }
 
-export const Navbar: React.FC<Props> = ({ model }) => {
+export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
   const user = model.shared.user
   const pageTag = model.page._tag
+  const isOpen = model.navbarMobileOpen
 
   const isHome = pageTag === 'Home'
   const isEditor = pageTag === 'Editor'
@@ -25,90 +30,180 @@ export const Navbar: React.FC<Props> = ({ model }) => {
   const activeCls = 'font-semibold text-green-600'
   const inactiveCls = 'text-gray-500 hover:text-gray-900'
 
+  const links = (isSidebar: boolean) => (
+    <>
+      <li>
+        <Link
+          className={cn(
+            // shared
+            'rounded px-[12px] py-[6px] text-sm block',
+            // state
+            isHome ? activeCls : inactiveCls,
+          )}
+          route={{ page: homePage() }}
+        >
+          Home
+        </Link>
+      </li>
+      {pipe(user, (optUser: Option<User>) =>
+        optUser._tag === 'Some' ? (
+          <>
+            <li>
+              <Link
+                className={cn(
+                  // shared
+                  'flex items-center gap-[4px] rounded px-[12px] py-[6px] text-sm',
+                  // state
+                  isEditor ? activeCls : inactiveCls,
+                )}
+                route={{ page: { _tag: 'EditorPage', slug: O.none } }}
+              >
+                <Pencil size={14} />
+                New Article
+              </Link>
+            </li>
+            <li>
+              <Link
+                className={cn(
+                  // shared
+                  'flex items-center gap-[4px] rounded px-[12px] py-[6px] text-sm',
+                  // state
+                  isSettings ? activeCls : inactiveCls,
+                )}
+                route={{ page: { _tag: 'SettingsPage' } }}
+              >
+                <Settings size={14} />
+                Settings
+              </Link>
+            </li>
+            <li>
+              <Link
+                className={cn(
+                  // shared
+                  'flex items-center gap-[8px] rounded px-[12px] py-[6px] text-sm',
+                  // state
+                  isProfile ? activeCls : inactiveCls,
+                )}
+                route={{
+                  page: {
+                    _tag: 'ProfilePage',
+                    username: optUser.value.username,
+                    favorites: false,
+                  },
+                }}
+              >
+                <img
+                  src={optUser.value.image || '/default-avatar.svg'}
+                  className='h-[28px] w-[28px] rounded-full object-cover'
+                  alt=''
+                />
+                {optUser.value.username}
+              </Link>
+            </li>
+          </>
+        ) : (
+          <>
+            <li>
+              <Link
+                className={cn('rounded px-[12px] py-[6px] text-sm', inactiveCls)}
+                route={{ page: { _tag: 'LoginPage' } }}
+              >
+                Sign in
+              </Link>
+            </li>
+            <li>
+              <Link
+                className={cn('rounded px-[12px] py-[6px] text-sm', inactiveCls)}
+                route={{ page: { _tag: 'RegisterPage' } }}
+              >
+                Sign up
+              </Link>
+            </li>
+          </>
+        ),
+      )}
+    </>
+  )
+
+  const animate = model.navbarMobileOpen
+  const state = animate.state._tag
+  const isVisible = state !== 'Invisible'
+
+  const backdropCls = cn(
+    'absolute inset-0 bg-black/50',
+    state === 'AnimateIn' && 'animate-fade-in',
+    state === 'AnimateOut' && 'animate-fade-out',
+  )
+
+  const sidebarCls = cn(
+    'relative flex flex-col w-[280px] h-full bg-white shadow-xl p-[16px] overflow-y-auto',
+    state === 'AnimateIn' && 'animate-slide-in',
+    state === 'AnimateOut' && 'animate-slide-out',
+  )
+
   return (
-    <nav className='border-b border-gray-100 bg-white shadow-sm'>
-      <div className='mx-auto max-w-6xl px-4'>
-        <div className='flex h-14 items-center justify-between'>
+    <nav className='border-b border-gray-100 bg-white shadow-sm sticky top-0 z-20'>
+      <div className='mx-auto max-w-[1152px] px-[16px]'>
+        <div className='flex h-[56px] items-center justify-between'>
           <Link
             className='text-xl font-bold tracking-tight text-green-600'
             route={{ page: homePage() }}
           >
             conduit
           </Link>
-          <ul className='flex items-center gap-1'>
-            <li>
-              <Link
-                className={`rounded px-3 py-1.5 text-sm ${isHome ? activeCls : inactiveCls}`}
-                route={{ page: homePage() }}
-              >
-                Home
-              </Link>
-            </li>
-            {pipe(user, (optUser: Option<User>) =>
-              optUser._tag === 'Some' ? (
-                <>
-                  <li>
-                    <Link
-                      className={`flex items-center gap-1 rounded px-3 py-1.5 text-sm ${isEditor ? activeCls : inactiveCls}`}
-                      route={{ page: { _tag: 'EditorPage', slug: O.none } }}
-                    >
-                      <Pencil size={14} />
-                      New Article
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      className={`flex items-center gap-1 rounded px-3 py-1.5 text-sm ${isSettings ? activeCls : inactiveCls}`}
-                      route={{ page: { _tag: 'SettingsPage' } }}
-                    >
-                      <Settings size={14} />
-                      Settings
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      className={`flex items-center gap-2 rounded px-3 py-1.5 text-sm ${isProfile ? activeCls : inactiveCls}`}
-                      route={{
-                        page: {
-                          _tag: 'ProfilePage',
-                          username: optUser.value.username,
-                          favorites: false,
-                        },
-                      }}
-                    >
-                      <img
-                        src={optUser.value.image || '/default-avatar.svg'}
-                        className='h-7 w-7 rounded-full object-cover'
-                        alt=''
-                      />
-                      {optUser.value.username}
-                    </Link>
-                  </li>
-                </>
-              ) : (
-                <>
-                  <li>
-                    <Link
-                      className={`rounded px-3 py-1.5 text-sm ${inactiveCls}`}
-                      route={{ page: { _tag: 'LoginPage' } }}
-                    >
-                      Sign in
-                    </Link>
-                  </li>
-                  <li>
-                    <Link
-                      className={`rounded px-3 py-1.5 text-sm ${inactiveCls}`}
-                      route={{ page: { _tag: 'RegisterPage' } }}
-                    >
-                      Sign up
-                    </Link>
-                  </li>
-                </>
-              ),
-            )}
+
+          {/* mobile hamburger button */}
+          <button
+            type='button'
+            className='lg:hidden p-[8px] text-gray-500 hover:text-gray-900 focus:outline-none'
+            onClick={() => dispatch({ _tag: 'ToggleNavbarMobile', open: true })}
+          >
+            <Menu size={24} />
+          </button>
+
+          {/* desktop nav links */}
+          <ul className='hidden lg:flex lg:items-center lg:gap-[4px]'>
+            {links(false)}
           </ul>
         </div>
       </div>
+
+      {/* mobile sidebar portal */}
+      {isVisible &&
+        createPortal(
+          <div className='absolute inset-0 z-[100] flex justify-end overflow-hidden'>
+            {/* backdrop */}
+            <div
+              className={backdropCls}
+              onClick={() =>
+                dispatch({ _tag: 'ToggleNavbarMobile', open: false })
+              }
+            />
+            {/* sidebar content */}
+            <div className={sidebarCls}>
+              <div className='flex flex-col gap-[16px]'>
+                <div className='flex items-center justify-between'>
+                  <span className='text-xl font-bold text-green-600'>
+                    conduit
+                  </span>
+                  <button
+                    type='button'
+                    className='p-[8px] text-gray-500 hover:text-gray-900 focus:outline-none'
+                    onClick={() =>
+                      dispatch({ _tag: 'ToggleNavbarMobile', open: false })
+                    }
+                  >
+                    <X size={24} />
+                  </button>
+                </div>
+                <ul className='flex flex-col gap-[8px]'>
+                  {links(true)}
+                </ul>
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
     </nav>
   )
 }

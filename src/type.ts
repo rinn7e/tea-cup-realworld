@@ -27,12 +27,24 @@ export type PageModel =
   | { _tag: 'NotFound' }
   | { _tag: 'Loading' }
 
+export type AnimateState =
+  | { _tag: 'AnimateIn' }
+  | { _tag: 'Visible' }
+  | { _tag: 'AnimateOut' }
+  | { _tag: 'Invisible' }
+
+export type Animate<A> = {
+  internal: A
+  state: AnimateState
+}
+
 export type Model = {
   route: Route
   shared: Shared
   page: PageModel
   isInternal: boolean
   debugPanel: DebugPanel.Model
+  navbarMobileOpen: Animate<null>
 }
 
 export type Msg =
@@ -46,4 +58,6 @@ export type Msg =
   | { _tag: 'ProfileMsg'; msg: Profile.Msg }
   | { _tag: 'EditorMsg'; msg: Editor.Msg }
   | { _tag: 'DebugPanelMsg'; msg: DebugPanel.Msg }
+  | { _tag: 'ToggleNavbarMobile'; open: boolean }
+  | { _tag: 'SetNavbarMobileState'; state: AnimateState }
   | { _tag: 'None' }

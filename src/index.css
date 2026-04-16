@@ -7,7 +7,64 @@
 }
 
 @layer base {
+  html,
   body {
-    @apply text-base text-[#373a3c] antialiased;
+    height: 100%;
+  }
+
+  body {
+    @apply relative text-base text-[#373a3c] antialiased;
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes slideOut {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes fadeOut {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  .animate-slide-in {
+    animation: slideIn 0.15s cubic-bezier(0, 0, 0.2, 1) forwards;
+  }
+
+  .animate-slide-out {
+    animation: slideOut 0.15s cubic-bezier(0, 0, 0.2, 1) forwards;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.15s cubic-bezier(0, 0, 0.2, 1) forwards;
+  }
+
+  .animate-fade-out {
+    animation: fadeOut 0.15s cubic-bezier(0, 0, 0.2, 1) forwards;
   }
 }
