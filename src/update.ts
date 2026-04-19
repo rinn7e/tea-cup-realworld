@@ -12,7 +12,7 @@ import { Cmd, Task } from 'tea-cup-fp'
 import { getCurrentUser } from './api'
 import type { User } from './api/type'
 import * as DebugPanel from './component/debug-panel/type'
-import { homePage, parseAppRoute, toUrlString } from './data/route'
+import { AppRouteEq, homePage, parseAppRoute, toUrlString } from './data/route'
 import * as Article from './page/article/update'
 import * as Auth from './page/auth/update'
 import * as Editor from './page/editor/update'
@@ -250,7 +250,7 @@ const navigate =
 const execChangeRoute =
   (newRoute: Route, isInternal: boolean) =>
   (model: Model): [Model, Cmd<Msg>] => {
-    if (model.route.page._tag !== newRoute.page._tag) {
+    if (!AppRouteEq.equals(model.route, newRoute)) {
       return navigate(newRoute, isInternal)(model)
     } else {
       if (isInternal) {

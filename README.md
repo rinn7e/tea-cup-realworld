@@ -4,13 +4,13 @@ A functional, type-safe implementation of the RealWorld Medium.com clone spec bu
 
 ## Tech Stack
 
-- **React 19.x** - UI Library
-- **TeaCup 5.x** - State Management (The Elm Architecture)
-- **TypeScript 5.x** - Language
-- **fp-ts 2.x** - Functional programming primitives
-- **io-ts 2.x** - Runtime validation / Decoding
-- **Vite 7.x** - Build tool & Dev server
-- **Tailwind CSS 4.x** - Styling
+- [**React 19.x**](https://github.com/facebook/react) - UI Library
+- [**TeaCup 5.x**](https://github.com/vankeisb/react-tea-cup) - State Management (The Elm Architecture)
+- [**TypeScript 5.x**](https://github.com/microsoft/TypeScript) - Language
+- [**fp-ts 2.x**](https://github.com/gcanti/fp-ts) - Functional programming primitives
+- [**io-ts 2.x**](https://github.com/gcanti/io-ts) - Runtime validation / Decoding
+- [**Vite 7.x**](https://github.com/vitejs/vite) - Build tool & Dev server
+- [**Tailwind CSS 4.x**](https://github.com/tailwindlabs/tailwindcss) - Styling
 
 ## How to start locally
 

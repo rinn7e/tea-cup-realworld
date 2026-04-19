@@ -21,18 +21,40 @@ export const Footer: React.FC = () => {
         >
           conduit
         </Link>
-        <span className='text-xs text-gray-400'>
-          An interactive learning project from{' '}
-          <a
-            href='https://thinkster.io'
-            target='_blank'
-            rel='noopener noreferrer'
-            className='underline hover:text-gray-600'
-          >
-            Thinkster
-          </a>
-          . Code &amp; design licensed under MIT.
-        </span>
+        <div className='flex flex-col gap-[4px] lg:items-end'>
+          <span className='text-xs text-gray-400'>
+            An interactive learning project from{' '}
+            <a
+              href='https://thinkster.io'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='underline hover:text-gray-600'
+            >
+              Thinkster
+            </a>
+            . Code &amp; design licensed under MIT.
+          </span>
+          <span className='text-xs text-gray-400'>
+            Built using{' '}
+            <a
+              href='https://github.com/vankeisb/react-tea-cup'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='underline hover:text-gray-600'
+            >
+              react-tea-cup
+            </a>
+            , written by{' '}
+            <a
+              href='https://github.com/rinn7e'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='underline hover:text-gray-600'
+            >
+              rinn7e
+            </a>
+          </span>
+        </div>
       </div>
     </footer>
   )

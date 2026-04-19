@@ -1,4 +1,8 @@
+import * as EqClass from 'fp-ts/lib/Eq'
+import * as O from 'fp-ts/lib/Option'
 import { type Option } from 'fp-ts/lib/Option'
+import * as B from 'fp-ts/lib/boolean'
+import * as S from 'fp-ts/lib/string'
 
 export type HomePage = {
   readonly _tag: 'HomePage'
@@ -45,6 +49,70 @@ export type AppPage =
   | ArticlePage
   | ProfilePage
   | NotFoundPage
+
+export const HomePageEq: EqClass.Eq<HomePage> = EqClass.struct({
+  _tag: S.Eq,
+})
+
+export const LoginPageEq: EqClass.Eq<LoginPage> = EqClass.struct({
+  _tag: S.Eq,
+})
+
+export const RegisterPageEq: EqClass.Eq<RegisterPage> = EqClass.struct({
+  _tag: S.Eq,
+})
+
+export const SettingsPageEq: EqClass.Eq<SettingsPage> = EqClass.struct({
+  _tag: S.Eq,
+})
+
+export const EditorPageEq: EqClass.Eq<EditorPage> = EqClass.struct({
+  _tag: S.Eq,
+  slug: O.getEq(S.Eq),
+})
+
+export const ArticlePageEq: EqClass.Eq<ArticlePage> = EqClass.struct({
+  _tag: S.Eq,
+  slug: S.Eq,
+})
+
+export const ProfilePageEq: EqClass.Eq<ProfilePage> = EqClass.struct({
+  _tag: S.Eq,
+  username: S.Eq,
+  favorites: B.Eq,
+})
+
+export const NotFoundPageEq: EqClass.Eq<NotFoundPage> = EqClass.struct({
+  _tag: S.Eq,
+})
+
+export const AppPageEq: EqClass.Eq<AppPage> = {
+  equals: (x, y) => {
+    if (x._tag === 'HomePage' && y._tag === 'HomePage') {
+      return HomePageEq.equals(x, y)
+    } else if (x._tag === 'LoginPage' && y._tag === 'LoginPage') {
+      return LoginPageEq.equals(x, y)
+    } else if (x._tag === 'RegisterPage' && y._tag === 'RegisterPage') {
+      return RegisterPageEq.equals(x, y)
+    } else if (x._tag === 'SettingsPage' && y._tag === 'SettingsPage') {
+      return SettingsPageEq.equals(x, y)
+    } else if (x._tag === 'EditorPage' && y._tag === 'EditorPage') {
+      return EditorPageEq.equals(x, y)
+    } else if (x._tag === 'ArticlePage' && y._tag === 'ArticlePage') {
+      return ArticlePageEq.equals(x, y)
+    } else if (x._tag === 'ProfilePage' && y._tag === 'ProfilePage') {
+      return ProfilePageEq.equals(x, y)
+    } else if (x._tag === 'NotFoundPage' && y._tag === 'NotFoundPage') {
+      return NotFoundPageEq.equals(x, y)
+    } else {
+      return false
+    }
+  },
+}
+
+export const AppRouteEq: EqClass.Eq<AppRoute> = EqClass.struct({
+  page: AppPageEq,
+})
 
 export type AppRoute = {
   page: AppPage
