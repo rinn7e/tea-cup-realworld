@@ -26,8 +26,10 @@ export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
   const isEditor = pageTag === 'EditorPageModel'
   const isSettings = pageTag === 'SettingsPageModel'
   const isProfile = pageTag === 'ProfilePageModel'
+  const isLogin = pageTag === 'LoginPageModel'
+  const isSignup = pageTag === 'SignupPageModel'
 
-  const activeCls = 'font-semibold text-green-600'
+  const activeCls = 'text-green-600'
   const inactiveCls = 'text-gray-500 hover:text-gray-900'
 
   const links = (_isSidebar: boolean) => (
@@ -107,7 +109,7 @@ export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
               <Link
                 className={cn(
                   'rounded px-[12px] py-[6px] text-sm',
-                  inactiveCls,
+                  isLogin ? activeCls : inactiveCls,
                 )}
                 route={{ page: { _tag: 'LoginPage' } }}
               >
@@ -118,7 +120,7 @@ export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
               <Link
                 className={cn(
                   'rounded px-[12px] py-[6px] text-sm',
-                  inactiveCls,
+                  isSignup ? activeCls : inactiveCls,
                 )}
                 route={{ page: { _tag: 'SignupPage' } }}
               >

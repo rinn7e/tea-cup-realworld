@@ -1,5 +1,5 @@
-import React from 'react'
 import { cn } from '@rinn7e/tea-cup-prelude'
+import React from 'react'
 
 export interface Props {
   className?: string

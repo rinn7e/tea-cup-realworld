@@ -1,12 +1,12 @@
 import * as RD from '@devexperts/remote-data-ts'
 import { FormItemMemo } from '@rinn7e/tea-cup-form/lib/component'
+import { cn } from '@rinn7e/tea-cup-prelude'
+import { Loader2 } from 'lucide-react'
 import React from 'react'
 
 import { Link } from '@/component/link'
 import type { Route } from '@/type'
 import { memoStrategy } from '@/util/memo-strategy'
-import { cn } from '@rinn7e/tea-cup-prelude'
-import { Loader2 } from 'lucide-react'
 
 import { Props, PropsEq, loginEmailField, loginPasswordField } from './type'
 
@@ -71,7 +71,9 @@ function LoginPageComponent({ model, dispatch }: Props) {
               type='submit'
               disabled={!model.isFormValid}
             >
-              <span className={cn(RD.isPending(model.requestRd) && 'opacity-0')}>
+              <span
+                className={cn(RD.isPending(model.requestRd) && 'opacity-0')}
+              >
                 Sign in
               </span>
               {RD.isPending(model.requestRd) && (
