@@ -10,9 +10,10 @@ import { standardInputUi } from '@/component/form-fields'
 import type { Shared } from '@/type'
 
 import type { Model, Msg } from './type'
+import { loginEmailField, loginPasswordField } from './type'
 
-const emailField: [string, Form.FormType] = [
-  'email',
+const loginEmailFormItem = (): [string, Form.FormType] => [
+  loginEmailField,
   {
     _tag: 'TextType',
     placeholder: 'Email',
@@ -28,8 +29,8 @@ const emailField: [string, Form.FormType] = [
   },
 ]
 
-const passwordField: [string, Form.FormType] = [
-  'password',
+const loginPasswordFormItem = (): [string, Form.FormType] => [
+  loginPasswordField,
   {
     _tag: 'TextType',
     placeholder: 'Password',
@@ -45,7 +46,8 @@ const passwordField: [string, Form.FormType] = [
   },
 ]
 
-const loginFormConfig: [string, Form.FormType][] = [emailField, passwordField]
+const loginFormConfig = (): Form.Forms =>
+  new Map([loginEmailFormItem(), loginPasswordFormItem()])
 
 const preprocessFormMsgHandler =
   (newForm: Form.Model) =>
@@ -71,7 +73,7 @@ export const formMsgHandler =
 
 export const init = (_shared: Shared): [Model, Cmd<Msg>] => {
   const model: Model = {
-    form: Form.init(new Map(loginFormConfig)),
+    form: Form.init(loginFormConfig()),
     requestRd: RD.initial,
     isFormValid: false,
   }
@@ -87,10 +89,10 @@ export const update =
       }
       case 'Submit': {
         const email = Form.valueTextType(
-          Form.lookupForm('email', model.form.forms),
+          Form.lookupForm(loginEmailField, model.form.forms),
         )
         const password = Form.valueTextType(
-          Form.lookupForm('password', model.form.forms),
+          Form.lookupForm(loginPasswordField, model.form.forms),
         )
 
         return [

@@ -1,12 +1,17 @@
 import * as RD from '@devexperts/remote-data-ts'
 import { FormItemMemo } from '@rinn7e/tea-cup-form/lib/component'
-import { pipe } from 'fp-ts/lib/function'
-import { X } from 'lucide-react'
 import React from 'react'
 
 import { memoStrategy } from '@/util/memo-strategy'
 
-import { Props, PropsEq } from './type'
+import {
+  Props,
+  PropsEq,
+  editorBodyField,
+  editorDescriptionField,
+  editorTagInputField,
+  editorTitleField,
+} from './type'
 
 function EditorPageComponent({ model, dispatch }: Props) {
   const form = model.form
@@ -30,45 +35,26 @@ function EditorPageComponent({ model, dispatch }: Props) {
           disabled={RD.isPending(model.requestRd)}
         >
           <FormItemMemo
-            field='title'
+            field={editorTitleField}
             model={form}
             dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
           />
           <FormItemMemo
-            field='description'
+            field={editorDescriptionField}
             model={form}
             dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
           />
           <FormItemMemo
-            field='body'
+            field={editorBodyField}
             model={form}
             dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
           />
 
-          <div className='flex flex-col gap-[8px]'>
-            <FormItemMemo
-              field='tagInput'
-              model={form}
-              dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
-            />
-            <div className='flex flex-wrap gap-[4px] px-[12px]'>
-              {model.tagList.map((tag) => (
-                <span
-                  key={tag}
-                  className='inline-flex items-center gap-[4px] rounded-full bg-green-100 px-[8px] py-[2px] text-xs text-green-800'
-                >
-                  <button
-                    type='button'
-                    className='cursor-pointer hover:text-green-600 focus:outline-none'
-                    onClick={() => dispatch({ _tag: 'RemoveTag', tag })}
-                  >
-                    <X size={12} />
-                  </button>
-                  {tag}
-                </span>
-              ))}
-            </div>
-          </div>
+          <FormItemMemo
+            field={editorTagInputField}
+            model={form}
+            dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
+          />
 
           <div className='flex justify-end pt-[24px]'>
             <button

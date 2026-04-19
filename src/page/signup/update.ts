@@ -10,9 +10,14 @@ import { standardInputUi } from '@/component/form-fields'
 import type { Shared } from '@/type'
 
 import type { Model, Msg } from './type'
+import {
+  signupEmailField,
+  signupPasswordField,
+  signupUsernameField,
+} from './type'
 
-const emailField: [string, Form.FormType] = [
-  'email',
+const signupEmailFormItem = (): [string, Form.FormType] => [
+  signupEmailField,
   {
     _tag: 'TextType',
     placeholder: 'Email',
@@ -28,8 +33,8 @@ const emailField: [string, Form.FormType] = [
   },
 ]
 
-const passwordField: [string, Form.FormType] = [
-  'password',
+const signupPasswordFormItem = (): [string, Form.FormType] => [
+  signupPasswordField,
   {
     _tag: 'TextType',
     placeholder: 'Password',
@@ -45,8 +50,8 @@ const passwordField: [string, Form.FormType] = [
   },
 ]
 
-const usernameField: [string, Form.FormType] = [
-  'username',
+const signupUsernameFormItem = (): [string, Form.FormType] => [
+  signupUsernameField,
   {
     _tag: 'TextType',
     placeholder: 'Username',
@@ -62,11 +67,12 @@ const usernameField: [string, Form.FormType] = [
   },
 ]
 
-const signupFormConfig: [string, Form.FormType][] = [
-  usernameField,
-  emailField,
-  passwordField,
-]
+const signupFormConfig = (): Form.Forms =>
+  new Map([
+    signupUsernameFormItem(),
+    signupEmailFormItem(),
+    signupPasswordFormItem(),
+  ])
 
 const preprocessFormMsgHandler =
   (newForm: Form.Model) =>
@@ -92,7 +98,7 @@ export const formMsgHandler =
 
 export const init = (_shared: Shared): [Model, Cmd<Msg>] => {
   const model: Model = {
-    form: Form.init(new Map(signupFormConfig)),
+    form: Form.init(signupFormConfig()),
     requestRd: RD.initial,
     isFormValid: false,
   }
@@ -108,13 +114,13 @@ export const update =
       }
       case 'Submit': {
         const email = Form.valueTextType(
-          Form.lookupForm('email', model.form.forms),
+          Form.lookupForm(signupEmailField, model.form.forms),
         )
         const password = Form.valueTextType(
-          Form.lookupForm('password', model.form.forms),
+          Form.lookupForm(signupPasswordField, model.form.forms),
         )
         const username = Form.valueTextType(
-          Form.lookupForm('username', model.form.forms),
+          Form.lookupForm(signupUsernameField, model.form.forms),
         )
 
         return [

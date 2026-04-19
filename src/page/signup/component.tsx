@@ -1,13 +1,18 @@
 import * as RD from '@devexperts/remote-data-ts'
 import { FormItemMemo } from '@rinn7e/tea-cup-form/lib/component'
-import { pipe } from 'fp-ts/lib/function'
 import React from 'react'
 
 import { Link } from '@/component/link'
 import type { Route } from '@/type'
 import { memoStrategy } from '@/util/memo-strategy'
 
-import { Props, PropsEq } from './type'
+import {
+  Props,
+  PropsEq,
+  signupEmailField,
+  signupPasswordField,
+  signupUsernameField,
+} from './type'
 
 function SignupPageComponent({ model, dispatch }: Props) {
   const loginRoute: Route = { page: { _tag: 'LoginPage' } }
@@ -45,17 +50,17 @@ function SignupPageComponent({ model, dispatch }: Props) {
             disabled={RD.isPending(model.requestRd)}
           >
             <FormItemMemo
-              field='username'
+              field={signupUsernameField}
               model={model.form}
               dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
             />
             <FormItemMemo
-              field='email'
+              field={signupEmailField}
               model={model.form}
               dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
             />
             <FormItemMemo
-              field='password'
+              field={signupPasswordField}
               model={model.form}
               dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
             />
@@ -75,7 +80,4 @@ function SignupPageComponent({ model, dispatch }: Props) {
   )
 }
 
-export const SignupPageMemo = memoStrategy(
-  SignupPageComponent,
-  PropsEq.equals,
-)
+export const SignupPageMemo = memoStrategy(SignupPageComponent, PropsEq.equals)

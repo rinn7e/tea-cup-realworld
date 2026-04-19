@@ -1,13 +1,12 @@
 import * as RD from '@devexperts/remote-data-ts'
 import { FormItemMemo } from '@rinn7e/tea-cup-form/lib/component'
-import { pipe } from 'fp-ts/lib/function'
 import React from 'react'
 
 import { Link } from '@/component/link'
 import type { Route } from '@/type'
 import { memoStrategy } from '@/util/memo-strategy'
 
-import { Props, PropsEq } from './type'
+import { Props, PropsEq, loginEmailField, loginPasswordField } from './type'
 
 function LoginPageComponent({ model, dispatch }: Props) {
   const signupRoute: Route = { page: { _tag: 'SignupPage' } }
@@ -48,12 +47,12 @@ function LoginPageComponent({ model, dispatch }: Props) {
             disabled={RD.isPending(model.requestRd)}
           >
             <FormItemMemo
-              field='email'
+              field={loginEmailField}
               model={model.form}
               dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
             />
             <FormItemMemo
-              field='password'
+              field={loginPasswordField}
               model={model.form}
               dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
             />

@@ -2,6 +2,7 @@ import * as RD from '@devexperts/remote-data-ts'
 import * as Form from '@rinn7e/tea-cup-form'
 import { lookupForm, valueTextType } from '@rinn7e/tea-cup-form'
 import { attemptTE } from '@rinn7e/tea-cup-prelude'
+import * as E from 'fp-ts/lib/Either'
 import * as O from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/function'
 import { Cmd } from 'tea-cup-fp'
@@ -9,92 +10,145 @@ import { Cmd } from 'tea-cup-fp'
 import { updateUser } from '@/api'
 import type { User } from '@/api/type'
 import { standardInputUi } from '@/component/form-fields'
-import type { Shared } from '@/type'
+import { minLengthIfExistValidator } from '@/util/form'
 
 import type { Model, Msg } from './type'
+import {
+  settingsBioField,
+  settingsEmailField,
+  settingsImageField,
+  settingsPasswordConfirmationField,
+  settingsPasswordField,
+  settingsUsernameField,
+} from './type'
 
-const settingsFormConfig = (user: User): [string, Form.FormType][] => [
-  [
-    'image',
-    {
-      _tag: 'TextType',
-      placeholder: 'URL of profile picture',
-      label: 'Profile picture',
-      currentValue: user.image || '',
-      validation: (s: string) => Form.nonEmptyValidator(s, 'Image URL'),
-      linkValidations: [],
-      showValidation: false,
-      isTextarea: false,
-      isPassword: O.none,
-      isFocus: false,
-      ui: standardInputUi(false, O.none, false),
-    },
-  ],
-  [
-    'username',
-    {
-      _tag: 'TextType',
-      placeholder: 'Username',
-      label: 'Username',
-      currentValue: user.username,
-      validation: (s: string) => Form.nonEmptyValidator(s, 'Username'),
-      linkValidations: [],
-      showValidation: false,
-      isTextarea: false,
-      isPassword: O.none,
-      isFocus: false,
-      ui: standardInputUi(false),
-    },
-  ],
-  [
-    'bio',
-    {
-      _tag: 'TextType',
-      placeholder: 'Short bio about you',
-      label: 'Bio',
-      currentValue: user.bio || '',
-      validation: (s: string) => Form.nonEmptyValidator(s, 'Bio'),
-      linkValidations: [],
-      showValidation: false,
-      isTextarea: true,
-      isPassword: O.none,
-      isFocus: false,
-      ui: standardInputUi(true),
-    },
-  ],
-  [
-    'email',
-    {
-      _tag: 'TextType',
-      placeholder: 'Email',
-      label: 'Email',
-      currentValue: user.email,
-      validation: (s: string) => Form.emailValidator(s),
-      linkValidations: [],
-      showValidation: false,
-      isTextarea: false,
-      isPassword: O.none,
-      isFocus: false,
-      ui: standardInputUi(false),
-    },
-  ],
-  [
-    'password',
-    {
-      _tag: 'TextType',
-      placeholder: 'New Password',
-      label: 'Password',
-      currentValue: '',
-      validation: (s: string) => Form.minLengthValidator('Password', 8)(s),
-      linkValidations: [],
-      showValidation: false,
-      isTextarea: false,
-      isPassword: O.some({ revealPassword: false, disableAutocomplete: false }),
-      isFocus: false,
-      ui: standardInputUi(false),
-    },
-  ],
+const settingsImageFormItem = (
+  image: string | null,
+): [string, Form.FormType] => [
+  settingsImageField,
+  {
+    _tag: 'TextType',
+    placeholder: 'URL of profile picture',
+    label: 'Profile picture',
+    currentValue: image || '',
+    validation: E.right,
+    linkValidations: [],
+    showValidation: false,
+    isTextarea: false,
+    isPassword: O.none,
+    isFocus: false,
+    ui: standardInputUi(false, O.none, false),
+  },
 ]
+
+const settingsUsernameFormItem = (
+  username: string,
+): [string, Form.FormType] => [
+  settingsUsernameField,
+  {
+    _tag: 'TextType',
+    placeholder: 'Username',
+    label: 'Username',
+    currentValue: username,
+    validation: (s: string) => Form.nonEmptyValidator(s, 'Username'),
+    linkValidations: [],
+    showValidation: false,
+    isTextarea: false,
+    isPassword: O.none,
+    isFocus: false,
+    ui: standardInputUi(false),
+  },
+]
+
+const settingsBioFormItem = (bio: string | null): [string, Form.FormType] => [
+  settingsBioField,
+  {
+    _tag: 'TextType',
+    placeholder: 'Short bio about you',
+    label: 'Bio',
+    currentValue: bio || '',
+    validation: E.right,
+    linkValidations: [],
+    showValidation: false,
+    isTextarea: true,
+    isPassword: O.none,
+    isFocus: false,
+    ui: standardInputUi(true),
+  },
+]
+
+const settingsEmailFormItem = (email: string): [string, Form.FormType] => [
+  settingsEmailField,
+  {
+    _tag: 'TextType',
+    placeholder: 'Email',
+    label: 'Email',
+    currentValue: email,
+    validation: (s: string) =>
+      pipe(Form.nonEmptyValidator(s, 'Email'), E.chain(Form.emailValidator)),
+    linkValidations: [],
+    showValidation: false,
+    isTextarea: false,
+    isPassword: O.none,
+    isFocus: false,
+    ui: standardInputUi(false),
+  },
+]
+
+const settingsPasswordFormItem = (): [string, Form.FormType] => [
+  settingsPasswordField,
+  {
+    _tag: 'TextType',
+    placeholder: 'New Password',
+    label: 'Password',
+    currentValue: '',
+    validation: (s: string) => minLengthIfExistValidator('Password', 8)(s),
+    linkValidations: [],
+    showValidation: false,
+    isTextarea: false,
+    isPassword: O.some({ revealPassword: false, disableAutocomplete: false }),
+    isFocus: false,
+    ui: standardInputUi(false),
+  },
+]
+
+const settingsPasswordConfirmationFormItem = (): [string, Form.FormType] => [
+  settingsPasswordConfirmationField,
+  {
+    _tag: 'TextType',
+    placeholder: 'Repeat Password',
+    label: 'Repeat Password',
+    currentValue: '',
+    validation: (s: string) =>
+      minLengthIfExistValidator('Repeat Password', 8)(s),
+    linkValidations: [
+      {
+        linkKey: settingsPasswordField,
+        validation: (currentInput: string, linkInput: string) => {
+          if (currentInput !== linkInput) {
+            return E.left('Password does not match')
+          }
+          return E.right(currentInput)
+        },
+      },
+    ],
+    showValidation: false,
+    isTextarea: false,
+    isPassword: O.some({ revealPassword: false, disableAutocomplete: false }),
+    isFocus: false,
+    ui: standardInputUi(false),
+  },
+]
+
+const settingsFormConfig = (user: User): Form.Forms =>
+  new Map([
+    settingsImageFormItem(user.image),
+    settingsUsernameFormItem(user.username),
+    settingsBioFormItem(user.bio),
+    settingsEmailFormItem(user.email),
+    settingsPasswordFormItem(),
+    settingsPasswordConfirmationFormItem(),
+  ])
 
 const preprocessFormMsgHandler =
   (newForm: Form.Model) =>
@@ -116,9 +170,8 @@ export const formMsgHandler =
     return preprocessFormMsgHandler(Form.update(subMsg)(model.form))(model)
   }
 
-
 export const init = (user: User): [Model, Cmd<Msg>] => {
-  const initialForm = Form.init(new Map(settingsFormConfig(user)))
+  const initialForm = Form.init(settingsFormConfig(user))
   const baseModel: Model = {
     form: initialForm,
     requestRd: RD.initial,
@@ -138,11 +191,15 @@ export const update =
         return [model, Cmd.none()]
       case 'Submit': {
         const form = model.form
-        const image = valueTextType(lookupForm('image', form.forms))
-        const username = valueTextType(lookupForm('username', form.forms))
-        const bio = valueTextType(lookupForm('bio', form.forms))
-        const email = valueTextType(lookupForm('email', form.forms))
-        const password = valueTextType(lookupForm('password', form.forms))
+        const image = valueTextType(lookupForm(settingsImageField, form.forms))
+        const username = valueTextType(
+          lookupForm(settingsUsernameField, form.forms),
+        )
+        const bio = valueTextType(lookupForm(settingsBioField, form.forms))
+        const email = valueTextType(lookupForm(settingsEmailField, form.forms))
+        const password = valueTextType(
+          lookupForm(settingsPasswordField, form.forms),
+        )
 
         const userUpdate: {
           image?: string

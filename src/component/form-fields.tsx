@@ -14,9 +14,11 @@ export const standardInputUi =
   (props: CustomTextInputProps) => {
     const isError = E.isLeft(props.validationResult) && props.showValidation
     const sizeClass = isLarge ? 'py-[12px] text-base' : 'py-[8px] text-sm'
-    const validationClass = isError ? 'border-red-500' : 'border-gray-300'
+    const validationClass = isError
+      ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+      : 'border-gray-300 focus:border-green-500 focus:ring-green-500'
     const inputClass = cn(
-      'w-full rounded border px-[12px] bg-white outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-colors',
+      'w-full rounded border px-[12px] bg-white outline-none focus:ring-1 transition-colors',
       validationClass,
       sizeClass,
     )

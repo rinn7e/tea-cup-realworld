@@ -22,8 +22,8 @@ import {
   loginPage,
   notFoundPage,
   profilePage,
-  signupPage,
   settingsPage,
+  signupPage,
 } from './type'
 
 export const removeBaseUrl = (href: string): string => {

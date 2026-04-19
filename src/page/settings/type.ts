@@ -1,13 +1,19 @@
 import * as RD from '@devexperts/remote-data-ts'
 import * as Form from '@rinn7e/tea-cup-form'
-import { EqAlways, NullableEq } from '@rinn7e/tea-cup-prelude'
+import { EqAlways } from '@rinn7e/tea-cup-prelude'
 import * as EqClass from 'fp-ts/lib/Eq'
-import * as O from 'fp-ts/lib/Option'
 import * as B from 'fp-ts/lib/boolean'
 import type { Dispatcher, Result } from 'tea-cup-fp'
 
 import { HttpErrorStringEq } from '@/api/type'
 import type { HttpErrorString, UserResponse } from '@/api/type'
+
+export const settingsImageField = 'image'
+export const settingsUsernameField = 'username'
+export const settingsBioField = 'bio'
+export const settingsEmailField = 'email'
+export const settingsPasswordField = 'password'
+export const settingsPasswordConfirmationField = 'passwordConfirmation'
 
 export type Model = {
   form: Form.Model

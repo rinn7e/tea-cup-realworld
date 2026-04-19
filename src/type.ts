@@ -4,12 +4,12 @@ import type { User } from './api/type'
 import type * as DebugPanel from './component/debug-panel'
 import type { AppRoute } from './data/route'
 import type * as ArticlePage from './page/article/type'
-import type * as LoginPage from './page/login/type'
-import type * as SignupPage from './page/signup/type'
 import type * as EditorPage from './page/editor/type'
 import type * as HomePage from './page/home/type'
+import type * as LoginPage from './page/login/type'
 import type * as ProfilePage from './page/profile/type'
 import type * as SettingsPage from './page/settings/type'
+import type * as SignupPage from './page/signup/type'
 
 export type Route = AppRoute
 

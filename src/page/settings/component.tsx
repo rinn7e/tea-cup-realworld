@@ -1,11 +1,19 @@
 import * as RD from '@devexperts/remote-data-ts'
 import { FormItemMemo } from '@rinn7e/tea-cup-form/lib/component'
-import { pipe } from 'fp-ts/lib/function'
 import React from 'react'
 
 import { memoStrategy } from '@/util/memo-strategy'
 
-import { Props, PropsEq } from './type'
+import {
+  Props,
+  PropsEq,
+  settingsBioField,
+  settingsEmailField,
+  settingsImageField,
+  settingsPasswordConfirmationField,
+  settingsPasswordField,
+  settingsUsernameField,
+} from './type'
 
 function SettingsPageComponent({ model, dispatch }: Props) {
   const form = model.form
@@ -35,27 +43,32 @@ function SettingsPageComponent({ model, dispatch }: Props) {
             disabled={RD.isPending(model.requestRd)}
           >
             <FormItemMemo
-              field='image'
+              field={settingsImageField}
               model={form}
               dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
             />
             <FormItemMemo
-              field='username'
+              field={settingsUsernameField}
               model={form}
               dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
             />
             <FormItemMemo
-              field='bio'
+              field={settingsBioField}
               model={form}
               dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
             />
             <FormItemMemo
-              field='email'
+              field={settingsEmailField}
               model={form}
               dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
             />
             <FormItemMemo
-              field='password'
+              field={settingsPasswordField}
+              model={form}
+              dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
+            />
+            <FormItemMemo
+              field={settingsPasswordConfirmationField}
               model={form}
               dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
             />
