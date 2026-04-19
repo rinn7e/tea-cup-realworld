@@ -54,6 +54,17 @@ export const Footer: React.FC = () => {
               rinn7e
             </a>
           </span>
+          <span className='text-xs text-gray-400'>
+            Source code can be found{' '}
+            <a
+              href='https://github.com/rinn7e/tea-cup-realworld'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='underline hover:text-gray-600'
+            >
+              here
+            </a>
+          </span>
         </div>
       </div>
     </footer>

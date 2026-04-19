@@ -9,3 +9,7 @@ export const minLengthIfExistValidator =
     }
     return Form.minLengthValidator(label, minLength)(input)
   }
+
+export const isEmailField = (str: string): boolean => {
+  return str.toLowerCase().includes('email')
+}
