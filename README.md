@@ -36,7 +36,7 @@ To run the application with a local API server:
 To run the application using the official RealWorld API server:
 
 ```bash
-npm run dev -- --mode prod
+npm run dev -- --mode production
 ```
 
 This will use the base URL: `https://api.realworld.show/api`.
