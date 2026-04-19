@@ -7,7 +7,7 @@ import { memoStrategy } from '@/util/memo-strategy'
 
 import { Props, PropsEq } from './type'
 
-function AuthView({ model, dispatch }: Props) {
+function AuthPageComponent({ model, dispatch }: Props) {
   const title = model.isRegister ? 'Sign up' : 'Sign in'
   const linkText = model.isRegister ? 'Have an account?' : 'Need an account?'
   const loginRoute: Route = { page: { _tag: 'LoginPage' } }
@@ -81,4 +81,4 @@ function AuthView({ model, dispatch }: Props) {
   )
 }
 
-export const AuthViewMemo = memoStrategy(AuthView, PropsEq.equals)
+export const AuthPageMemo = memoStrategy(AuthPageComponent, PropsEq.equals)

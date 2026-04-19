@@ -5,7 +5,7 @@ import { memoStrategy } from '@/util/memo-strategy'
 
 import { Props, PropsEq } from './type'
 
-function SettingsView({ model, dispatch }: Props) {
+function SettingsPageComponent({ model, dispatch }: Props) {
   if (model.form._tag === 'None') {
     return (
       <div className='flex min-h-[400px] items-center justify-center pt-[64px]'>
@@ -96,4 +96,7 @@ function SettingsView({ model, dispatch }: Props) {
   )
 }
 
-export const SettingsViewMemo = memoStrategy(SettingsView, PropsEq.equals)
+export const SettingsPageMemo = memoStrategy(
+  SettingsPageComponent,
+  PropsEq.equals,
+)

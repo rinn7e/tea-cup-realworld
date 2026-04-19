@@ -20,12 +20,12 @@ interface Props {
 
 export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
   const user = model.shared.user
-  const pageTag = model.page._tag
+  const pageTag = model.pageModel._tag
 
-  const isHome = pageTag === 'Home'
-  const isEditor = pageTag === 'Editor'
-  const isSettings = pageTag === 'Settings'
-  const isProfile = pageTag === 'Profile'
+  const isHome = pageTag === 'HomePageModel'
+  const isEditor = pageTag === 'EditorPageModel'
+  const isSettings = pageTag === 'SettingsPageModel'
+  const isProfile = pageTag === 'ProfilePageModel'
 
   const activeCls = 'font-semibold text-green-600'
   const inactiveCls = 'text-gray-500 hover:text-gray-900'

@@ -6,7 +6,7 @@ import { memoStrategy } from '@/util/memo-strategy'
 
 import { Props, PropsEq } from './type'
 
-function EditorView({ model, dispatch }: Props) {
+function EditorPageComponent({ model, dispatch }: Props) {
   if (model.form._tag === 'None') {
     return (
       <div className='mx-auto flex w-full max-w-[768px] flex-col gap-[24px] px-[16px] py-[32px]'>
@@ -96,4 +96,4 @@ function EditorView({ model, dispatch }: Props) {
   )
 }
 
-export const EditorViewMemo = memoStrategy(EditorView, PropsEq.equals)
+export const EditorPageMemo = memoStrategy(EditorPageComponent, PropsEq.equals)

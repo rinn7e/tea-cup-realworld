@@ -9,14 +9,14 @@ import type {
   HttpErrorString,
   ProfileResponse,
 } from '@/api/type'
-import { ArticleShortView } from '@/component/article-short'
+import { ArticleShortComponent } from '@/component/article-short/component'
 import { Link } from '@/component/link'
 import { assetPath } from '@/util'
 import { memoStrategy } from '@/util/memo-strategy'
 
 import { Props, PropsEq } from './type'
 
-function ProfileView({ model, dispatch, isCurrentUser }: Props) {
+function ProfilePageComponent({ model, dispatch, isCurrentUser }: Props) {
   return (
     <div className='flex min-h-full flex-col'>
       {pipe(
@@ -148,7 +148,7 @@ function ProfileView({ model, dispatch, isCurrentUser }: Props) {
                         ) : (
                           <div className='flex flex-col'>
                             {articlesData.articles.map((article) => (
-                              <ArticleShortView
+                              <ArticleShortComponent
                                 key={article.slug}
                                 model={article}
                                 dispatch={(subMsg) =>
@@ -174,4 +174,7 @@ function ProfileView({ model, dispatch, isCurrentUser }: Props) {
   )
 }
 
-export const ProfileViewMemo = memoStrategy(ProfileView, PropsEq.equals)
+export const ProfilePageMemo = memoStrategy(
+  ProfilePageComponent,
+  PropsEq.equals,
+)

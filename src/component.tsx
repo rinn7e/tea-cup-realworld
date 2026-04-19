@@ -6,13 +6,13 @@ import { DebugPanelComponent } from './component/debug-panel/component'
 import { Footer } from './component/footer'
 import { SetGlobalMsgContext } from './component/global-context'
 import { Navbar } from './component/navbar'
-import * as Article from './page/article/component'
-import * as Auth from './page/auth/component'
-import * as Editor from './page/editor/component'
-import * as Home from './page/home/component'
+import { ArticlePageMemo } from './page/article/component'
+import { AuthPageMemo } from './page/auth/component'
+import { EditorPageMemo } from './page/editor/component'
+import { HomePageMemo } from './page/home/component'
 import { NotFoundView } from './page/not-found'
-import * as Profile from './page/profile/component'
-import * as Settings from './page/settings/component'
+import { ProfilePageMemo } from './page/profile/component'
+import { SettingsPageMemo } from './page/settings/component'
 import type { Model, Msg } from './type'
 
 interface Props {
@@ -44,60 +44,60 @@ export const App: React.FC<Props> = ({ model, dispatch }) => {
 }
 
 const renderPage = (model: Model, dispatch: Dispatcher<Msg>) => {
-  switch (model.page._tag) {
-    case 'Home':
+  switch (model.pageModel._tag) {
+    case 'HomePageModel':
       return (
-        <Home.HomeViewMemo
-          model={model.page.model}
-          dispatch={(msg) => dispatch({ _tag: 'HomeMsg', subMsg: msg })}
+        <HomePageMemo
+          model={model.pageModel.model}
+          dispatch={(msg) => dispatch({ _tag: 'HomePageMsg', subMsg: msg })}
         />
       )
-    case 'Article':
+    case 'ArticlePageModel':
       return (
-        <Article.ArticleViewMemo
-          model={model.page.model}
+        <ArticlePageMemo
+          model={model.pageModel.model}
           token={model.shared.token}
-          dispatch={(msg) => dispatch({ _tag: 'ArticleMsg', subMsg: msg })}
+          dispatch={(msg) => dispatch({ _tag: 'ArticlePageMsg', subMsg: msg })}
         />
       )
-    case 'Auth':
+    case 'AuthPageModel':
       return (
-        <Auth.AuthViewMemo
-          model={model.page.model}
-          dispatch={(msg) => dispatch({ _tag: 'AuthMsg', subMsg: msg })}
+        <AuthPageMemo
+          model={model.pageModel.model}
+          dispatch={(msg) => dispatch({ _tag: 'AuthPageMsg', subMsg: msg })}
         />
       )
-    case 'Settings':
+    case 'SettingsPageModel':
       return (
-        <Settings.SettingsViewMemo
-          model={model.page.model}
-          dispatch={(msg) => dispatch({ _tag: 'SettingsMsg', subMsg: msg })}
+        <SettingsPageMemo
+          model={model.pageModel.model}
+          dispatch={(msg) => dispatch({ _tag: 'SettingsPageMsg', subMsg: msg })}
         />
       )
-    case 'Profile': {
+    case 'ProfilePageModel': {
       const isCurrentUser =
         model.shared.user._tag === 'Some' &&
         model.shared.user.value.username ===
-          (model.page.model.profile._tag === 'RemoteSuccess'
-            ? model.page.model.profile.value.profile.username
+          (model.pageModel.model.profile._tag === 'RemoteSuccess'
+            ? model.pageModel.model.profile.value.profile.username
             : '')
 
       return (
-        <Profile.ProfileViewMemo
-          model={model.page.model}
-          dispatch={(msg) => dispatch({ _tag: 'ProfileMsg', subMsg: msg })}
+        <ProfilePageMemo
+          model={model.pageModel.model}
+          dispatch={(msg) => dispatch({ _tag: 'ProfilePageMsg', subMsg: msg })}
           isCurrentUser={isCurrentUser}
         />
       )
     }
-    case 'Editor':
+    case 'EditorPageModel':
       return (
-        <Editor.EditorViewMemo
-          model={model.page.model}
-          dispatch={(msg) => dispatch({ _tag: 'EditorMsg', subMsg: msg })}
+        <EditorPageMemo
+          model={model.pageModel.model}
+          dispatch={(msg) => dispatch({ _tag: 'EditorPageMsg', subMsg: msg })}
         />
       )
-    case 'NotFound':
+    case 'NotFoundPageModel':
       return <NotFoundView />
   }
 }

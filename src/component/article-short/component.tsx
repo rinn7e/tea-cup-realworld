@@ -12,7 +12,7 @@ export interface Props {
   dispatch: Dispatcher<Msg>
 }
 
-export const ArticleShortView: React.FC<Props> = ({ model, dispatch }) => {
+export const ArticleShortComponent: React.FC<Props> = ({ model, dispatch }) => {
   return (
     <div className='flex flex-col gap-[12px] border-b border-gray-200 py-[24px]'>
       <div className='flex items-center justify-between'>

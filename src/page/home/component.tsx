@@ -8,14 +8,14 @@ import type {
   HttpErrorString,
   TagsResponse,
 } from '@/api/type'
-import { ArticleShortView } from '@/component/article-short'
+import { ArticleShortComponent } from '@/component/article-short/component'
 import { Link } from '@/component/link'
 import { homePage } from '@/data/route'
 import { memoStrategy } from '@/util/memo-strategy'
 
 import { Props, PropsEq } from './type'
 
-function HomeView({ model, dispatch }: Props) {
+function HomePageComponent({ model, dispatch }: Props) {
   return (
     <div className='flex min-h-full flex-col'>
       {/* Hero Section */}
@@ -78,7 +78,7 @@ function HomeView({ model, dispatch }: Props) {
                     ) : (
                       <div className='flex flex-col'>
                         {data.articles.map((article) => (
-                          <ArticleShortView
+                          <ArticleShortComponent
                             key={article.slug}
                             model={article}
                             dispatch={(subMsg) =>
@@ -146,4 +146,4 @@ function HomeView({ model, dispatch }: Props) {
   )
 }
 
-export const HomeViewMemo = memoStrategy(HomeView, PropsEq.equals)
+export const HomePageMemo = memoStrategy(HomePageComponent, PropsEq.equals)

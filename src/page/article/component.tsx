@@ -18,7 +18,7 @@ import { memoStrategy } from '@/util/memo-strategy'
 
 import { Props, PropsEq } from './type'
 
-function ArticleView({ model, token, dispatch }: Props) {
+function ArticlePageComponent({ model, token, dispatch }: Props) {
   return (
     <div className='flex min-h-full flex-col'>
       {pipe(
@@ -334,4 +334,7 @@ function ArticleView({ model, token, dispatch }: Props) {
   )
 }
 
-export const ArticleViewMemo = memoStrategy(ArticleView, PropsEq.equals)
+export const ArticlePageMemo = memoStrategy(
+  ArticlePageComponent,
+  PropsEq.equals,
+)
