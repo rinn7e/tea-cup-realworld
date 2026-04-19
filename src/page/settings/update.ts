@@ -1,3 +1,4 @@
+import * as RD from '@devexperts/remote-data-ts'
 import * as Form from '@rinn7e/tea-cup-form'
 import { lookupForm, valueTextType } from '@rinn7e/tea-cup-form'
 import { attemptTE } from '@rinn7e/tea-cup-prelude'
@@ -95,34 +96,48 @@ const settingsFormConfig = (user: User): [string, Form.FormType][] => [
   ],
 ]
 
-export const init = (shared: Shared): [Model, Cmd<Msg>] => {
-  return [
-    {
-      form: pipe(
-        shared.user,
-        O.map((u) => Form.init(new Map(settingsFormConfig(u)))),
-      ),
-      errors: null,
-      submitting: false,
-    },
-    Cmd.none(),
-  ]
+const preprocessFormMsgHandler =
+  (newForm: Form.Model) =>
+  (model: Model): Model => {
+    const isFormValid =
+      Form.runValidationForAll(newForm.forms, Form.noExtraValidation)._tag ===
+      'Right'
+    return {
+      ...model,
+      form: newForm,
+      isFormValid,
+      requestRd: RD.initial,
+    }
+  }
+
+export const formMsgHandler =
+  (subMsg: Form.Msg) =>
+  (model: Model): Model => {
+    return preprocessFormMsgHandler(Form.update(subMsg)(model.form))(model)
+  }
+
+
+export const init = (user: User): [Model, Cmd<Msg>] => {
+  const initialForm = Form.init(new Map(settingsFormConfig(user)))
+  const baseModel: Model = {
+    form: initialForm,
+    requestRd: RD.initial,
+    isFormValid: false,
+  }
+  return [preprocessFormMsgHandler(initialForm)(baseModel), Cmd.none()]
 }
 
 export const update =
-  (shared: Shared) =>
+  (user: User) =>
   (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
     switch (msg._tag) {
-      case 'FormMsg':
-        return [
-          { ...model, form: pipe(model.form, O.map(Form.update(msg.subMsg))) },
-          Cmd.none(),
-        ]
+      case 'FormMsg': {
+        return [{ ...formMsgHandler(msg.subMsg)(model) }, Cmd.none()]
+      }
       case 'Logout':
         return [model, Cmd.none()]
       case 'Submit': {
-        if (model.form._tag === 'None') return [model, Cmd.none()]
-        const form = model.form.value
+        const form = model.form
         const image = valueTextType(lookupForm('image', form.forms))
         const username = valueTextType(lookupForm('username', form.forms))
         const bio = valueTextType(lookupForm('bio', form.forms))
@@ -140,22 +155,20 @@ export const update =
           userUpdate.password = password
         }
 
-        if (shared.token._tag === 'None') return [model, Cmd.none()]
-
         return [
-          { ...model, submitting: true, errors: null },
+          { ...model, requestRd: RD.pending },
           attemptTE(
-            updateUser(shared.token.value, { user: userUpdate }),
+            updateUser(user.token, { user: userUpdate }),
             (result): Msg => ({ _tag: 'SubmitResponse', result }),
           ),
         ]
       }
       case 'SubmitResponse':
         if (msg.result.tag === 'Ok') {
-          return [{ ...model, submitting: false }, Cmd.none()]
+          return [{ ...model, requestRd: RD.success(null) }, Cmd.none()]
         } else {
           return [
-            { ...model, submitting: false, errors: msg.result.err },
+            { ...model, requestRd: RD.failure(msg.result.err) },
             Cmd.none(),
           ]
         }

@@ -1,3 +1,4 @@
+import * as RD from '@devexperts/remote-data-ts'
 import * as Form from '@rinn7e/tea-cup-form'
 import { EqAlways, NullableEq } from '@rinn7e/tea-cup-prelude'
 import * as EqClass from 'fp-ts/lib/Eq'
@@ -9,15 +10,15 @@ import { HttpErrorStringEq } from '@/api/type'
 import type { HttpErrorString, UserResponse } from '@/api/type'
 
 export type Model = {
-  form: O.Option<Form.Model>
-  errors: HttpErrorString | null
-  submitting: boolean
+  form: Form.Model
+  requestRd: RD.RemoteData<HttpErrorString, null>
+  isFormValid: boolean
 }
 
 export const ModelEq = EqClass.struct<Model>({
-  form: O.getEq(Form.ModelEq),
-  errors: NullableEq(HttpErrorStringEq),
-  submitting: B.Eq,
+  form: Form.ModelEq,
+  requestRd: RD.getEq(HttpErrorStringEq, EqAlways),
+  isFormValid: B.Eq,
 })
 
 export type Msg =

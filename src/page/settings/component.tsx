@@ -1,4 +1,6 @@
+import * as RD from '@devexperts/remote-data-ts'
 import { FormItemMemo } from '@rinn7e/tea-cup-form/lib/component'
+import { pipe } from 'fp-ts/lib/function'
 import React from 'react'
 
 import { memoStrategy } from '@/util/memo-strategy'
@@ -6,15 +8,7 @@ import { memoStrategy } from '@/util/memo-strategy'
 import { Props, PropsEq } from './type'
 
 function SettingsPageComponent({ model, dispatch }: Props) {
-  if (model.form._tag === 'None') {
-    return (
-      <div className='flex min-h-[400px] items-center justify-center pt-[64px]'>
-        <div className='text-gray-500'>Loading settings...</div>
-      </div>
-    )
-  }
-
-  const form = model.form.value
+  const form = model.form
 
   return (
     <div className='flex min-h-full items-start justify-center px-[16px] pt-[64px] pb-[32px]'>
@@ -23,9 +17,9 @@ function SettingsPageComponent({ model, dispatch }: Props) {
           Your Settings
         </h1>
 
-        {model.errors && (
+        {RD.isFailure(model.requestRd) && (
           <ul className='flex flex-col gap-[4px] rounded border border-red-200 bg-red-50 p-[12px] text-sm text-red-700'>
-            <li>{model.errors.actualErr}</li>
+            <li>{model.requestRd.error.actualErr}</li>
           </ul>
         )}
 
@@ -36,7 +30,10 @@ function SettingsPageComponent({ model, dispatch }: Props) {
             dispatch({ _tag: 'Submit' })
           }}
         >
-          <fieldset className='flex flex-col gap-[0px]'>
+          <fieldset
+            className='flex flex-col gap-[0px]'
+            disabled={RD.isPending(model.requestRd)}
+          >
             <FormItemMemo
               field='image'
               model={form}
@@ -66,7 +63,7 @@ function SettingsPageComponent({ model, dispatch }: Props) {
               <button
                 className='rounded bg-green-600 px-[20px] py-[10px] text-sm font-semibold text-white transition-colors hover:bg-green-700 disabled:opacity-60'
                 type='submit'
-                disabled={model.submitting}
+                disabled={RD.isPending(model.requestRd) || !model.isFormValid}
               >
                 Update Settings
               </button>

@@ -174,7 +174,12 @@ const navigate =
         ]
       }
       case 'SettingsPage': {
-        const [settingsModel, settingsCmd] = SettingsPage.init(model.shared)
+        if (model.shared.user._tag === 'None') {
+          return navigate({ page: { _tag: 'LoginPage' } }, isInternal)(model)
+        }
+        const [settingsModel, settingsCmd] = SettingsPage.init(
+          model.shared.user.value,
+        )
         return [
           {
             ...model,
@@ -216,9 +221,12 @@ const navigate =
         ]
       }
       case 'EditorPage': {
+        if (model.shared.user._tag === 'None') {
+          return navigate({ page: { _tag: 'LoginPage' } }, isInternal)(model)
+        }
         const [editorModel, editorCmd] = EditorPage.init(
+          model.shared.user.value,
           newRoute.page.slug,
-          model.shared,
         )
         return [
           {
@@ -431,11 +439,13 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
       }
     }
     case 'SettingsPageMsg': {
-      if (model.pageModel._tag === 'SettingsPageModel') {
-        const [settingsModel, settingsCmd] = SettingsPage.update(model.shared)(
-          msg.subMsg,
-          model.pageModel.model,
-        )
+      if (
+        model.pageModel._tag === 'SettingsPageModel' &&
+        model.shared.user._tag === 'Some'
+      ) {
+        const [settingsModel, settingsCmd] = SettingsPage.update(
+          model.shared.user.value,
+        )(msg.subMsg, model.pageModel.model)
 
         return pipe(
           [
@@ -505,11 +515,13 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
       }
       return [model, Cmd.none()]
     case 'EditorPageMsg': {
-      if (model.pageModel._tag === 'EditorPageModel') {
-        const [editorModel, editorCmd] = EditorPage.update(model.shared)(
-          msg.subMsg,
-          model.pageModel.model,
-        )
+      if (
+        model.pageModel._tag === 'EditorPageModel' &&
+        model.shared.user._tag === 'Some'
+      ) {
+        const [editorModel, editorCmd] = EditorPage.update(
+          model.shared.user.value,
+        )(msg.subMsg, model.pageModel.model)
 
         return pipe(
           [

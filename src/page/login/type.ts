@@ -10,12 +10,14 @@ import type { HttpErrorString, UserResponse } from '@/api/type'
 
 export type Model = {
   form: Form.Model
-  submitRd: RD.RemoteData<HttpErrorString, null>
+  requestRd: RD.RemoteData<HttpErrorString, null>
+  isFormValid: boolean
 }
 
 export const ModelEq = EqClass.struct<Model>({
   form: Form.ModelEq,
-  submitRd: RD.getEq(HttpErrorStringEq, EqAlways),
+  requestRd: RD.getEq(HttpErrorStringEq, EqAlways),
+  isFormValid: B.Eq,
 })
 
 export type Msg =

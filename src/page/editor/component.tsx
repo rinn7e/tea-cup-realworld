@@ -1,4 +1,6 @@
+import * as RD from '@devexperts/remote-data-ts'
 import { FormItemMemo } from '@rinn7e/tea-cup-form/lib/component'
+import { pipe } from 'fp-ts/lib/function'
 import { X } from 'lucide-react'
 import React from 'react'
 
@@ -7,29 +9,13 @@ import { memoStrategy } from '@/util/memo-strategy'
 import { Props, PropsEq } from './type'
 
 function EditorPageComponent({ model, dispatch }: Props) {
-  if (model.form._tag === 'None') {
-    return (
-      <div className='mx-auto flex w-full max-w-[768px] flex-col gap-[24px] px-[16px] py-[32px]'>
-        <div className='flex min-h-[400px] items-center justify-center'>
-          Loading...
-        </div>
-      </div>
-    )
-  }
-
-  const form = model.form.value
+  const form = model.form
 
   return (
     <div className='mx-auto flex w-full max-w-[768px] flex-col gap-[24px] px-[16px] py-[32px]'>
-      {model.errors && (
+      {RD.isFailure(model.requestRd) && (
         <ul className='flex flex-col gap-[4px] rounded border border-red-200 bg-red-50 p-[12px] text-sm text-red-700'>
-          {Object.entries({ error: [model.errors.actualErr] }).map(
-            ([field, messages]) => (
-              <li key={field}>
-                {field} {(messages as string[]).join(', ')}
-              </li>
-            ),
-          )}
+          <li>{model.requestRd.error.actualErr}</li>
         </ul>
       )}
 
@@ -39,7 +25,10 @@ function EditorPageComponent({ model, dispatch }: Props) {
           dispatch({ _tag: 'Submit' })
         }}
       >
-        <fieldset className='flex flex-col gap-[0px]'>
+        <fieldset
+          className='flex flex-col gap-[0px]'
+          disabled={RD.isPending(model.requestRd)}
+        >
           <FormItemMemo
             field='title'
             model={form}
@@ -85,7 +74,7 @@ function EditorPageComponent({ model, dispatch }: Props) {
             <button
               className='rounded bg-green-600 px-[20px] py-[10px] text-sm font-semibold text-white transition-colors hover:bg-green-700 disabled:opacity-60'
               type='submit'
-              disabled={model.submitting}
+              disabled={RD.isPending(model.requestRd) || !model.isFormValid}
             >
               Publish Article
             </button>

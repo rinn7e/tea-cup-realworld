@@ -2,6 +2,7 @@ import * as RD from '@devexperts/remote-data-ts'
 import * as Form from '@rinn7e/tea-cup-form'
 import { attemptTE } from '@rinn7e/tea-cup-prelude'
 import * as O from 'fp-ts/lib/Option'
+import { pipe } from 'fp-ts/lib/function'
 import { Cmd } from 'tea-cup-fp'
 
 import { signup } from '@/api'
@@ -67,25 +68,44 @@ const signupFormConfig: [string, Form.FormType][] = [
   passwordField,
 ]
 
+const preprocessFormMsgHandler =
+  (newForm: Form.Model) =>
+  (model: Model): Model => {
+    const isFormValid =
+      Form.runValidationForAll(newForm.forms, Form.noExtraValidation)._tag ===
+      'Right'
+    return {
+      ...model,
+      form: newForm,
+      isFormValid,
+      requestRd: RD.initial,
+    }
+  }
+
+export const formMsgHandler =
+  (subMsg: Form.Msg) =>
+  (model: Model): Model => {
+    return pipe(model.form, Form.update(subMsg), (newForm) =>
+      preprocessFormMsgHandler(newForm)(model),
+    )
+  }
+
 export const init = (_shared: Shared): [Model, Cmd<Msg>] => {
-  return [
-    {
-      form: Form.init(new Map(signupFormConfig)),
-      submitRd: RD.initial,
-    },
-    Cmd.none(),
-  ]
+  const model: Model = {
+    form: Form.init(new Map(signupFormConfig)),
+    requestRd: RD.initial,
+    isFormValid: false,
+  }
+  return [preprocessFormMsgHandler(model.form)(model), Cmd.none()]
 }
 
 export const update =
   (_shared: Shared) =>
   (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
     switch (msg._tag) {
-      case 'FormMsg':
-        return [
-          { ...model, form: Form.update(msg.subMsg)(model.form) },
-          Cmd.none(),
-        ]
+      case 'FormMsg': {
+        return [{ ...formMsgHandler(msg.subMsg)(model) }, Cmd.none()]
+      }
       case 'Submit': {
         const email = Form.valueTextType(
           Form.lookupForm('email', model.form.forms),
@@ -98,7 +118,7 @@ export const update =
         )
 
         return [
-          { ...model, submitRd: RD.pending },
+          { ...model, requestRd: RD.pending },
           attemptTE(
             signup({ user: { username, email, password } }),
             (result): Msg => ({ _tag: 'SubmitResponse', result }),
@@ -107,10 +127,10 @@ export const update =
       }
       case 'SubmitResponse':
         if (msg.result.tag === 'Ok') {
-          return [{ ...model, submitRd: RD.success(null) }, Cmd.none()]
+          return [{ ...model, requestRd: RD.success(null) }, Cmd.none()]
         } else {
           return [
-            { ...model, submitRd: RD.failure(msg.result.err) },
+            { ...model, requestRd: RD.failure(msg.result.err) },
             Cmd.none(),
           ]
         }

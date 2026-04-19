@@ -26,18 +26,10 @@ function SignupPageComponent({ model, dispatch }: Props) {
           </p>
         </div>
 
-        {pipe(
-          model.submitRd,
-          RD.fold(
-            () => null,
-            () => null,
-            (err) => (
-              <ul className='flex flex-col gap-[4px] rounded border border-red-200 bg-red-50 p-[12px] text-sm text-red-700'>
-                <li>{err.actualErr}</li>
-              </ul>
-            ),
-            () => null,
-          ),
+        {RD.isFailure(model.requestRd) && (
+          <ul className='flex flex-col gap-[4px] rounded border border-red-200 bg-red-50 p-[12px] text-sm text-red-700'>
+            <li>{model.requestRd.error.actualErr}</li>
+          </ul>
         )}
 
         <form
@@ -48,7 +40,10 @@ function SignupPageComponent({ model, dispatch }: Props) {
             dispatch({ _tag: 'Submit' })
           }}
         >
-          <fieldset className='flex flex-col gap-[0px]'>
+          <fieldset
+            className='flex flex-col gap-[0px]'
+            disabled={RD.isPending(model.requestRd)}
+          >
             <FormItemMemo
               field='username'
               model={model.form}
@@ -68,7 +63,7 @@ function SignupPageComponent({ model, dispatch }: Props) {
               <button
                 className='w-full rounded bg-green-600 px-[16px] py-[10px] text-sm font-semibold text-white transition-colors hover:bg-green-700 disabled:opacity-60'
                 type='submit'
-                disabled={RD.isPending(model.submitRd)}
+                disabled={RD.isPending(model.requestRd) || !model.isFormValid}
               >
                 Sign up
               </button>
