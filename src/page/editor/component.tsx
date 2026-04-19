@@ -23,7 +23,7 @@ function EditorPageComponent({ model, dispatch }: Props) {
     <div className='mx-auto flex w-full max-w-[768px] flex-col gap-[24px] px-[16px] py-[32px]'>
       {model.errors && (
         <ul className='flex flex-col gap-[4px] rounded border border-red-200 bg-red-50 p-[12px] text-sm text-red-700'>
-          {Object.entries({ what: [model.errors.actualErr] }).map(
+          {Object.entries({ error: [model.errors.actualErr] }).map(
             ([field, messages]) => (
               <li key={field}>
                 {field} {(messages as string[]).join(', ')}

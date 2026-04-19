@@ -23,6 +23,8 @@ export const standardInputUi =
 
     const content = isTextarea ? (
       <textarea
+        name={props.key}
+        autoComplete='off'
         className={cn(inputClass, 'resize-none')}
         rows={8}
         placeholder={props.placeholder}
@@ -56,6 +58,8 @@ export const standardInputUi =
       />
     ) : (
       <input
+        name={props.key}
+        autoComplete='off'
         className={inputClass}
         type={
           props.isPassword._tag === 'Some'

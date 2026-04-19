@@ -25,13 +25,7 @@ function SettingsPageComponent({ model, dispatch }: Props) {
 
         {model.errors && (
           <ul className='flex flex-col gap-[4px] rounded border border-red-200 bg-red-50 p-[12px] text-sm text-red-700'>
-            {Object.entries({ what: [model.errors.actualErr] }).map(
-              ([field, messages]) => (
-                <li key={field}>
-                  {field} {(messages as string[]).join(', ')}
-                </li>
-              ),
-            )}
+            <li>{model.errors.actualErr}</li>
           </ul>
         )}
 

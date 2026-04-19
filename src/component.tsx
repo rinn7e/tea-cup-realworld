@@ -7,7 +7,8 @@ import { Footer } from './component/footer'
 import { SetGlobalMsgContext } from './component/global-context'
 import { Navbar } from './component/navbar'
 import { ArticlePageMemo } from './page/article/component'
-import { AuthPageMemo } from './page/auth/component'
+import { LoginPageMemo } from './page/login/component'
+import { RegisterPageMemo } from './page/register/component'
 import { EditorPageMemo } from './page/editor/component'
 import { HomePageMemo } from './page/home/component'
 import { NotFoundView } from './page/not-found'
@@ -60,11 +61,18 @@ const renderPage = (model: Model, dispatch: Dispatcher<Msg>) => {
           dispatch={(msg) => dispatch({ _tag: 'ArticlePageMsg', subMsg: msg })}
         />
       )
-    case 'AuthPageModel':
+    case 'LoginPageModel':
       return (
-        <AuthPageMemo
+        <LoginPageMemo
           model={model.pageModel.model}
-          dispatch={(msg) => dispatch({ _tag: 'AuthPageMsg', subMsg: msg })}
+          dispatch={(msg) => dispatch({ _tag: 'LoginPageMsg', subMsg: msg })}
+        />
+      )
+    case 'RegisterPageModel':
+      return (
+        <RegisterPageMemo
+          model={model.pageModel.model}
+          dispatch={(msg) => dispatch({ _tag: 'RegisterPageMsg', subMsg: msg })}
         />
       )
     case 'SettingsPageModel':

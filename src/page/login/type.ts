@@ -8,17 +8,13 @@ import { HttpErrorStringEq } from '@/api/type'
 import type { HttpErrorString, UserResponse } from '@/api/type'
 
 export type Model = {
-  isRegister: boolean
-  loginForm: Form.Model
-  signupForm: Form.Model
+  form: Form.Model
   errors: HttpErrorString | null
   submitting: boolean
 }
 
 export const ModelEq = EqClass.struct<Model>({
-  isRegister: B.Eq,
-  loginForm: Form.ModelEq,
-  signupForm: Form.ModelEq,
+  form: Form.ModelEq,
   errors: NullableEq(HttpErrorStringEq),
   submitting: B.Eq,
 })

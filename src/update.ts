@@ -14,7 +14,8 @@ import type { User } from './api/type'
 import * as DebugPanel from './component/debug-panel'
 import { AppRouteEq, homePage, parseAppRoute, toUrlString } from './data/route'
 import * as ArticlePage from './page/article/update'
-import * as AuthPage from './page/auth/update'
+import * as LoginPage from './page/login/update'
+import * as RegisterPage from './page/register/update'
 import * as EditorPage from './page/editor/update'
 import * as HomePage from './page/home/update'
 import * as ProfilePage from './page/profile/update'
@@ -141,34 +142,34 @@ const navigate =
         ]
       }
       case 'LoginPage': {
-        const [authModel, authCmd] = AuthPage.init(false, model.shared)
+        const [loginModel, loginCmd] = LoginPage.init(model.shared)
         return [
           {
             ...model,
             isInternal,
             route: newRoute,
-            pageModel: { _tag: 'AuthPageModel', model: authModel },
+            pageModel: { _tag: 'LoginPageModel', model: loginModel },
             navbarMobileOpen: { internal: null, state: { _tag: 'Invisible' } },
           },
           Cmd.batch([
             urlCmd,
-            authCmd.map((msg) => ({ _tag: 'AuthPageMsg', subMsg: msg })),
+            loginCmd.map((msg) => ({ _tag: 'LoginPageMsg', subMsg: msg })),
           ]),
         ]
       }
       case 'RegisterPage': {
-        const [authModel, authCmd] = AuthPage.init(true, model.shared)
+        const [registerModel, registerCmd] = RegisterPage.init(model.shared)
         return [
           {
             ...model,
             isInternal,
             route: newRoute,
-            pageModel: { _tag: 'AuthPageModel', model: authModel },
+            pageModel: { _tag: 'RegisterPageModel', model: registerModel },
             navbarMobileOpen: { internal: null, state: { _tag: 'Invisible' } },
           },
           Cmd.batch([
             urlCmd,
-            authCmd.map((msg) => ({ _tag: 'AuthPageMsg', subMsg: msg })),
+            registerCmd.map((msg) => ({ _tag: 'RegisterPageMsg', subMsg: msg })),
           ]),
         ]
       }
@@ -352,9 +353,9 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
         )
       }
       return [model, Cmd.none()]
-    case 'AuthPageMsg': {
-      if (model.pageModel._tag === 'AuthPageModel') {
-        const [authModel, authCmd] = AuthPage.update(model.shared)(
+    case 'LoginPageMsg': {
+      if (model.pageModel._tag === 'LoginPageModel') {
+        const [loginModel, loginCmd] = LoginPage.update(model.shared)(
           msg.subMsg,
           model.pageModel.model,
         )
@@ -363,10 +364,50 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
           [
             {
               ...model,
-              pageModel: { _tag: 'AuthPageModel', model: authModel } as const,
+              pageModel: { _tag: 'LoginPageModel', model: loginModel } as const,
             },
-            authCmd.map(
-              (m) => ({ _tag: 'AuthPageMsg' as const, subMsg: m }) as Msg,
+            loginCmd.map(
+              (m) => ({ _tag: 'LoginPageMsg' as const, subMsg: m }) as Msg,
+            ),
+          ] as [Model, Cmd<Msg>],
+          updateAndCmd((m) => {
+            if (
+              msg.subMsg._tag === 'SubmitResponse' &&
+              msg.subMsg.result.tag === 'Ok'
+            ) {
+              const user = msg.subMsg.result.value.user
+              saveToken(user.token)
+              return changeRouteHandler(
+                { page: homePage() },
+                true,
+              )({ ...m, shared: { ...m.shared, user: O.some(user) } })
+            } else {
+              return [m, Cmd.none()]
+            }
+          }),
+        )
+      } else {
+        return [model, Cmd.none()]
+      }
+    }
+    case 'RegisterPageMsg': {
+      if (model.pageModel._tag === 'RegisterPageModel') {
+        const [registerModel, registerCmd] = RegisterPage.update(model.shared)(
+          msg.subMsg,
+          model.pageModel.model,
+        )
+
+        return pipe(
+          [
+            {
+              ...model,
+              pageModel: {
+                _tag: 'RegisterPageModel',
+                model: registerModel,
+              } as const,
+            },
+            registerCmd.map(
+              (m) => ({ _tag: 'RegisterPageMsg' as const, subMsg: m }) as Msg,
             ),
           ] as [Model, Cmd<Msg>],
           updateAndCmd((m) => {

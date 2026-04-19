@@ -7,62 +7,51 @@ import { memoStrategy } from '@/util/memo-strategy'
 
 import { Props, PropsEq } from './type'
 
-function AuthPageComponent({ model, dispatch }: Props) {
-  const title = model.isRegister ? 'Sign up' : 'Sign in'
-  const linkText = model.isRegister ? 'Have an account?' : 'Need an account?'
+function RegisterPageComponent({ model, dispatch }: Props) {
   const loginRoute: Route = { page: { _tag: 'LoginPage' } }
-  const registerRoute: Route = { page: { _tag: 'RegisterPage' } }
-  const route = model.isRegister ? loginRoute : registerRoute
 
   return (
     <div className='flex min-h-full items-start justify-center px-[16px] pt-[64px] pb-[32px]'>
       <div className='flex w-full max-w-[448px] flex-col gap-[24px]'>
         <div className='flex flex-col gap-[8px]'>
           <h1 className='text-center text-3xl font-bold text-gray-900'>
-            {title}
+            Sign up
           </h1>
           <p className='text-center text-sm'>
-            <Link route={route} className='text-green-600 hover:underline'>
-              {linkText}
+            <Link route={loginRoute} className='text-green-600 hover:underline'>
+              Have an account?
             </Link>
           </p>
         </div>
 
         {model.errors && (
           <ul className='flex flex-col gap-[4px] rounded border border-red-200 bg-red-50 p-[12px] text-sm text-red-700'>
-            {Object.entries({ what: [model.errors.actualErr] }).map(
-              ([field, messages]) => (
-                <li key={field}>
-                  {field} {(messages as string[]).join(', ')}
-                </li>
-              ),
-            )}
+            <li>{model.errors.actualErr}</li>
           </ul>
         )}
 
         <form
           className='flex flex-col gap-[24px]'
+          autoComplete='off'
           onSubmit={(e) => {
             e.preventDefault()
             dispatch({ _tag: 'Submit' })
           }}
         >
           <fieldset className='flex flex-col gap-[0px]'>
-            {model.isRegister && (
-              <FormItemMemo
-                field='username'
-                model={model.signupForm}
-                dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
-              />
-            )}
+            <FormItemMemo
+              field='username'
+              model={model.form}
+              dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
+            />
             <FormItemMemo
               field='email'
-              model={model.isRegister ? model.signupForm : model.loginForm}
+              model={model.form}
               dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
             />
             <FormItemMemo
               field='password'
-              model={model.isRegister ? model.signupForm : model.loginForm}
+              model={model.form}
               dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
             />
             <div className='pt-[16px]'>
@@ -71,7 +60,7 @@ function AuthPageComponent({ model, dispatch }: Props) {
                 type='submit'
                 disabled={model.submitting}
               >
-                {title}
+                Sign up
               </button>
             </div>
           </fieldset>
@@ -81,4 +70,7 @@ function AuthPageComponent({ model, dispatch }: Props) {
   )
 }
 
-export const AuthPageMemo = memoStrategy(AuthPageComponent, PropsEq.equals)
+export const RegisterPageMemo = memoStrategy(
+  RegisterPageComponent,
+  PropsEq.equals,
+)
