@@ -71,7 +71,10 @@ const navigate =
             page: { _tag: 'Home', model: homeModel },
             navbarMobileOpen: { internal: null, state: { _tag: 'Invisible' } },
           },
-          Cmd.batch([urlCmd, homeCmd.map((msg) => ({ _tag: 'HomeMsg', msg }))]),
+          Cmd.batch([
+            urlCmd,
+            homeCmd.map((msg) => ({ _tag: 'HomeMsg', subMsg: msg })),
+          ]),
         ]
       }
       case 'ArticlePage': {
@@ -89,7 +92,7 @@ const navigate =
           },
           Cmd.batch([
             urlCmd,
-            articleCmd.map((msg) => ({ _tag: 'ArticleMsg', msg })),
+            articleCmd.map((msg) => ({ _tag: 'ArticleMsg', subMsg: msg })),
           ]),
         ]
       }
@@ -103,7 +106,10 @@ const navigate =
             page: { _tag: 'Auth', model: authModel },
             navbarMobileOpen: { internal: null, state: { _tag: 'Invisible' } },
           },
-          Cmd.batch([urlCmd, authCmd.map((msg) => ({ _tag: 'AuthMsg', msg }))]),
+          Cmd.batch([
+            urlCmd,
+            authCmd.map((msg) => ({ _tag: 'AuthMsg', subMsg: msg })),
+          ]),
         ]
       }
       case 'RegisterPage': {
@@ -116,7 +122,10 @@ const navigate =
             page: { _tag: 'Auth', model: authModel },
             navbarMobileOpen: { internal: null, state: { _tag: 'Invisible' } },
           },
-          Cmd.batch([urlCmd, authCmd.map((msg) => ({ _tag: 'AuthMsg', msg }))]),
+          Cmd.batch([
+            urlCmd,
+            authCmd.map((msg) => ({ _tag: 'AuthMsg', subMsg: msg })),
+          ]),
         ]
       }
       case 'SettingsPage': {
@@ -137,7 +146,7 @@ const navigate =
             },
             Cmd.batch([
               urlCmd,
-              settingsCmd.map((msg) => ({ _tag: 'SettingsMsg', msg })),
+              settingsCmd.map((msg) => ({ _tag: 'SettingsMsg', subMsg: msg })),
             ]),
           ]
         } else {
@@ -166,7 +175,7 @@ const navigate =
           },
           Cmd.batch([
             urlCmd,
-            profileCmd.map((msg) => ({ _tag: 'ProfileMsg', msg })),
+            profileCmd.map((msg) => ({ _tag: 'ProfileMsg', subMsg: msg })),
           ]),
         ]
       }
@@ -189,7 +198,7 @@ const navigate =
             },
             Cmd.batch([
               urlCmd,
-              editorCmd.map((msg) => ({ _tag: 'EditorMsg', msg })),
+              editorCmd.map((msg) => ({ _tag: 'EditorMsg', subMsg: msg })),
             ]),
           ]
         } else {
@@ -274,19 +283,19 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
     case 'HomeMsg':
       if (model.page._tag === 'Home') {
         const [homeModel, homeCmd] = Home.update(model.shared.token)(
-          msg.msg,
+          msg.subMsg,
           model.page.model,
         )
         return [
           { ...model, page: { _tag: 'Home', model: homeModel } },
-          homeCmd.map((msg) => ({ _tag: 'HomeMsg', msg })),
+          homeCmd.map((msg) => ({ _tag: 'HomeMsg', subMsg: msg })),
         ]
       }
       return [model, Cmd.none()]
     case 'ArticleMsg':
       if (model.page._tag === 'Article') {
         const [articleModel, articleCmd] = Article.update(model.shared.token)(
-          msg.msg,
+          msg.subMsg,
           model.page.model,
         )
         return pipe(
@@ -296,13 +305,13 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
               page: { _tag: 'Article', model: articleModel } as const,
             },
             articleCmd.map(
-              (m) => ({ _tag: 'ArticleMsg' as const, msg: m }) as Msg,
+              (m) => ({ _tag: 'ArticleMsg' as const, subMsg: m }) as Msg,
             ),
           ] as [Model, Cmd<Msg>],
           updateAndCmd((m) => {
             if (
-              msg.msg._tag === 'DeleteArticleResponse' &&
-              msg.msg.result.tag === 'Ok'
+              msg.subMsg._tag === 'DeleteArticleResponse' &&
+              msg.subMsg.result.tag === 'Ok'
             ) {
               return changeRouteHandler({ page: homePage() }, true)(m)
             }
@@ -313,19 +322,21 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
       return [model, Cmd.none()]
     case 'AuthMsg': {
       if (model.page._tag === 'Auth') {
-        const [authModel, authCmd] = Auth.update(msg.msg, model.page.model)
+        const [authModel, authCmd] = Auth.update(msg.subMsg, model.page.model)
 
         return pipe(
           [
             { ...model, page: { _tag: 'Auth', model: authModel } as const },
-            authCmd.map((m) => ({ _tag: 'AuthMsg' as const, msg: m }) as Msg),
+            authCmd.map(
+              (m) => ({ _tag: 'AuthMsg' as const, subMsg: m }) as Msg,
+            ),
           ] as [Model, Cmd<Msg>],
           updateAndCmd((m) => {
             if (
-              msg.msg._tag === 'SubmitResponse' &&
-              msg.msg.result.tag === 'Ok'
+              msg.subMsg._tag === 'SubmitResponse' &&
+              msg.subMsg.result.tag === 'Ok'
             ) {
-              const user = msg.msg.result.value.user
+              const user = msg.subMsg.result.value.user
               saveToken(user.token)
               return changeRouteHandler(
                 { page: homePage() },
@@ -347,7 +358,7 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
       ) {
         const token = model.shared.token.value
         const [settingsModel, settingsCmd] = Settings.update(token)(
-          msg.msg,
+          msg.subMsg,
           model.page.model,
         )
 
@@ -358,21 +369,21 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
               page: { _tag: 'Settings', model: settingsModel } as const,
             },
             settingsCmd.map(
-              (m) => ({ _tag: 'SettingsMsg' as const, msg: m }) as Msg,
+              (m) => ({ _tag: 'SettingsMsg' as const, subMsg: m }) as Msg,
             ),
           ] as [Model, Cmd<Msg>],
           updateAndCmd((m) => {
-            if (msg.msg._tag === 'Logout') {
+            if (msg.subMsg._tag === 'Logout') {
               removeToken()
               return changeRouteHandler(
                 { page: homePage() },
                 true,
               )({ ...m, shared: { ...m.shared, user: O.none, token: O.none } })
             } else if (
-              msg.msg._tag === 'SubmitResponse' &&
-              msg.msg.result.tag === 'Ok'
+              msg.subMsg._tag === 'SubmitResponse' &&
+              msg.subMsg.result.tag === 'Ok'
             ) {
-              const user = msg.msg.result.value.user
+              const user = msg.subMsg.result.value.user
               saveToken(user.token)
               return [
                 {
@@ -405,10 +416,10 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
         const [profileModel, profileCmd] = Profile.update(
           username,
           model.shared.token,
-        )(msg.msg, model.page.model)
+        )(msg.subMsg, model.page.model)
         return [
           { ...model, page: { _tag: 'Profile', model: profileModel } },
-          profileCmd.map((m) => ({ _tag: 'ProfileMsg', msg: m })),
+          profileCmd.map((m) => ({ _tag: 'ProfileMsg', subMsg: m })),
         ]
       }
       return [model, Cmd.none()]
@@ -416,7 +427,7 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
       if (model.page._tag === 'Editor' && model.shared.token._tag === 'Some') {
         const token = model.shared.token.value
         const [editorModel, editorCmd] = Editor.update(token)(
-          msg.msg,
+          msg.subMsg,
           model.page.model,
         )
 
@@ -424,15 +435,15 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
           [
             { ...model, page: { _tag: 'Editor', model: editorModel } as const },
             editorCmd.map(
-              (m) => ({ _tag: 'EditorMsg' as const, msg: m }) as Msg,
+              (m) => ({ _tag: 'EditorMsg' as const, subMsg: m }) as Msg,
             ),
           ] as [Model, Cmd<Msg>],
           updateAndCmd((m) => {
             if (
-              msg.msg._tag === 'SubmitResponse' &&
-              msg.msg.result.tag === 'Ok'
+              msg.subMsg._tag === 'SubmitResponse' &&
+              msg.subMsg.result.tag === 'Ok'
             ) {
-              const slug = msg.msg.result.value.article.slug
+              const slug = msg.subMsg.result.value.article.slug
               return changeRouteHandler(
                 { page: { _tag: 'ArticlePage', slug } },
                 true,
@@ -448,7 +459,10 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
     }
     case 'DebugPanelMsg':
       return [
-        { ...model, debugPanel: DebugPanel.update(msg.msg, model.debugPanel) },
+        {
+          ...model,
+          debugPanel: DebugPanel.update(msg.subMsg, model.debugPanel),
+        },
         Cmd.none(),
       ]
     case 'ToggleNavbarMobile': {

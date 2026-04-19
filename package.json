@@ -1,7 +1,9 @@
 {
   "name": "tea-cup-realworld",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "TeaCup implementation of the RealWorld spec (React + fp-ts)",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "vite",

@@ -24,7 +24,7 @@ export const ModelEq = EqClass.struct<Model>({
 })
 
 export type Msg =
-  | { _tag: 'FormMsg'; msg: Form.Msg }
+  | { _tag: 'FormMsg'; subMsg: Form.Msg }
   | { _tag: 'Submit' }
   | { _tag: 'SubmitResponse'; result: Result<HttpErrorString, UserResponse> }
 

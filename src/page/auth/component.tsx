@@ -52,18 +52,18 @@ function AuthView({ model, dispatch }: Props) {
               <FormItemMemo
                 field='username'
                 model={model.signupForm}
-                dispatch={(msg) => dispatch({ _tag: 'FormMsg', msg })}
+                dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
               />
             )}
             <FormItemMemo
               field='email'
               model={model.isRegister ? model.signupForm : model.loginForm}
-              dispatch={(msg) => dispatch({ _tag: 'FormMsg', msg })}
+              dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
             />
             <FormItemMemo
               field='password'
               model={model.isRegister ? model.signupForm : model.loginForm}
-              dispatch={(msg) => dispatch({ _tag: 'FormMsg', msg })}
+              dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
             />
             <div className='pt-[16px]'>
               <button

@@ -36,7 +36,7 @@ export const App: React.FC<Props> = ({ model, dispatch }) => {
       </div>
       <DebugPanel
         model={model.debugPanel}
-        dispatch={(msg) => dispatch({ _tag: 'DebugPanelMsg', msg })}
+        dispatch={(msg) => dispatch({ _tag: 'DebugPanelMsg', subMsg: msg })}
       />
     </SetGlobalMsgContext>
   )
@@ -48,7 +48,7 @@ const renderPage = (model: Model, dispatch: Dispatcher<Msg>) => {
       return (
         <Home.HomeViewMemo
           model={model.page.model}
-          dispatch={(msg) => dispatch({ _tag: 'HomeMsg', msg })}
+          dispatch={(msg) => dispatch({ _tag: 'HomeMsg', subMsg: msg })}
         />
       )
     case 'Article':
@@ -56,21 +56,21 @@ const renderPage = (model: Model, dispatch: Dispatcher<Msg>) => {
         <Article.ArticleViewMemo
           model={model.page.model}
           token={model.shared.token}
-          dispatch={(msg) => dispatch({ _tag: 'ArticleMsg', msg })}
+          dispatch={(msg) => dispatch({ _tag: 'ArticleMsg', subMsg: msg })}
         />
       )
     case 'Auth':
       return (
         <Auth.AuthViewMemo
           model={model.page.model}
-          dispatch={(msg) => dispatch({ _tag: 'AuthMsg', msg })}
+          dispatch={(msg) => dispatch({ _tag: 'AuthMsg', subMsg: msg })}
         />
       )
     case 'Settings':
       return (
         <Settings.SettingsViewMemo
           model={model.page.model}
-          dispatch={(msg) => dispatch({ _tag: 'SettingsMsg', msg })}
+          dispatch={(msg) => dispatch({ _tag: 'SettingsMsg', subMsg: msg })}
         />
       )
     case 'Profile': {
@@ -84,7 +84,7 @@ const renderPage = (model: Model, dispatch: Dispatcher<Msg>) => {
       return (
         <Profile.ProfileViewMemo
           model={model.page.model}
-          dispatch={(msg) => dispatch({ _tag: 'ProfileMsg', msg })}
+          dispatch={(msg) => dispatch({ _tag: 'ProfileMsg', subMsg: msg })}
           isCurrentUser={isCurrentUser}
         />
       )
@@ -93,7 +93,7 @@ const renderPage = (model: Model, dispatch: Dispatcher<Msg>) => {
       return (
         <Editor.EditorViewMemo
           model={model.page.model}
-          dispatch={(msg) => dispatch({ _tag: 'EditorMsg', msg })}
+          dispatch={(msg) => dispatch({ _tag: 'EditorMsg', subMsg: msg })}
         />
       )
     case 'Loading':

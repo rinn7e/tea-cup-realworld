@@ -120,7 +120,7 @@ export const update =
     switch (msg._tag) {
       case 'FormMsg':
         return [
-          { ...model, form: Form.update(msg.msg)(model.form) },
+          { ...model, form: Form.update(msg.subMsg)(model.form) },
           Cmd.none(),
         ]
       case 'GetArticleResponse':

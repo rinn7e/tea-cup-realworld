@@ -4,7 +4,6 @@ import * as t from 'io-ts'
 
 import { type HttpErrorString, mkHttpError } from '../type/common'
 
-// TODO: verify base URL — currently falls back to http://localhost:3000/api
 export const API_BASE: string =
   (import.meta as { env?: { VITE_API_BASE?: string } }).env?.VITE_API_BASE ??
   'http://localhost:3000/api'

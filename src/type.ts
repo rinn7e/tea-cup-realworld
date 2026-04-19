@@ -51,13 +51,13 @@ export type Msg =
   | { _tag: 'UrlChange'; location: Location }
   | { _tag: 'ChangeRoute'; route: Route }
   | { _tag: 'SetUser'; user: Option<User> }
-  | { _tag: 'HomeMsg'; msg: Home.Msg }
-  | { _tag: 'ArticleMsg'; msg: Article.Msg }
-  | { _tag: 'AuthMsg'; msg: Auth.Msg }
-  | { _tag: 'SettingsMsg'; msg: Settings.Msg }
-  | { _tag: 'ProfileMsg'; msg: Profile.Msg }
-  | { _tag: 'EditorMsg'; msg: Editor.Msg }
-  | { _tag: 'DebugPanelMsg'; msg: DebugPanel.Msg }
+  | { _tag: 'HomeMsg'; subMsg: Home.Msg }
+  | { _tag: 'ArticleMsg'; subMsg: Article.Msg }
+  | { _tag: 'AuthMsg'; subMsg: Auth.Msg }
+  | { _tag: 'SettingsMsg'; subMsg: Settings.Msg }
+  | { _tag: 'ProfileMsg'; subMsg: Profile.Msg }
+  | { _tag: 'EditorMsg'; subMsg: Editor.Msg }
+  | { _tag: 'DebugPanelMsg'; subMsg: DebugPanel.Msg }
   | { _tag: 'ToggleNavbarMobile'; open: boolean }
   | { _tag: 'SetNavbarMobileState'; state: AnimateState }
   | { _tag: 'None' }

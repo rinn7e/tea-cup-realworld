@@ -31,24 +31,24 @@ function EditorView({ model, dispatch }: Props) {
           <FormItemMemo
             field='title'
             model={model.form}
-            dispatch={(msg) => dispatch({ _tag: 'FormMsg', msg })}
+            dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
           />
           <FormItemMemo
             field='description'
             model={model.form}
-            dispatch={(msg) => dispatch({ _tag: 'FormMsg', msg })}
+            dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
           />
           <FormItemMemo
             field='body'
             model={model.form}
-            dispatch={(msg) => dispatch({ _tag: 'FormMsg', msg })}
+            dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
           />
 
           <div className='flex flex-col gap-[8px]'>
             <FormItemMemo
               field='tagInput'
               model={model.form}
-              dispatch={(msg) => dispatch({ _tag: 'FormMsg', msg })}
+              dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
             />
             <div className='flex flex-wrap gap-[4px] px-[12px]'>
               {model.tagList.map((tag) => (

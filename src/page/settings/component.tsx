@@ -36,27 +36,27 @@ function SettingsView({ model, dispatch }: Props) {
             <FormItemMemo
               field='image'
               model={model.form}
-              dispatch={(msg) => dispatch({ _tag: 'FormMsg', msg })}
+              dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
             />
             <FormItemMemo
               field='username'
               model={model.form}
-              dispatch={(msg) => dispatch({ _tag: 'FormMsg', msg })}
+              dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
             />
             <FormItemMemo
               field='bio'
               model={model.form}
-              dispatch={(msg) => dispatch({ _tag: 'FormMsg', msg })}
+              dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
             />
             <FormItemMemo
               field='email'
               model={model.form}
-              dispatch={(msg) => dispatch({ _tag: 'FormMsg', msg })}
+              dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
             />
             <FormItemMemo
               field='password'
               model={model.form}
-              dispatch={(msg) => dispatch({ _tag: 'FormMsg', msg })}
+              dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
             />
             <div className='flex justify-end pt-[16px]'>
               <button

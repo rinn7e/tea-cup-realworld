@@ -85,12 +85,12 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
     case 'FormMsg':
       if (model.isRegister) {
         return [
-          { ...model, signupForm: Form.update(msg.msg)(model.signupForm) },
+          { ...model, signupForm: Form.update(msg.subMsg)(model.signupForm) },
           Cmd.none(),
         ]
       } else {
         return [
-          { ...model, loginForm: Form.update(msg.msg)(model.loginForm) },
+          { ...model, loginForm: Form.update(msg.subMsg)(model.loginForm) },
           Cmd.none(),
         ]
       }
