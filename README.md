@@ -1,16 +1,16 @@
 # 🍵 RealWorld example app in `react-tea-cup`
 
-A functional, type-safe implementation of the RealWorld Medium.com clone spec built using **TeaCup** (React + fp-ts) following **The Elm Architecture (TEA)**.
+A functional, type-safe implementation of the RealWorld Medium.com clone spec built using **react-tea-cup**  following **The Elm Architecture (TEA)**.
 
 ## Tech Stack
 
-- [**React 19.x**](https://github.com/facebook/react) - UI Library
-- [**TeaCup 5.x**](https://github.com/vankeisb/react-tea-cup) - State Management (The Elm Architecture)
-- [**TypeScript 5.x**](https://github.com/microsoft/TypeScript) - Language
-- [**fp-ts 2.x**](https://github.com/gcanti/fp-ts) - Functional programming primitives
-- [**io-ts 2.x**](https://github.com/gcanti/io-ts) - Runtime validation / Decoding
-- [**Vite 7.x**](https://github.com/vitejs/vite) - Build tool & Dev server
-- [**Tailwind CSS 4.x**](https://github.com/tailwindlabs/tailwindcss) - Styling
+- [**react 19.x**](https://github.com/facebook/react): UI Library
+- [**react-tea-cup 5.x**](https://github.com/vankeisb/react-tea-cup): State Management (The Elm Architecture)
+- [**typescript 5.x**](https://github.com/microsoft/TypeScript): Language
+- [**fp-ts 2.x**](https://github.com/gcanti/fp-ts): Functional programming primitives
+- [**io-ts 2.x**](https://github.com/gcanti/io-ts): Runtime validation / Decoding
+- [**vite 7.x**](https://github.com/vitejs/vite): Build tool & Dev server
+- [**tailwindcss 4.x**](https://github.com/tailwindlabs/tailwindcss): Styling
 
 ## How to start locally
 
