@@ -53,7 +53,7 @@ This will use the base URL: `https://api.realworld.show/api`.
 
 ## API spec
 
-The application implements the [RealWorld API spec](https://realworld-docs.netlify.app/docs/specs/backend-specs/introduction).
+The application implements the [RealWorld API spec](https://github.com/realworld-apps/realworld/tree/main/specs/api).
 
 ## Contributing
 
