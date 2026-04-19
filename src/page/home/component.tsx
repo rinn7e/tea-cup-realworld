@@ -11,6 +11,7 @@ import type {
 } from '@/api/type'
 import { Link } from '@/component/link'
 import { homePage } from '@/data/route'
+import { assetPath } from '@/util'
 import { memoStrategy } from '@/util/memo-strategy'
 
 import { Props, PropsEq } from './type'
@@ -94,10 +95,10 @@ function HomeView({ model, dispatch }: Props) {
                                   }}
                                 >
                                   <img
-                                    src={
+                                    src={assetPath(
                                       article.author.image ||
-                                      '/default-avatar.svg'
-                                    }
+                                        '/default-avatar.svg',
+                                    )}
                                     className='h-[32px] w-[32px] rounded-full object-cover'
                                     alt=''
                                   />

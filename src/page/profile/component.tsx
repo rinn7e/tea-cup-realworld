@@ -10,6 +10,7 @@ import type {
   ProfileResponse,
 } from '@/api/type'
 import { Link } from '@/component/link'
+import { assetPath } from '@/util'
 import { memoStrategy } from '@/util/memo-strategy'
 
 import { Props, PropsEq } from './type'
@@ -41,7 +42,7 @@ function ProfileView({ model, dispatch, isCurrentUser }: Props) {
               <div className='border-b border-gray-200 bg-gray-50 py-[40px] text-center shadow-inner'>
                 <div className='mx-auto flex max-w-[1152px] flex-col items-center gap-[12px] px-[16px]'>
                   <img
-                    src={data.profile.image || '/default-avatar.svg'}
+                    src={assetPath(data.profile.image || '/default-avatar.svg')}
                     className='h-[96px] w-[96px] rounded-full border-[4px] border-white object-cover shadow-sm'
                     alt=''
                   />
@@ -162,10 +163,10 @@ function ProfileView({ model, dispatch, isCurrentUser }: Props) {
                                       }}
                                     >
                                       <img
-                                        src={
+                                        src={assetPath(
                                           article.author.image ||
-                                          '/default-avatar.svg'
-                                        }
+                                            '/default-avatar.svg',
+                                        )}
                                         className='h-[32px] w-[32px] rounded-full object-cover'
                                         alt=''
                                       />

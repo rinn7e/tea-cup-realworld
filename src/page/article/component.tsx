@@ -12,6 +12,7 @@ import type {
   HttpErrorString,
 } from '@/api/type'
 import { Link } from '@/component/link'
+import { assetPath } from '@/util'
 import { memoStrategy } from '@/util/memo-strategy'
 
 import { Props, PropsEq } from './type'
@@ -53,7 +54,7 @@ function ArticleView({ model, token, dispatch }: Props) {
                   }}
                 >
                   <img
-                    src={author.image || '/default-avatar.svg'}
+                    src={assetPath(author.image || '/default-avatar.svg')}
                     className='h-[36px] w-[36px] rounded-full object-cover'
                     alt=''
                   />
@@ -281,10 +282,10 @@ function ArticleView({ model, token, dispatch }: Props) {
                                       }}
                                     >
                                       <img
-                                        src={
+                                        src={assetPath(
                                           comment.author.image ||
-                                          '/default-avatar.svg'
-                                        }
+                                            '/default-avatar.svg',
+                                        )}
                                         className='h-[20px] w-[20px] rounded-full object-cover'
                                         alt=''
                                       />

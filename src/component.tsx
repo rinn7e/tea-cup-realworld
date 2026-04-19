@@ -10,6 +10,7 @@ import * as Article from './page/article/component'
 import * as Auth from './page/auth/component'
 import * as Editor from './page/editor/component'
 import * as Home from './page/home/component'
+import { NotFoundView } from './page/not-found'
 import * as Profile from './page/profile/component'
 import * as Settings from './page/settings/component'
 import type { Model, Msg } from './type'
@@ -97,8 +98,6 @@ const renderPage = (model: Model, dispatch: Dispatcher<Msg>) => {
         />
       )
     case 'NotFound':
-      return <div className='p-[16px]'>404 - Not Found</div>
-    default:
-      return <div className='p-[16px]'>Unknown page</div>
+      return <NotFoundView />
   }
 }

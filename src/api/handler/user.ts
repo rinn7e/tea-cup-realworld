@@ -1,6 +1,8 @@
 import * as TE from 'fp-ts/lib/TaskEither'
 import { pipe } from 'fp-ts/lib/function'
 
+import { API_BASE } from '@/env'
+
 import { type HttpErrorString } from '../type/common'
 import {
   type LoginRequest,
@@ -9,12 +11,7 @@ import {
   type UserResponse,
   UserResponseJson,
 } from '../type/user'
-import {
-  API_BASE,
-  decodeError,
-  decodeSuccess,
-  fetchToTaskEither,
-} from './common'
+import { decodeError, decodeSuccess, fetchToTaskEither } from './common'
 
 export const getCurrentUser = (
   token: string,

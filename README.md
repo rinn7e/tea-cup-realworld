@@ -1,6 +1,8 @@
 # 🍵 RealWorld example app in `react-tea-cup`
 
-A functional, type-safe implementation of the RealWorld Medium.com clone spec built using **react-tea-cup**  following **The Elm Architecture (TEA)**.
+### [Demo](https://angular-ngrx-nx-realworld-example-app-lyart.vercel.app)&nbsp;&nbsp;&nbsp;&nbsp;[RealWorld](https://github.com/gothinkster/realworld)
+
+A functional, type-safe implementation of the RealWorld Medium.com clone spec built using **react-tea-cup** following **The Elm Architecture (TEA)**.
 
 ## Tech Stack
 

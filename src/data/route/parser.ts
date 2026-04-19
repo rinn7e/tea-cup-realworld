@@ -12,6 +12,8 @@ import {
 } from '@rinn7e/fp-ts-routing'
 import * as O from 'fp-ts/lib/Option'
 
+import { BASE_URL } from '@/env'
+
 import type { AppPage, AppRoute } from './type'
 import {
   articlePage,
@@ -23,6 +25,22 @@ import {
   registerPage,
   settingsPage,
 } from './type'
+
+export const removeBaseUrl = (href: string): string => {
+  const url = new URL(href)
+  let pathname = url.pathname
+  const base = BASE_URL.replace(/\/$/, '')
+  if (base !== '' && pathname.startsWith(base)) {
+    pathname = pathname.slice(base.length)
+  }
+  return pathname || '/'
+}
+
+export const addBaseUrl = (path: string): string => {
+  const base = BASE_URL.replace(/\/$/, '')
+  const cleanPath = path.replace(/^\//, '')
+  return base + '/' + cleanPath
+}
 
 // Parser
 // ------------------------------------------------------------------
@@ -68,7 +86,8 @@ const appRouter: Parser<AppPage> = zero<AppPage>()
   .alt(anyStrings.parser.map(() => notFoundPage()))
 
 export const parseAppRoute = (_mainUrl: string, href: string): AppRoute => {
-  const page = parse(appRouter, Route.parse(href), homePage())
+  const pathname = removeBaseUrl(href)
+  const page = parse(appRouter, Route.parse(pathname), homePage())
   return { page }
 }
 
@@ -77,26 +96,31 @@ export const parseAppRoute = (_mainUrl: string, href: string): AppRoute => {
 
 export const toUrlString = (r: AppRoute): string => {
   const page = r.page
-  switch (page._tag) {
-    case 'HomePage':
-      return format(homeMatch.formatter, {})
-    case 'LoginPage':
-      return format(loginMatch.formatter, {})
-    case 'RegisterPage':
-      return format(registerMatch.formatter, {})
-    case 'SettingsPage':
-      return format(settingsMatch.formatter, {})
-    case 'EditorPage':
-      return O.isSome(page.slug)
-        ? format(editorSlugMatch.formatter, { slug: page.slug.value })
-        : format(editorMatch.formatter, {})
-    case 'ArticlePage':
-      return format(articleMatch.formatter, { slug: page.slug })
-    case 'ProfilePage':
-      return page.favorites
-        ? format(profileFavoritesMatch.formatter, { username: page.username })
-        : format(profileMatch.formatter, { username: page.username })
-    case 'NotFoundPage':
-      return '/404'
+  const getPath = () => {
+    switch (page._tag) {
+      case 'HomePage':
+        return format(homeMatch.formatter, {})
+      case 'LoginPage':
+        return format(loginMatch.formatter, {})
+      case 'RegisterPage':
+        return format(registerMatch.formatter, {})
+      case 'SettingsPage':
+        return format(settingsMatch.formatter, {})
+      case 'EditorPage':
+        return O.isSome(page.slug)
+          ? format(editorSlugMatch.formatter, { slug: page.slug.value })
+          : format(editorMatch.formatter, {})
+      case 'ArticlePage':
+        return format(articleMatch.formatter, { slug: page.slug })
+      case 'ProfilePage':
+        return page.favorites
+          ? format(profileFavoritesMatch.formatter, { username: page.username })
+          : format(profileMatch.formatter, { username: page.username })
+      case 'NotFoundPage':
+        return '404'
+    }
   }
+
+  const path = getPath()
+  return addBaseUrl(path)
 }

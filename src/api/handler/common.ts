@@ -4,10 +4,6 @@ import * as t from 'io-ts'
 
 import { type HttpErrorString, mkHttpError } from '../type/common'
 
-export const API_BASE: string =
-  (import.meta as { env?: { VITE_API_BASE?: string } }).env?.VITE_API_BASE ??
-  'http://localhost:3000/api'
-
 export type FetchToTaskEitherError = { err: string; status?: number }
 export type FetchToTaskEitherSuccess = {
   ok: boolean

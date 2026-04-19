@@ -10,6 +10,7 @@ import type { Dispatcher } from 'tea-cup-fp'
 import type { User } from '../api/type'
 import { homePage } from '../data/route'
 import type { Model, Msg } from '../type'
+import { assetPath } from '../util'
 import { Link } from './link'
 
 interface Props {
@@ -92,7 +93,7 @@ export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
                 }}
               >
                 <img
-                  src={optUser.value.image || '/default-avatar.svg'}
+                  src={assetPath(optUser.value.image || '/default-avatar.svg')}
                   className='h-[28px] w-[28px] rounded-full object-cover'
                   alt=''
                 />

@@ -2,6 +2,8 @@ import { type Option } from 'fp-ts/lib/Option'
 import * as TE from 'fp-ts/lib/TaskEither'
 import { pipe } from 'fp-ts/lib/function'
 
+import { API_BASE } from '@/env'
+
 import {
   type CommentResponse,
   CommentResponseJson,
@@ -10,7 +12,6 @@ import {
 } from '../type/comment'
 import { type HttpErrorString } from '../type/common'
 import {
-  API_BASE,
   decodeError,
   decodeSuccess,
   ensureIsOk,
