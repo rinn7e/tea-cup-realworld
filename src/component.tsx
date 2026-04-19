@@ -96,12 +96,6 @@ const renderPage = (model: Model, dispatch: Dispatcher<Msg>) => {
           dispatch={(msg) => dispatch({ _tag: 'EditorMsg', subMsg: msg })}
         />
       )
-    case 'Loading':
-      return (
-        <div className='flex min-h-[400px] items-center justify-center'>
-          Loading...
-        </div>
-      )
     case 'NotFound':
       return <div className='p-[16px]'>404 - Not Found</div>
     default:

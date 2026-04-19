@@ -1,10 +1,16 @@
-import { delayCmd, taskFromTE, updateAndCmd } from '@rinn7e/tea-cup-prelude'
+import {
+  delayCmd,
+  msgCmd,
+  taskFromTE,
+  updateAndCmd,
+} from '@rinn7e/tea-cup-prelude'
 import * as O from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/function'
 import { newUrl } from 'react-tea-cup'
 import { Cmd, Task } from 'tea-cup-fp'
 
 import { getCurrentUser } from './api'
+import type { User } from './api/type'
 import * as DebugPanel from './component/debug-panel/type'
 import { homePage, loginPage, parseAppRoute, toUrlString } from './data/route'
 import * as Article from './page/article/update'
@@ -16,39 +22,77 @@ import * as Settings from './page/settings/update'
 import type { Model, Msg, Route } from './type'
 import { getToken, removeToken, saveToken } from './util/storage'
 
-export const init = (location: Location): [Model, Cmd<Msg>] => {
+// Initialization
+// ---------------------------------------------
+
+export const preInit = (location: Location): [Model | null, Cmd<Msg>] => {
+  return [null, initializeCmd(location)]
+}
+
+export const preUpdate = (
+  msg: Msg,
+  model: Model | null,
+): [Model | null, Cmd<Msg>] => {
+  if (model === null) {
+    if (msg._tag === 'Init') {
+      return init(msg.location, msg.user)
+    }
+    return [null, Cmd.none()]
+  }
+
+  return update(msg, model)
+}
+
+// Init, Update
+// ---------------------------------------------
+
+export const init = (
+  location: Location,
+  user: O.Option<User>,
+): [Model, Cmd<Msg>] => {
   const route = parseAppRoute('', location.href)
-  const storedToken = getToken()
+  const token = pipe(
+    user,
+    O.map((u) => u.token),
+  )
   const model: Model = {
     route,
     shared: {
-      user: O.none,
-      token: storedToken ? O.some(storedToken) : O.none,
+      user,
+      token,
     },
-    page: { _tag: 'Loading' },
+    page: { _tag: 'NotFound' },
     isInternal: false,
     debugPanel: DebugPanel.init(),
     navbarMobileOpen: { internal: null, state: { _tag: 'Invisible' } },
   }
 
-  const [initialModel, initialCmd] = navigate(route, true)(model)
-
-  if (storedToken) {
-    const userCmd = Task.attempt(
-      taskFromTE(getCurrentUser(storedToken)),
-      (res) => {
-        const msg: Msg = {
-          _tag: 'SetUser',
-          user: res.tag === 'Ok' ? O.some(res.value.user) : O.none,
-        }
-        return msg
-      },
-    )
-    return [initialModel, Cmd.batch([initialCmd, userCmd])]
-  }
-
-  return [initialModel, initialCmd]
+  return navigate(route, true)(model)
 }
+
+export const initializeCmd = (location: Location): Cmd<Msg> => {
+  const storedToken = getToken()
+  if (storedToken) {
+    return Task.attempt(
+      taskFromTE(getCurrentUser(storedToken)),
+      (res): Msg => ({
+        _tag: 'Init',
+        location,
+        user: res.tag === 'Ok' ? O.some(res.value.user) : O.none,
+      }),
+    )
+  }
+  return msgCmd({ _tag: 'Init', location, user: O.none })
+}
+
+const getUserCmd = (storedToken: string): Cmd<Msg> =>
+  Task.attempt(taskFromTE(getCurrentUser(storedToken)), (res) => {
+    const msg: Msg = {
+      _tag: 'SetUser',
+      user: res.tag === 'Ok' ? O.some(res.value.user) : O.none,
+    }
+    return msg
+  })
 
 const navigate =
   (newRoute: Route, isInternal: boolean) =>
@@ -62,7 +106,7 @@ const navigate =
 
     switch (newRoute.page._tag) {
       case 'HomePage': {
-        const [homeModel, homeCmd] = Home.init(model.shared.token)
+        const [homeModel, homeCmd] = Home.init(model.shared)
         return [
           {
             ...model,
@@ -80,7 +124,7 @@ const navigate =
       case 'ArticlePage': {
         const [articleModel, articleCmd] = Article.init(
           newRoute.page.slug,
-          model.shared.token,
+          model.shared,
         )
         return [
           {
@@ -97,7 +141,7 @@ const navigate =
         ]
       }
       case 'LoginPage': {
-        const [authModel, authCmd] = Auth.init(false)
+        const [authModel, authCmd] = Auth.init(false, model.shared)
         return [
           {
             ...model,
@@ -113,7 +157,7 @@ const navigate =
         ]
       }
       case 'RegisterPage': {
-        const [authModel, authCmd] = Auth.init(true)
+        const [authModel, authCmd] = Auth.init(true, model.shared)
         return [
           {
             ...model,
@@ -129,41 +173,29 @@ const navigate =
         ]
       }
       case 'SettingsPage': {
-        if (model.shared.user._tag === 'Some') {
-          const [settingsModel, settingsCmd] = Settings.init(
-            model.shared.user.value,
-          )
-          return [
-            {
-              ...model,
-              isInternal,
-              route: newRoute,
-              page: { _tag: 'Settings', model: settingsModel },
-              navbarMobileOpen: {
-                internal: null,
-                state: { _tag: 'Invisible' },
-              },
+        const [settingsModel, settingsCmd] = Settings.init(model.shared)
+        return [
+          {
+            ...model,
+            isInternal,
+            route: newRoute,
+            page: { _tag: 'Settings', model: settingsModel },
+            navbarMobileOpen: {
+              internal: null,
+              state: { _tag: 'Invisible' },
             },
-            Cmd.batch([
-              urlCmd,
-              settingsCmd.map((msg) => ({ _tag: 'SettingsMsg', subMsg: msg })),
-            ]),
-          ]
-        } else {
-          return [
-            { ...model, isInternal },
-            Task.perform(
-              newUrl(toUrlString({ page: loginPage() })),
-              (): Msg => ({ _tag: 'None' }),
-            ),
-          ]
-        }
+          },
+          Cmd.batch([
+            urlCmd,
+            settingsCmd.map((msg) => ({ _tag: 'SettingsMsg', subMsg: msg })),
+          ]),
+        ]
       }
       case 'ProfilePage': {
         const [profileModel, profileCmd] = Profile.init(
           newRoute.page.username,
           newRoute.page.favorites,
-          model.shared.user,
+          model.shared,
         )
         return [
           {
@@ -180,36 +212,26 @@ const navigate =
         ]
       }
       case 'EditorPage': {
-        if (model.shared.user._tag === 'Some') {
-          const [editorModel, editorCmd] = Editor.init(
-            newRoute.page.slug,
-            model.shared.token,
-          )
-          return [
-            {
-              ...model,
-              isInternal,
-              route: newRoute,
-              page: { _tag: 'Editor', model: editorModel },
-              navbarMobileOpen: {
-                internal: null,
-                state: { _tag: 'Invisible' },
-              },
+        const [editorModel, editorCmd] = Editor.init(
+          newRoute.page.slug,
+          model.shared,
+        )
+        return [
+          {
+            ...model,
+            isInternal,
+            route: newRoute,
+            page: { _tag: 'Editor', model: editorModel },
+            navbarMobileOpen: {
+              internal: null,
+              state: { _tag: 'Invisible' },
             },
-            Cmd.batch([
-              urlCmd,
-              editorCmd.map((msg) => ({ _tag: 'EditorMsg', subMsg: msg })),
-            ]),
-          ]
-        } else {
-          return [
-            { ...model, isInternal },
-            Task.perform(
-              newUrl(toUrlString({ page: loginPage() })),
-              (): Msg => ({ _tag: 'None' }),
-            ),
-          ]
-        }
+          },
+          Cmd.batch([
+            urlCmd,
+            editorCmd.map((msg) => ({ _tag: 'EditorMsg', subMsg: msg })),
+          ]),
+        ]
       }
       default:
         return [
@@ -247,6 +269,8 @@ const changeRouteHandler =
 
 export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
   switch (msg._tag) {
+    case 'Init':
+      return [model, Cmd.none()]
     case 'UrlChange': {
       if (model.isInternal) {
         return [
@@ -282,7 +306,7 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
     }
     case 'HomeMsg':
       if (model.page._tag === 'Home') {
-        const [homeModel, homeCmd] = Home.update(model.shared.token)(
+        const [homeModel, homeCmd] = Home.update(model.shared)(
           msg.subMsg,
           model.page.model,
         )
@@ -294,7 +318,7 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
       return [model, Cmd.none()]
     case 'ArticleMsg':
       if (model.page._tag === 'Article') {
-        const [articleModel, articleCmd] = Article.update(model.shared.token)(
+        const [articleModel, articleCmd] = Article.update(model.shared)(
           msg.subMsg,
           model.page.model,
         )
@@ -322,7 +346,10 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
       return [model, Cmd.none()]
     case 'AuthMsg': {
       if (model.page._tag === 'Auth') {
-        const [authModel, authCmd] = Auth.update(msg.subMsg, model.page.model)
+        const [authModel, authCmd] = Auth.update(model.shared)(
+          msg.subMsg,
+          model.page.model,
+        )
 
         return pipe(
           [
@@ -352,12 +379,8 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
       }
     }
     case 'SettingsMsg': {
-      if (
-        model.page._tag === 'Settings' &&
-        model.shared.token._tag === 'Some'
-      ) {
-        const token = model.shared.token.value
-        const [settingsModel, settingsCmd] = Settings.update(token)(
+      if (model.page._tag === 'Settings') {
+        const [settingsModel, settingsCmd] = Settings.update(model.shared)(
           msg.subMsg,
           model.page.model,
         )
@@ -415,7 +438,7 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
               : ''
         const [profileModel, profileCmd] = Profile.update(
           username,
-          model.shared.token,
+          model.shared,
         )(msg.subMsg, model.page.model)
         return [
           { ...model, page: { _tag: 'Profile', model: profileModel } },
@@ -424,9 +447,8 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
       }
       return [model, Cmd.none()]
     case 'EditorMsg': {
-      if (model.page._tag === 'Editor' && model.shared.token._tag === 'Some') {
-        const token = model.shared.token.value
-        const [editorModel, editorCmd] = Editor.update(token)(
+      if (model.page._tag === 'Editor') {
+        const [editorModel, editorCmd] = Editor.update(model.shared)(
           msg.subMsg,
           model.page.model,
         )

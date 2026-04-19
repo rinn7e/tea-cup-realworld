@@ -3,6 +3,8 @@ import { attemptTE } from '@rinn7e/tea-cup-prelude'
 import { type Option, none, some } from 'fp-ts/lib/Option'
 import { Cmd } from 'tea-cup-fp'
 
+import type { Shared } from '@/type'
+
 import {
   favoriteArticle,
   followUser,
@@ -18,7 +20,7 @@ import type { Model, Msg } from './type'
 export const init = (
   username: string,
   favorites: boolean,
-  user: Option<User>,
+  shared: Shared,
 ): [Model, Cmd<Msg>] => {
   const model: Model = {
     profile: RD.pending,
@@ -26,7 +28,7 @@ export const init = (
     showFavorites: favorites,
   }
 
-  const token = user._tag === 'Some' ? some(user.value.token) : none
+  const token = shared.token
 
   return [
     model,
@@ -47,8 +49,9 @@ export const init = (
 }
 
 export const update =
-  (username: string, token: Option<string>) =>
+  (username: string, shared: Shared) =>
   (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
+    const token = shared.token
     switch (msg._tag) {
       case 'GetProfileResponse':
         if (msg.result.tag === 'Ok') {

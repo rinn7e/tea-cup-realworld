@@ -1,3 +1,4 @@
+import * as O from 'fp-ts/lib/Option'
 import * as Form from '@rinn7e/tea-cup-form'
 import { EqAlways, NullableEq } from '@rinn7e/tea-cup-prelude'
 import * as EqClass from 'fp-ts/lib/Eq'
@@ -8,13 +9,13 @@ import { HttpErrorStringEq } from '@/api/type'
 import type { HttpErrorString, UserResponse } from '@/api/type'
 
 export type Model = {
-  form: Form.Model
+  form: O.Option<Form.Model>
   errors: HttpErrorString | null
   submitting: boolean
 }
 
 export const ModelEq = EqClass.struct<Model>({
-  form: Form.ModelEq,
+  form: O.getEq(Form.ModelEq),
   errors: NullableEq(HttpErrorStringEq),
   submitting: B.Eq,
 })

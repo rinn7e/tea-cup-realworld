@@ -4,18 +4,20 @@ import * as O from 'fp-ts/lib/Option'
 import type { Option } from 'fp-ts/lib/Option'
 import { Cmd } from 'tea-cup-fp'
 
+import type { Shared } from '@/type'
+
 import { favoriteArticle, getArticles, getTags, unfavoriteArticle } from '@/api'
 
 import type { Model, Msg } from './type'
 
-export const init = (token: Option<string> = O.none): [Model, Cmd<Msg>] => {
+export const init = (shared: Shared): [Model, Cmd<Msg>] => {
   const model: Model = {
     articles: RD.pending,
     tags: RD.pending,
   }
 
   const articlesCmd = attemptTE(
-    getArticles(token),
+    getArticles(shared.token),
     (result): Msg => ({ _tag: 'GetArticlesResponse', result }),
   )
 
@@ -24,7 +26,7 @@ export const init = (token: Option<string> = O.none): [Model, Cmd<Msg>] => {
     Cmd.batch([
       articlesCmd,
       attemptTE(
-        getTags(token),
+        getTags(shared.token),
         (result): Msg => ({ _tag: 'GetTagsResponse', result }),
       ),
     ]),
@@ -32,7 +34,7 @@ export const init = (token: Option<string> = O.none): [Model, Cmd<Msg>] => {
 }
 
 export const update =
-  (token: Option<string>) =>
+  (shared: Shared) =>
   (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
     switch (msg._tag) {
       case 'GetArticlesResponse':
@@ -54,22 +56,22 @@ export const update =
           return [{ ...model, tags: RD.failure(msg.result.err) }, Cmd.none()]
         }
       case 'FavoriteArticle':
-        if (token._tag === 'Some') {
+        if (shared.token._tag === 'Some') {
           return [
             model,
             attemptTE(
-              favoriteArticle(token.value, msg.slug),
+              favoriteArticle(shared.token.value, msg.slug),
               (result): Msg => ({ _tag: 'FavoriteArticleResponse', result }),
             ),
           ]
         }
         return [model, Cmd.none()]
       case 'UnfavoriteArticle':
-        if (token._tag === 'Some') {
+        if (shared.token._tag === 'Some') {
           return [
             model,
             attemptTE(
-              unfavoriteArticle(token.value, msg.slug),
+              unfavoriteArticle(shared.token.value, msg.slug),
               (result): Msg => ({ _tag: 'FavoriteArticleResponse', result }),
             ),
           ]

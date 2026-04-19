@@ -3,9 +3,13 @@ import { lookupForm, valueTextType } from '@rinn7e/tea-cup-form'
 import { attemptTE } from '@rinn7e/tea-cup-prelude'
 import * as E from 'fp-ts/lib/Either'
 import * as O from 'fp-ts/lib/Option'
+import { pipe } from 'fp-ts/lib/function'
 import { Cmd } from 'tea-cup-fp'
 
+import type { Shared } from '@/type'
+
 import { createArticle, getArticle, updateArticle } from '@/api'
+import type { User } from '@/api/type'
 import { standardInputUi } from '@/component/form-fields'
 
 import type { Model, Msg } from './type'
@@ -91,11 +95,14 @@ const emptyFormConfig = editorFormConfig({
 
 export const init = (
   slug: O.Option<string>,
-  token: O.Option<string> = O.none,
+  shared: Shared,
 ): [Model, Cmd<Msg>] => {
   const model: Model = {
     slug: slug._tag === 'Some' ? slug.value : null,
-    form: Form.init(new Map(emptyFormConfig)),
+    form: pipe(
+      shared.user,
+      O.map(() => Form.init(new Map(emptyFormConfig))),
+    ),
     tagList: [],
     submitting: false,
     errors: null,
@@ -105,7 +112,7 @@ export const init = (
     return [
       { ...model, submitting: true },
       attemptTE(
-        getArticle(token, slug.value),
+        getArticle(shared.token, slug.value),
         (result): Msg => ({ _tag: 'GetArticleResponse', result }),
       ),
     ]
@@ -115,12 +122,12 @@ export const init = (
 }
 
 export const update =
-  (token: string) =>
+  (shared: Shared) =>
   (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
     switch (msg._tag) {
       case 'FormMsg':
         return [
-          { ...model, form: Form.update(msg.subMsg)(model.form) },
+          { ...model, form: pipe(model.form, O.map(Form.update(msg.subMsg))) },
           Cmd.none(),
         ]
       case 'GetArticleResponse':
@@ -131,14 +138,16 @@ export const update =
               ...model,
               submitting: false,
               tagList: a.tagList,
-              form: Form.init(
-                new Map(
-                  editorFormConfig({
-                    title: a.title,
-                    description: a.description,
-                    body: a.body ?? '',
-                    tagInput: '',
-                  }),
+              form: O.some(
+                Form.init(
+                  new Map(
+                    editorFormConfig({
+                      title: a.title,
+                      description: a.description,
+                      body: a.body ?? '',
+                      tagInput: '',
+                    }),
+                  ),
                 ),
               ),
             },
@@ -147,19 +156,23 @@ export const update =
         }
         return [{ ...model, submitting: false }, Cmd.none()]
       case 'AddTag': {
+        if (model.form._tag === 'None') return [model, Cmd.none()]
+        const form = model.form.value
         const tagInput = valueTextType(
-          lookupForm('tagInput', model.form.forms),
+          lookupForm('tagInput', form.forms),
         ).trim()
         if (tagInput && !model.tagList.includes(tagInput)) {
           return [
             {
               ...model,
               tagList: [...model.tagList, tagInput],
-              form: Form.update({
-                _tag: 'UpdateFormManual',
-                key: 'tagInput',
-                value: '',
-              })(model.form),
+              form: O.some(
+                Form.update({
+                  _tag: 'UpdateFormManual',
+                  key: 'tagInput',
+                  value: '',
+                })(form),
+              ),
             },
             Cmd.none(),
           ]
@@ -172,18 +185,19 @@ export const update =
           Cmd.none(),
         ]
       case 'Submit': {
-        const title = valueTextType(lookupForm('title', model.form.forms))
-        const description = valueTextType(
-          lookupForm('description', model.form.forms),
-        )
-        const body = valueTextType(lookupForm('body', model.form.forms))
+        if (model.form._tag === 'None' || shared.token._tag === 'None')
+          return [model, Cmd.none()]
+        const form = model.form.value
+        const title = valueTextType(lookupForm('title', form.forms))
+        const description = valueTextType(lookupForm('description', form.forms))
+        const body = valueTextType(lookupForm('body', form.forms))
 
         const request = {
           article: { title, description, body, tagList: model.tagList },
         }
         const task = model.slug
-          ? updateArticle(token, model.slug, request)
-          : createArticle(token, request)
+          ? updateArticle(shared.token.value, model.slug, request)
+          : createArticle(shared.token.value, request)
 
         return [
           { ...model, submitting: true, errors: null },

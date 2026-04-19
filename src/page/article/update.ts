@@ -4,6 +4,8 @@ import * as O from 'fp-ts/lib/Option'
 import type { Option } from 'fp-ts/lib/Option'
 import { Cmd } from 'tea-cup-fp'
 
+import type { Shared } from '@/type'
+
 import {
   createComment,
   deleteArticle,
@@ -20,7 +22,7 @@ import type { Model, Msg } from './type'
 
 export const init = (
   slug: string,
-  token: Option<string> = O.none,
+  shared: Shared,
 ): [Model, Cmd<Msg>] => {
   const model: Model = {
     slug,
@@ -33,11 +35,11 @@ export const init = (
     model,
     Cmd.batch<Msg>([
       attemptTE(
-        getArticle(token, slug),
+        getArticle(shared.token, slug),
         (result): Msg => ({ _tag: 'GetArticleResponse', result }),
       ),
       attemptTE(
-        getComments(token, slug),
+        getComments(shared.token, slug),
         (result): Msg => ({ _tag: 'GetCommentsResponse', result }),
       ),
     ]),
@@ -45,7 +47,7 @@ export const init = (
 }
 
 export const update =
-  (token: Option<string>) =>
+  (shared: Shared) =>
   (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
     switch (msg._tag) {
       case 'GetArticleResponse':
@@ -70,22 +72,22 @@ export const update =
           ]
         }
       case 'FavoriteArticle':
-        if (token._tag === 'Some') {
+        if (shared.token._tag === 'Some') {
           return [
             model,
             attemptTE(
-              favoriteArticle(token.value, model.slug),
+              favoriteArticle(shared.token.value, model.slug),
               (result): Msg => ({ _tag: 'FavoriteArticleResponse', result }),
             ),
           ]
         }
         return [model, Cmd.none()]
       case 'UnfavoriteArticle':
-        if (token._tag === 'Some') {
+        if (shared.token._tag === 'Some') {
           return [
             model,
             attemptTE(
-              unfavoriteArticle(token.value, model.slug),
+              unfavoriteArticle(shared.token.value, model.slug),
               (result): Msg => ({ _tag: 'FavoriteArticleResponse', result }),
             ),
           ]
@@ -100,22 +102,22 @@ export const update =
         }
         return [model, Cmd.none()]
       case 'FollowAuthor':
-        if (token._tag === 'Some') {
+        if (shared.token._tag === 'Some') {
           return [
             model,
             attemptTE(
-              followUser(token.value, msg.username),
+              followUser(shared.token.value, msg.username),
               (result): Msg => ({ _tag: 'FollowAuthorResponse', result }),
             ),
           ]
         }
         return [model, Cmd.none()]
       case 'UnfollowAuthor':
-        if (token._tag === 'Some') {
+        if (shared.token._tag === 'Some') {
           return [
             model,
             attemptTE(
-              unfollowUser(token.value, msg.username),
+              unfollowUser(shared.token.value, msg.username),
               (result): Msg => ({ _tag: 'UnfollowAuthorResponse', result }),
             ),
           ]
@@ -139,11 +141,11 @@ export const update =
         }
         return [model, Cmd.none()]
       case 'DeleteArticle':
-        if (token._tag === 'Some') {
+        if (shared.token._tag === 'Some') {
           return [
             model,
             attemptTE(
-              deleteArticle(token.value, model.slug),
+              deleteArticle(shared.token.value, model.slug),
               (result): Msg => ({ _tag: 'DeleteArticleResponse', result }),
             ),
           ]
@@ -154,11 +156,11 @@ export const update =
       case 'SetCommentInput':
         return [{ ...model, commentInput: msg.value }, Cmd.none()]
       case 'SubmitComment':
-        if (token._tag === 'Some' && model.commentInput.trim() !== '') {
+        if (shared.token._tag === 'Some' && model.commentInput.trim() !== '') {
           return [
             { ...model, commentInput: '' },
             attemptTE(
-              createComment(token.value, model.slug, model.commentInput),
+              createComment(shared.token.value, model.slug, model.commentInput),
               (result): Msg => ({ _tag: 'SubmitCommentResponse', result }),
             ),
           ]
@@ -183,11 +185,11 @@ export const update =
         }
         return [model, Cmd.none()]
       case 'DeleteComment':
-        if (token._tag === 'Some') {
+        if (shared.token._tag === 'Some') {
           return [
             model,
             attemptTE(
-              deleteComment(token.value, model.slug, msg.id),
+              deleteComment(shared.token.value, model.slug, msg.id),
               (result): Msg => ({
                 _tag: 'DeleteCommentResponse',
                 id: msg.id,

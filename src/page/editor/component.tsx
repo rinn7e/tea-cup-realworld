@@ -7,6 +7,18 @@ import { memoStrategy } from '@/util/memo-strategy'
 import { Props, PropsEq } from './type'
 
 function EditorView({ model, dispatch }: Props) {
+  if (model.form._tag === 'None') {
+    return (
+      <div className='mx-auto flex w-full max-w-[768px] flex-col gap-[24px] px-[16px] py-[32px]'>
+        <div className='flex min-h-[400px] items-center justify-center'>
+          Loading...
+        </div>
+      </div>
+    )
+  }
+
+  const form = model.form.value
+
   return (
     <div className='mx-auto flex w-full max-w-[768px] flex-col gap-[24px] px-[16px] py-[32px]'>
       {model.errors && (
@@ -30,24 +42,24 @@ function EditorView({ model, dispatch }: Props) {
         <fieldset className='flex flex-col gap-[0px]'>
           <FormItemMemo
             field='title'
-            model={model.form}
+            model={form}
             dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
           />
           <FormItemMemo
             field='description'
-            model={model.form}
+            model={form}
             dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
           />
           <FormItemMemo
             field='body'
-            model={model.form}
+            model={form}
             dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
           />
 
           <div className='flex flex-col gap-[8px]'>
             <FormItemMemo
               field='tagInput'
-              model={model.form}
+              model={form}
               dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
             />
             <div className='flex flex-wrap gap-[4px] px-[12px]'>

@@ -8,7 +8,9 @@
 
 - [x] Port to elm
 
-- [ ] Host on github
+- [-] Host on github
+
+- [ ] Fix form no validation
 
 - [ ] Port to miso
 

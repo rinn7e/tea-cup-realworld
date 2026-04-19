@@ -3,6 +3,8 @@ import { attemptTE } from '@rinn7e/tea-cup-prelude'
 import * as O from 'fp-ts/lib/Option'
 import { Cmd } from 'tea-cup-fp'
 
+import type { Shared } from '@/type'
+
 import { login, register } from '@/api'
 import { standardInputUi } from '@/component/form-fields'
 
@@ -67,7 +69,10 @@ const signupFormConfig: [string, Form.FormType][] = [
   passwordField,
 ]
 
-export const init = (isRegister: boolean): [Model, Cmd<Msg>] => {
+export const init = (
+  isRegister: boolean,
+  _shared: Shared,
+): [Model, Cmd<Msg>] => {
   return [
     {
       isRegister,
@@ -80,7 +85,9 @@ export const init = (isRegister: boolean): [Model, Cmd<Msg>] => {
   ]
 }
 
-export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
+export const update =
+  (_shared: Shared) =>
+  (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
   switch (msg._tag) {
     case 'FormMsg':
       if (model.isRegister) {

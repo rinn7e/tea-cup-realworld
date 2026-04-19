@@ -6,6 +6,16 @@ import { memoStrategy } from '@/util/memo-strategy'
 import { Props, PropsEq } from './type'
 
 function SettingsView({ model, dispatch }: Props) {
+  if (model.form._tag === 'None') {
+    return (
+      <div className='flex min-h-[400px] items-center justify-center pt-[64px]'>
+        <div className='text-gray-500'>Loading settings...</div>
+      </div>
+    )
+  }
+
+  const form = model.form.value
+
   return (
     <div className='flex min-h-full items-start justify-center px-[16px] pt-[64px] pb-[32px]'>
       <div className='flex w-full max-w-[448px] flex-col gap-[24px]'>
@@ -35,27 +45,27 @@ function SettingsView({ model, dispatch }: Props) {
           <fieldset className='flex flex-col gap-[0px]'>
             <FormItemMemo
               field='image'
-              model={model.form}
+              model={form}
               dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
             />
             <FormItemMemo
               field='username'
-              model={model.form}
+              model={form}
               dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
             />
             <FormItemMemo
               field='bio'
-              model={model.form}
+              model={form}
               dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
             />
             <FormItemMemo
               field='email'
-              model={model.form}
+              model={form}
               dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
             />
             <FormItemMemo
               field='password'
-              model={model.form}
+              model={form}
               dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
             />
             <div className='flex justify-end pt-[16px]'>

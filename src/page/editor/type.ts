@@ -1,3 +1,4 @@
+import * as O from 'fp-ts/lib/Option'
 import * as Form from '@rinn7e/tea-cup-form'
 import { EqAlways, NullableEq } from '@rinn7e/tea-cup-prelude'
 import * as A from 'fp-ts/lib/Array'
@@ -11,7 +12,7 @@ import type { ArticleResponse, HttpErrorString } from '@/api/type'
 
 export type Model = {
   slug: string | null
-  form: Form.Model
+  form: O.Option<Form.Model>
   tagList: string[]
   errors: HttpErrorString | null
   submitting: boolean
@@ -19,7 +20,7 @@ export type Model = {
 
 export const ModelEq = EqClass.struct<Model>({
   slug: NullableEq(S.Eq),
-  form: Form.ModelEq,
+  form: O.getEq(Form.ModelEq),
   tagList: A.getEq(S.Eq),
   errors: NullableEq(HttpErrorStringEq),
   submitting: B.Eq,

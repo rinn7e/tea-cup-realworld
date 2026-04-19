@@ -25,7 +25,6 @@ export type PageModel =
   | { _tag: 'Profile'; model: Profile.Model }
   | { _tag: 'Editor'; model: Editor.Model }
   | { _tag: 'NotFound' }
-  | { _tag: 'Loading' }
 
 export type AnimateState =
   | { _tag: 'AnimateIn' }
@@ -60,4 +59,5 @@ export type Msg =
   | { _tag: 'DebugPanelMsg'; subMsg: DebugPanel.Msg }
   | { _tag: 'ToggleNavbarMobile'; open: boolean }
   | { _tag: 'SetNavbarMobileState'; state: AnimateState }
+  | { _tag: 'Init'; location: Location; user: Option<User> }
   | { _tag: 'None' }

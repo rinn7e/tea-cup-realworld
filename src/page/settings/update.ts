@@ -2,7 +2,10 @@ import * as Form from '@rinn7e/tea-cup-form'
 import { lookupForm, valueTextType } from '@rinn7e/tea-cup-form'
 import { attemptTE } from '@rinn7e/tea-cup-prelude'
 import * as O from 'fp-ts/lib/Option'
+import { pipe } from 'fp-ts/lib/function'
 import { Cmd } from 'tea-cup-fp'
+
+import type { Shared } from '@/type'
 
 import { updateUser } from '@/api'
 import type { User } from '@/api/type'
@@ -93,10 +96,13 @@ const settingsFormConfig = (user: User): [string, Form.FormType][] => [
   ],
 ]
 
-export const init = (user: User): [Model, Cmd<Msg>] => {
+export const init = (shared: Shared): [Model, Cmd<Msg>] => {
   return [
     {
-      form: Form.init(new Map(settingsFormConfig(user))),
+      form: pipe(
+      shared.user,
+      O.map((u) => Form.init(new Map(settingsFormConfig(u)))),
+    ),
       errors: null,
       submitting: false,
     },
@@ -105,22 +111,24 @@ export const init = (user: User): [Model, Cmd<Msg>] => {
 }
 
 export const update =
-  (token: string) =>
+  (shared: Shared) =>
   (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
     switch (msg._tag) {
       case 'FormMsg':
         return [
-          { ...model, form: Form.update(msg.subMsg)(model.form) },
+          { ...model, form: pipe(model.form, O.map(Form.update(msg.subMsg))) },
           Cmd.none(),
         ]
       case 'Logout':
         return [model, Cmd.none()]
       case 'Submit': {
-        const image = valueTextType(lookupForm('image', model.form.forms))
-        const username = valueTextType(lookupForm('username', model.form.forms))
-        const bio = valueTextType(lookupForm('bio', model.form.forms))
-        const email = valueTextType(lookupForm('email', model.form.forms))
-        const password = valueTextType(lookupForm('password', model.form.forms))
+        if (model.form._tag === 'None') return [model, Cmd.none()]
+        const form = model.form.value
+        const image = valueTextType(lookupForm('image', form.forms))
+        const username = valueTextType(lookupForm('username', form.forms))
+        const bio = valueTextType(lookupForm('bio', form.forms))
+        const email = valueTextType(lookupForm('email', form.forms))
+        const password = valueTextType(lookupForm('password', form.forms))
 
         const userUpdate: {
           image?: string
@@ -133,10 +141,12 @@ export const update =
           userUpdate.password = password
         }
 
+        if (shared.token._tag === 'None') return [model, Cmd.none()]
+
         return [
           { ...model, submitting: true, errors: null },
           attemptTE(
-            updateUser(token, { user: userUpdate }),
+            updateUser(shared.token.value, { user: userUpdate }),
             (result): Msg => ({ _tag: 'SubmitResponse', result }),
           ),
         ]
