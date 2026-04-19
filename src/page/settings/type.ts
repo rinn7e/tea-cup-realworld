@@ -1,7 +1,7 @@
-import * as O from 'fp-ts/lib/Option'
 import * as Form from '@rinn7e/tea-cup-form'
 import { EqAlways, NullableEq } from '@rinn7e/tea-cup-prelude'
 import * as EqClass from 'fp-ts/lib/Eq'
+import * as O from 'fp-ts/lib/Option'
 import * as B from 'fp-ts/lib/boolean'
 import type { Dispatcher, Result } from 'tea-cup-fp'
 

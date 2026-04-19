@@ -1,9 +1,6 @@
 import * as RD from '@devexperts/remote-data-ts'
 import { attemptTE } from '@rinn7e/tea-cup-prelude'
-import { type Option, none, some } from 'fp-ts/lib/Option'
 import { Cmd } from 'tea-cup-fp'
-
-import type { Shared } from '@/type'
 
 import {
   favoriteArticle,
@@ -13,7 +10,7 @@ import {
   unfavoriteArticle,
   unfollowUser,
 } from '@/api'
-import type { User } from '@/api/type'
+import type { Shared } from '@/type'
 
 import type { Model, Msg } from './type'
 

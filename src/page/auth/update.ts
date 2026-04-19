@@ -3,10 +3,9 @@ import { attemptTE } from '@rinn7e/tea-cup-prelude'
 import * as O from 'fp-ts/lib/Option'
 import { Cmd } from 'tea-cup-fp'
 
-import type { Shared } from '@/type'
-
 import { login, register } from '@/api'
 import { standardInputUi } from '@/component/form-fields'
+import type { Shared } from '@/type'
 
 import type { Model, Msg } from './type'
 
@@ -88,56 +87,58 @@ export const init = (
 export const update =
   (_shared: Shared) =>
   (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
-  switch (msg._tag) {
-    case 'FormMsg':
-      if (model.isRegister) {
+    switch (msg._tag) {
+      case 'FormMsg':
+        if (model.isRegister) {
+          return [
+            { ...model, signupForm: Form.update(msg.subMsg)(model.signupForm) },
+            Cmd.none(),
+          ]
+        } else {
+          return [
+            { ...model, loginForm: Form.update(msg.subMsg)(model.loginForm) },
+            Cmd.none(),
+          ]
+        }
+      case 'Submit': {
+        const currentForm = model.isRegister
+          ? model.signupForm
+          : model.loginForm
+        const email = Form.valueTextType(
+          Form.lookupForm('email', currentForm.forms),
+        )
+        const password = Form.valueTextType(
+          Form.lookupForm('password', currentForm.forms),
+        )
+
+        const authTask = model.isRegister
+          ? register({
+              user: {
+                username: Form.valueTextType(
+                  Form.lookupForm('username', currentForm.forms),
+                ),
+                email,
+                password,
+              },
+            })
+          : login({ user: { email, password } })
+
         return [
-          { ...model, signupForm: Form.update(msg.subMsg)(model.signupForm) },
-          Cmd.none(),
-        ]
-      } else {
-        return [
-          { ...model, loginForm: Form.update(msg.subMsg)(model.loginForm) },
-          Cmd.none(),
+          { ...model, submitting: true, errors: null },
+          attemptTE(
+            authTask,
+            (result): Msg => ({ _tag: 'SubmitResponse', result }),
+          ),
         ]
       }
-    case 'Submit': {
-      const currentForm = model.isRegister ? model.signupForm : model.loginForm
-      const email = Form.valueTextType(
-        Form.lookupForm('email', currentForm.forms),
-      )
-      const password = Form.valueTextType(
-        Form.lookupForm('password', currentForm.forms),
-      )
-
-      const authTask = model.isRegister
-        ? register({
-            user: {
-              username: Form.valueTextType(
-                Form.lookupForm('username', currentForm.forms),
-              ),
-              email,
-              password,
-            },
-          })
-        : login({ user: { email, password } })
-
-      return [
-        { ...model, submitting: true, errors: null },
-        attemptTE(
-          authTask,
-          (result): Msg => ({ _tag: 'SubmitResponse', result }),
-        ),
-      ]
+      case 'SubmitResponse':
+        if (msg.result.tag === 'Ok') {
+          return [{ ...model, submitting: false }, Cmd.none()]
+        } else {
+          return [
+            { ...model, submitting: false, errors: msg.result.err },
+            Cmd.none(),
+          ]
+        }
     }
-    case 'SubmitResponse':
-      if (msg.result.tag === 'Ok') {
-        return [{ ...model, submitting: false }, Cmd.none()]
-      } else {
-        return [
-          { ...model, submitting: false, errors: msg.result.err },
-          Cmd.none(),
-        ]
-      }
   }
-}

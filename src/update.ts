@@ -12,7 +12,7 @@ import { Cmd, Task } from 'tea-cup-fp'
 import { getCurrentUser } from './api'
 import type { User } from './api/type'
 import * as DebugPanel from './component/debug-panel/type'
-import { homePage, loginPage, parseAppRoute, toUrlString } from './data/route'
+import { homePage, parseAppRoute, toUrlString } from './data/route'
 import * as Article from './page/article/update'
 import * as Auth from './page/auth/update'
 import * as Editor from './page/editor/update'
@@ -85,7 +85,7 @@ export const initializeCmd = (location: Location): Cmd<Msg> => {
   return msgCmd({ _tag: 'Init', location, user: O.none })
 }
 
-const getUserCmd = (storedToken: string): Cmd<Msg> =>
+const _getUserCmd = (storedToken: string): Cmd<Msg> =>
   Task.attempt(taskFromTE(getCurrentUser(storedToken)), (res) => {
     const msg: Msg = {
       _tag: 'SetUser',

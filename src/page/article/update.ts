@@ -1,10 +1,6 @@
 import * as RD from '@devexperts/remote-data-ts'
 import { attemptTE } from '@rinn7e/tea-cup-prelude'
-import * as O from 'fp-ts/lib/Option'
-import type { Option } from 'fp-ts/lib/Option'
 import { Cmd } from 'tea-cup-fp'
-
-import type { Shared } from '@/type'
 
 import {
   createComment,
@@ -17,13 +13,11 @@ import {
   unfavoriteArticle,
   unfollowUser,
 } from '@/api'
+import type { Shared } from '@/type'
 
 import type { Model, Msg } from './type'
 
-export const init = (
-  slug: string,
-  shared: Shared,
-): [Model, Cmd<Msg>] => {
+export const init = (slug: string, shared: Shared): [Model, Cmd<Msg>] => {
   const model: Model = {
     slug,
     article: RD.pending,
