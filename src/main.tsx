@@ -12,8 +12,16 @@ import { preInit, preUpdate } from './update'
 // Helper
 // ---------------------------------------------
 
+const preLoadingView = () => {
+  return (
+    <div className='initial-loader-wrap'>
+      <div className='initial-loader'></div>
+    </div>
+  )
+}
+
 const preView = (dispatch: Dispatcher<Msg>, model: Model | null) =>
-  model ? <App model={model} dispatch={dispatch} /> : null
+  model ? <App model={model} dispatch={dispatch} /> : preLoadingView()
 
 // App
 // ---------------------------------------------
