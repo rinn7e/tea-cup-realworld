@@ -8,9 +8,11 @@
 
 - [x] Host on github
 
-- [ ] Add pagination
+- [x] Fix form no validation
 
-- [ ] Fix form no validation
+- [ ] Implement haskell backend, the official api is buggy
+
+- [ ] Add pagination
 
 - [ ] fix tags link in homepage
 
@@ -21,5 +23,3 @@
 - [ ] Port to miso
 
 - [ ] Port to other elm/tea frameworks
-
-- [ ] Implement haskell BE to connect with this
