@@ -5,7 +5,7 @@ import type * as DebugPanel from './component/debug-panel'
 import type { AppRoute } from './data/route'
 import type * as ArticlePage from './page/article/type'
 import type * as LoginPage from './page/login/type'
-import type * as RegisterPage from './page/register/type'
+import type * as SignupPage from './page/signup/type'
 import type * as EditorPage from './page/editor/type'
 import type * as HomePage from './page/home/type'
 import type * as ProfilePage from './page/profile/type'
@@ -22,7 +22,7 @@ export type PageModel =
   | { _tag: 'HomePageModel'; model: HomePage.Model }
   | { _tag: 'ArticlePageModel'; model: ArticlePage.Model }
   | { _tag: 'LoginPageModel'; model: LoginPage.Model }
-  | { _tag: 'RegisterPageModel'; model: RegisterPage.Model }
+  | { _tag: 'SignupPageModel'; model: SignupPage.Model }
   | { _tag: 'SettingsPageModel'; model: SettingsPage.Model }
   | { _tag: 'ProfilePageModel'; model: ProfilePage.Model }
   | { _tag: 'EditorPageModel'; model: EditorPage.Model }
@@ -57,7 +57,7 @@ export type Msg =
   | { _tag: 'HomePageMsg'; subMsg: HomePage.Msg }
   | { _tag: 'ArticlePageMsg'; subMsg: ArticlePage.Msg }
   | { _tag: 'LoginPageMsg'; subMsg: LoginPage.Msg }
-  | { _tag: 'RegisterPageMsg'; subMsg: RegisterPage.Msg }
+  | { _tag: 'SignupPageMsg'; subMsg: SignupPage.Msg }
   | { _tag: 'SettingsPageMsg'; subMsg: SettingsPage.Msg }
   | { _tag: 'ProfilePageMsg'; subMsg: ProfilePage.Msg }
   | { _tag: 'EditorPageMsg'; subMsg: EditorPage.Msg }

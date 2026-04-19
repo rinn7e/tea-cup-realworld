@@ -22,7 +22,7 @@ import {
   loginPage,
   notFoundPage,
   profilePage,
-  registerPage,
+  signupPage,
   settingsPage,
 } from './type'
 
@@ -47,7 +47,7 @@ export const addBaseUrl = (path: string): string => {
 
 const homeMatch = end
 const loginMatch = lit('login').and(end)
-const registerMatch = lit('register').and(end)
+const signupMatch = lit('signup').and(end)
 const settingsMatch = lit('settings').and(end)
 const editorMatch: Match<object> = lit('editor').and(end)
 const editorSlugMatch: Match<{ slug: string }> = lit('editor')
@@ -72,7 +72,7 @@ const anyStrings = new Match<object>(
 const appRouter: Parser<AppPage> = zero<AppPage>()
   .alt(homeMatch.parser.map(() => homePage()))
   .alt(loginMatch.parser.map(() => loginPage()))
-  .alt(registerMatch.parser.map(() => registerPage()))
+  .alt(signupMatch.parser.map(() => signupPage()))
   .alt(settingsMatch.parser.map(() => settingsPage()))
   .alt(editorMatch.parser.map(() => editorPage(O.none)))
   .alt(editorSlugMatch.parser.map(({ slug }) => editorPage(O.some(slug))))
@@ -102,8 +102,8 @@ export const toUrlString = (r: AppRoute): string => {
         return format(homeMatch.formatter, {})
       case 'LoginPage':
         return format(loginMatch.formatter, {})
-      case 'RegisterPage':
-        return format(registerMatch.formatter, {})
+      case 'SignupPage':
+        return format(signupMatch.formatter, {})
       case 'SettingsPage':
         return format(settingsMatch.formatter, {})
       case 'EditorPage':

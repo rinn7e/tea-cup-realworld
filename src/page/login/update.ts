@@ -1,3 +1,4 @@
+import * as RD from '@devexperts/remote-data-ts'
 import * as Form from '@rinn7e/tea-cup-form'
 import { attemptTE } from '@rinn7e/tea-cup-prelude'
 import * as O from 'fp-ts/lib/Option'
@@ -49,8 +50,7 @@ export const init = (_shared: Shared): [Model, Cmd<Msg>] => {
   return [
     {
       form: Form.init(new Map(loginFormConfig)),
-      errors: null,
-      submitting: false,
+      submitRd: RD.initial,
     },
     Cmd.none(),
   ]
@@ -74,7 +74,7 @@ export const update =
         )
 
         return [
-          { ...model, submitting: true, errors: null },
+          { ...model, submitRd: RD.pending },
           attemptTE(
             login({ user: { email, password } }),
             (result): Msg => ({ _tag: 'SubmitResponse', result }),
@@ -83,10 +83,10 @@ export const update =
       }
       case 'SubmitResponse':
         if (msg.result.tag === 'Ok') {
-          return [{ ...model, submitting: false }, Cmd.none()]
+          return [{ ...model, submitRd: RD.success(null) }, Cmd.none()]
         } else {
           return [
-            { ...model, submitting: false, errors: msg.result.err },
+            { ...model, submitRd: RD.failure(msg.result.err) },
             Cmd.none(),
           ]
         }

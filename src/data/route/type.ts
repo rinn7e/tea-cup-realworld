@@ -12,8 +12,8 @@ export type LoginPage = {
   readonly _tag: 'LoginPage'
 }
 
-export type RegisterPage = {
-  readonly _tag: 'RegisterPage'
+export type SignupPage = {
+  readonly _tag: 'SignupPage'
 }
 
 export type SettingsPage = {
@@ -43,7 +43,7 @@ export type NotFoundPage = {
 export type AppPage =
   | HomePage
   | LoginPage
-  | RegisterPage
+  | SignupPage
   | SettingsPage
   | EditorPage
   | ArticlePage
@@ -58,7 +58,7 @@ export const LoginPageEq: EqClass.Eq<LoginPage> = EqClass.struct({
   _tag: S.Eq,
 })
 
-export const RegisterPageEq: EqClass.Eq<RegisterPage> = EqClass.struct({
+export const SignupPageEq: EqClass.Eq<SignupPage> = EqClass.struct({
   _tag: S.Eq,
 })
 
@@ -92,8 +92,8 @@ export const AppPageEq: EqClass.Eq<AppPage> = {
       return HomePageEq.equals(x, y)
     } else if (x._tag === 'LoginPage' && y._tag === 'LoginPage') {
       return LoginPageEq.equals(x, y)
-    } else if (x._tag === 'RegisterPage' && y._tag === 'RegisterPage') {
-      return RegisterPageEq.equals(x, y)
+    } else if (x._tag === 'SignupPage' && y._tag === 'SignupPage') {
+      return SignupPageEq.equals(x, y)
     } else if (x._tag === 'SettingsPage' && y._tag === 'SettingsPage') {
       return SettingsPageEq.equals(x, y)
     } else if (x._tag === 'EditorPage' && y._tag === 'EditorPage') {
@@ -124,7 +124,7 @@ export const defaultAppRoute = (): AppRoute => ({
 
 export const homePage = (): AppPage => ({ _tag: 'HomePage' })
 export const loginPage = (): AppPage => ({ _tag: 'LoginPage' })
-export const registerPage = (): AppPage => ({ _tag: 'RegisterPage' })
+export const signupPage = (): AppPage => ({ _tag: 'SignupPage' })
 export const settingsPage = (): AppPage => ({ _tag: 'SettingsPage' })
 export const editorPage = (slug: Option<string>): AppPage => ({
   _tag: 'EditorPage',

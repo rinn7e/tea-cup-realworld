@@ -8,7 +8,7 @@ import { SetGlobalMsgContext } from './component/global-context'
 import { Navbar } from './component/navbar'
 import { ArticlePageMemo } from './page/article/component'
 import { LoginPageMemo } from './page/login/component'
-import { RegisterPageMemo } from './page/register/component'
+import { SignupPageMemo } from './page/signup/component'
 import { EditorPageMemo } from './page/editor/component'
 import { HomePageMemo } from './page/home/component'
 import { NotFoundView } from './page/not-found'
@@ -68,11 +68,11 @@ const renderPage = (model: Model, dispatch: Dispatcher<Msg>) => {
           dispatch={(msg) => dispatch({ _tag: 'LoginPageMsg', subMsg: msg })}
         />
       )
-    case 'RegisterPageModel':
+    case 'SignupPageModel':
       return (
-        <RegisterPageMemo
+        <SignupPageMemo
           model={model.pageModel.model}
-          dispatch={(msg) => dispatch({ _tag: 'RegisterPageMsg', subMsg: msg })}
+          dispatch={(msg) => dispatch({ _tag: 'SignupPageMsg', subMsg: msg })}
         />
       )
     case 'SettingsPageModel':

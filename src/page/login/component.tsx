@@ -1,4 +1,6 @@
+import * as RD from '@devexperts/remote-data-ts'
 import { FormItemMemo } from '@rinn7e/tea-cup-form/lib/component'
+import { pipe } from 'fp-ts/lib/function'
 import React from 'react'
 
 import { Link } from '@/component/link'
@@ -8,7 +10,7 @@ import { memoStrategy } from '@/util/memo-strategy'
 import { Props, PropsEq } from './type'
 
 function LoginPageComponent({ model, dispatch }: Props) {
-  const registerRoute: Route = { page: { _tag: 'RegisterPage' } }
+  const signupRoute: Route = { page: { _tag: 'SignupPage' } }
 
   return (
     <div className='flex min-h-full items-start justify-center px-[16px] pt-[64px] pb-[32px]'>
@@ -19,7 +21,7 @@ function LoginPageComponent({ model, dispatch }: Props) {
           </h1>
           <p className='text-center text-sm'>
             <Link
-              route={registerRoute}
+              route={signupRoute}
               className='text-green-600 hover:underline'
             >
               Need an account?
@@ -27,10 +29,18 @@ function LoginPageComponent({ model, dispatch }: Props) {
           </p>
         </div>
 
-        {model.errors && (
-          <ul className='flex flex-col gap-[4px] rounded border border-red-200 bg-red-50 p-[12px] text-sm text-red-700'>
-            <li>{model.errors.actualErr}</li>
-          </ul>
+        {pipe(
+          model.submitRd,
+          RD.fold(
+            () => null,
+            () => null,
+            (err) => (
+              <ul className='flex flex-col gap-[4px] rounded border border-red-200 bg-red-50 p-[12px] text-sm text-red-700'>
+                <li>{err.actualErr}</li>
+              </ul>
+            ),
+            () => null,
+          ),
         )}
 
         <form
@@ -56,7 +66,7 @@ function LoginPageComponent({ model, dispatch }: Props) {
               <button
                 className='w-full rounded bg-green-600 px-[16px] py-[10px] text-sm font-semibold text-white transition-colors hover:bg-green-700 disabled:opacity-60'
                 type='submit'
-                disabled={model.submitting}
+                disabled={RD.isPending(model.submitRd)}
               >
                 Sign in
               </button>

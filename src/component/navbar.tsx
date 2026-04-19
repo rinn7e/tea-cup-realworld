@@ -120,7 +120,7 @@ export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
                   'rounded px-[12px] py-[6px] text-sm',
                   inactiveCls,
                 )}
-                route={{ page: { _tag: 'RegisterPage' } }}
+                route={{ page: { _tag: 'SignupPage' } }}
               >
                 Sign up
               </Link>

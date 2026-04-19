@@ -6,7 +6,7 @@ import { API_BASE } from '@/env'
 import { type HttpErrorString } from '../type/common'
 import {
   type LoginRequest,
-  type RegisterRequest,
+  type SignupRequest,
   type UpdateUserRequest,
   type UserResponse,
   UserResponseJson,
@@ -57,8 +57,8 @@ export const login = (
     TE.mapLeft(decodeError),
   )
 
-export const register = (
-  request: RegisterRequest,
+export const signup = (
+  request: SignupRequest,
 ): TE.TaskEither<HttpErrorString, UserResponse> =>
   pipe(
     fetch(`${API_BASE}/users`, {

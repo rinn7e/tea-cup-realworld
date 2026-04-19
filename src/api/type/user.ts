@@ -31,7 +31,7 @@ export type LoginRequest = {
   }
 }
 
-export type RegisterRequest = {
+export type SignupRequest = {
   user: {
     username: string
     email: string
