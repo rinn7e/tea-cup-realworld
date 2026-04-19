@@ -21,7 +21,7 @@ const normalFavButton = ({
     className={cn(
       'flex items-center gap-[4px] rounded border px-[8px] py-[4px] text-xs',
       favorited
-        ? 'bg-green-600 border-green-600 text-white hover:bg-green-700'
+        ? 'border-green-600 bg-green-600 text-white hover:bg-green-700'
         : 'border-green-600 text-green-600 hover:bg-green-50',
     )}
   >
@@ -55,6 +55,4 @@ export const favButtonView = ({
   variant = 'normal',
   ...props
 }: FavButtonProps): React.ReactElement =>
-  variant === 'detail'
-    ? detailFavButton(props)
-    : normalFavButton(props)
+  variant === 'detail' ? detailFavButton(props) : normalFavButton(props)

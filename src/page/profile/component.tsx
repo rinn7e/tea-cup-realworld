@@ -9,7 +9,7 @@ import type {
   HttpErrorString,
   ProfileResponse,
 } from '@/api/type'
-import { favButtonView } from '@/component/fav-button'
+import { ArticleShortView } from '@/component/article-short'
 import { Link } from '@/component/link'
 import { assetPath } from '@/util'
 import { memoStrategy } from '@/util/memo-strategy'
@@ -148,84 +148,17 @@ function ProfileView({ model, dispatch, isCurrentUser }: Props) {
                         ) : (
                           <div className='flex flex-col'>
                             {articlesData.articles.map((article) => (
-                              <div
+                              <ArticleShortView
                                 key={article.slug}
-                                className='flex flex-col gap-[12px] border-b border-gray-200 py-[24px]'
-                              >
-                                <div className='flex items-center justify-between'>
-                                  <div className='flex items-center gap-[12px]'>
-                                    <Link
-                                      route={{
-                                        page: {
-                                          _tag: 'ProfilePage',
-                                          username: article.author.username,
-                                          favorites: false,
-                                        },
-                                      }}
-                                    >
-                                      <img
-                                        src={assetPath(
-                                          article.author.image ||
-                                            '/default-avatar.svg',
-                                        )}
-                                        className='h-[32px] w-[32px] rounded-full object-cover'
-                                        alt=''
-                                      />
-                                    </Link>
-                                    <div className='flex flex-col'>
-                                      <Link
-                                        route={{
-                                          page: {
-                                            _tag: 'ProfilePage',
-                                            username: article.author.username,
-                                            favorites: false,
-                                          },
-                                        }}
-                                        className='block text-sm font-medium text-green-600 hover:underline'
-                                      >
-                                        {article.author.username}
-                                      </Link>
-                                      <span className='text-xs text-gray-400'>
-                                        {new Date(
-                                          article.createdAt,
-                                        ).toDateString()}
-                                      </span>
-                                    </div>
-                                  </div>
-                                  {favButtonView({
-                                    favorited: article.favorited,
-                                    favoritesCount: article.favoritesCount,
-                                    onClick: () =>
-                                      dispatch({
-                                        _tag: article.favorited
-                                          ? 'UnfavoriteArticle'
-                                          : 'FavoriteArticle',
-                                        slug: article.slug,
-                                      }),
-                                  })}
-                                </div>
-                                <Link
-                                  route={{
-                                    page: {
-                                      _tag: 'ArticlePage',
-                                      slug: article.slug,
-                                    },
-                                  }}
-                                  className='flex flex-col gap-[12px]'
-                                >
-                                  <div className='flex flex-col gap-[4px]'>
-                                    <h1 className='text-xl font-bold text-gray-900'>
-                                      {article.title}
-                                    </h1>
-                                    <p className='text-sm text-gray-500'>
-                                      {article.description}
-                                    </p>
-                                  </div>
-                                  <span className='text-xs text-gray-400'>
-                                    Read more...
-                                  </span>
-                                </Link>
-                              </div>
+                                model={article}
+                                dispatch={(subMsg) =>
+                                  dispatch({
+                                    _tag: 'ArticleShortMsg',
+                                    slug: article.slug,
+                                    subMsg,
+                                  })
+                                }
+                              />
                             ))}
                           </div>
                         ),

@@ -1,12 +1,12 @@
 import * as RD from '@devexperts/remote-data-ts'
-import { attemptTE } from '@rinn7e/tea-cup-prelude'
+import { ArrayExtra, attemptTE } from '@rinn7e/tea-cup-prelude'
+import * as A from 'fp-ts/lib/Array'
+import * as O from 'fp-ts/lib/Option'
+import { pipe } from 'fp-ts/lib/function'
 import { Cmd } from 'tea-cup-fp'
 
-import { favoriteArticle, getArticles, getTags, unfavoriteArticle } from '@/api'
-import {
-  favoriteArticleUtil,
-  unfavoriteArticleUtil,
-} from '@/api/type/article'
+import { getArticles, getTags } from '@/api'
+import * as ArticleShort from '@/component/article-short'
 import type { Shared } from '@/type'
 
 import type { Model, Msg } from './type'
@@ -56,94 +56,41 @@ export const update =
         } else {
           return [{ ...model, tags: RD.failure(msg.result.err) }, Cmd.none()]
         }
-      case 'FavoriteArticle':
-        if (
-          shared.token._tag === 'Some' &&
-          model.articles._tag === 'RemoteSuccess'
-        ) {
-          return [
-            {
-              ...model,
-              articles: RD.success({
-                ...model.articles.value,
-                articles: model.articles.value.articles.map((a) =>
-                  a.slug === msg.slug ? favoriteArticleUtil(a) : a,
-                ),
-              }),
-            },
-            attemptTE(
-              favoriteArticle(shared.token.value, msg.slug),
-              (result): Msg => ({
-                _tag: 'FavoriteArticleResponse',
-                slug: msg.slug,
-                result,
-              }),
+      case 'ArticleShortMsg':
+        if (model.articles._tag === 'RemoteSuccess') {
+          const articlesData = model.articles.value
+          return pipe(
+            articlesData.articles,
+            A.findIndex((a) => a.slug === msg.slug),
+            O.fold(
+              () => [model, Cmd.none()],
+              (index) => {
+                const [updated, subCmd] = ArticleShort.update(shared)(
+                  msg.subMsg,
+                  articlesData.articles[index],
+                )
+                return [
+                  {
+                    ...model,
+                    articles: RD.success({
+                      ...articlesData,
+                      articles: pipe(
+                        articlesData.articles,
+                        ArrayExtra.modifyAtIfExist(index, () => updated),
+                      ),
+                    }),
+                  },
+                  subCmd.map(
+                    (m): Msg => ({
+                      _tag: 'ArticleShortMsg',
+                      slug: msg.slug,
+                      subMsg: m,
+                    }),
+                  ),
+                ]
+              },
             ),
-          ]
-        }
-        return [model, Cmd.none()]
-      case 'UnfavoriteArticle':
-        if (
-          shared.token._tag === 'Some' &&
-          model.articles._tag === 'RemoteSuccess'
-        ) {
-          return [
-            {
-              ...model,
-              articles: RD.success({
-                ...model.articles.value,
-                articles: model.articles.value.articles.map((a) =>
-                  a.slug === msg.slug ? unfavoriteArticleUtil(a) : a,
-                ),
-              }),
-            },
-            attemptTE(
-              unfavoriteArticle(shared.token.value, msg.slug),
-              (result): Msg => ({
-                _tag: 'UnfavoriteArticleResponse',
-                slug: msg.slug,
-                result,
-              }),
-            ),
-          ]
-        }
-        return [model, Cmd.none()]
-      case 'FavoriteArticleResponse':
-      case 'UnfavoriteArticleResponse':
-        if (
-          msg.result.tag === 'Ok' &&
-          model.articles._tag === 'RemoteSuccess'
-        ) {
-          const updated = msg.result.value.article
-          return [
-            {
-              ...model,
-              articles: RD.success({
-                ...model.articles.value,
-                articles: model.articles.value.articles.map((a) =>
-                  a.slug === updated.slug ? updated : a,
-                ),
-              }),
-            },
-            Cmd.none(),
-          ]
-        } else if (model.articles._tag === 'RemoteSuccess') {
-          return [
-            {
-              ...model,
-              articles: RD.success({
-                ...model.articles.value,
-                articles: model.articles.value.articles.map((a) =>
-                  a.slug === msg.slug
-                    ? msg._tag === 'FavoriteArticleResponse'
-                      ? unfavoriteArticleUtil(a)
-                      : favoriteArticleUtil(a)
-                    : a,
-                ),
-              }),
-            },
-            Cmd.none(),
-          ]
+          )
         }
         return [model, Cmd.none()]
     }

@@ -6,14 +6,20 @@
 
 - [x] Fix all errors
 
-- [x] Port to elm
+- [x] Host on github
 
-- [-] Host on github
+- [ ] Add pagination
 
 - [ ] Fix form no validation
 
+- [ ] fix tags link in homepage
+
+## extra
+
+- [x] Port to elm
+
 - [ ] Port to miso
 
-- [ ] Port to other frameworkd
+- [ ] Port to other elm/tea frameworks
 
 - [ ] Implement haskell BE to connect with this

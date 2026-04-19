@@ -10,11 +10,11 @@ import {
   ProfileResponseEq,
 } from '@/api/type'
 import type {
-  ArticleResponse,
   ArticlesResponse,
   HttpErrorString,
   ProfileResponse,
 } from '@/api/type'
+import * as ArticleShort from '@/component/article-short'
 
 export type Model = {
   profile: RD.RemoteData<HttpErrorString, ProfileResponse>
@@ -40,17 +40,10 @@ export type Msg =
   | { _tag: 'ToggleFavorites'; show: boolean }
   | { _tag: 'Follow' }
   | { _tag: 'Unfollow' }
-  | { _tag: 'FavoriteArticle'; slug: string }
-  | { _tag: 'UnfavoriteArticle'; slug: string }
   | {
-      _tag: 'FavoriteArticleResponse'
+      _tag: 'ArticleShortMsg'
       slug: string
-      result: Result<HttpErrorString, ArticleResponse>
-    }
-  | {
-      _tag: 'UnfavoriteArticleResponse'
-      slug: string
-      result: Result<HttpErrorString, ArticleResponse>
+      subMsg: ArticleShort.Msg
     }
 
 export type Props = {

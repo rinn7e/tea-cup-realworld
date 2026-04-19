@@ -1,6 +1,5 @@
 # 🍵 RealWorld example app in `react-tea-cup`
 
-
 [![Deploy to GitHub Pages](https://github.com/rinn7e/tea-cup-realworld/actions/workflows/deploy.yml/badge.svg)](https://github.com/rinn7e/tea-cup-realworld/actions/workflows/deploy.yml)
 
 ### [Demo](https://angular-ngrx-nx-realworld-example-app-lyart.vercel.app)&nbsp;&nbsp;&nbsp;&nbsp;[RealWorld](https://github.com/gothinkster/realworld)

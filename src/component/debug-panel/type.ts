@@ -3,4 +3,3 @@ export type Model = {
 }
 
 export type Msg = { _tag: 'ToggleCollapse' }
-

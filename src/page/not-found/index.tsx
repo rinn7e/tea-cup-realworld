@@ -19,7 +19,7 @@ export const NotFoundView: React.FC = () => {
         <div className='pt-[16px]'>
           <Link
             route={{ page: homePage() }}
-            className='inline-flex items-center justify-center rounded-md bg-green-600 px-[24px] py-[12px] text-sm font-medium text-white shadow transition-colors hover:bg-green-700 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-green-500'
+            className='inline-flex items-center justify-center rounded-md bg-green-600 px-[24px] py-[12px] text-sm font-medium text-white shadow transition-colors hover:bg-green-700 focus-visible:ring-1 focus-visible:ring-green-500 focus-visible:outline-none'
           >
             Back to Home
           </Link>

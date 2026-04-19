@@ -13,10 +13,7 @@ import {
   unfavoriteArticle,
   unfollowUser,
 } from '@/api'
-import {
-  favoriteArticleUtil,
-  unfavoriteArticleUtil,
-} from '@/api/type/article'
+import { favoriteArticleUtil, unfavoriteArticleUtil } from '@/api/type/article'
 import type { Shared } from '@/type'
 
 import type { Model, Msg } from './type'

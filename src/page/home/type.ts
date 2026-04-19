@@ -9,11 +9,11 @@ import {
   TagsResponseEq,
 } from '@/api/type'
 import type {
-  ArticleResponse,
   ArticlesResponse,
   HttpErrorString,
   TagsResponse,
 } from '@/api/type'
+import * as ArticleShort from '@/component/article-short'
 
 export type Model = {
   articles: RD.RemoteData<HttpErrorString, ArticlesResponse>
@@ -31,17 +31,10 @@ export type Msg =
       result: Result<HttpErrorString, ArticlesResponse>
     }
   | { _tag: 'GetTagsResponse'; result: Result<HttpErrorString, TagsResponse> }
-  | { _tag: 'FavoriteArticle'; slug: string }
-  | { _tag: 'UnfavoriteArticle'; slug: string }
   | {
-      _tag: 'FavoriteArticleResponse'
+      _tag: 'ArticleShortMsg'
       slug: string
-      result: Result<HttpErrorString, ArticleResponse>
-    }
-  | {
-      _tag: 'UnfavoriteArticleResponse'
-      slug: string
-      result: Result<HttpErrorString, ArticleResponse>
+      subMsg: ArticleShort.Msg
     }
 
 export type Props = {
