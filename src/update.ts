@@ -11,7 +11,7 @@ import { Cmd, Task } from 'tea-cup-fp'
 
 import { getCurrentUser } from './api'
 import type { User } from './api/type'
-import * as DebugPanel from './component/debug-panel/type'
+import * as DebugPanel from './component/debug-panel'
 import { AppRouteEq, homePage, parseAppRoute, toUrlString } from './data/route'
 import * as Article from './page/article/update'
 import * as Auth from './page/auth/update'

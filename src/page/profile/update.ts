@@ -10,6 +10,10 @@ import {
   unfavoriteArticle,
   unfollowUser,
 } from '@/api'
+import {
+  favoriteArticleUtil,
+  unfavoriteArticleUtil,
+} from '@/api/type/article'
 import type { Shared } from '@/type'
 
 import type { Model, Msg } from './type'
@@ -111,28 +115,53 @@ export const update =
         }
         return [model, Cmd.none()]
       case 'FavoriteArticle':
-        if (token._tag === 'Some') {
+        if (token._tag === 'Some' && model.articles._tag === 'RemoteSuccess') {
           return [
-            model,
+            {
+              ...model,
+              articles: RD.success({
+                ...model.articles.value,
+                articles: model.articles.value.articles.map((a) =>
+                  a.slug === msg.slug ? favoriteArticleUtil(a) : a,
+                ),
+              }),
+            },
             attemptTE(
               favoriteArticle(token.value, msg.slug),
-              (result): Msg => ({ _tag: 'FavoriteArticleResponse', result }),
+              (result): Msg => ({
+                _tag: 'FavoriteArticleResponse',
+                slug: msg.slug,
+                result,
+              }),
             ),
           ]
         }
         return [model, Cmd.none()]
       case 'UnfavoriteArticle':
-        if (token._tag === 'Some') {
+        if (token._tag === 'Some' && model.articles._tag === 'RemoteSuccess') {
           return [
-            model,
+            {
+              ...model,
+              articles: RD.success({
+                ...model.articles.value,
+                articles: model.articles.value.articles.map((a) =>
+                  a.slug === msg.slug ? unfavoriteArticleUtil(a) : a,
+                ),
+              }),
+            },
             attemptTE(
               unfavoriteArticle(token.value, msg.slug),
-              (result): Msg => ({ _tag: 'FavoriteArticleResponse', result }),
+              (result): Msg => ({
+                _tag: 'UnfavoriteArticleResponse',
+                slug: msg.slug,
+                result,
+              }),
             ),
           ]
         }
         return [model, Cmd.none()]
       case 'FavoriteArticleResponse':
+      case 'UnfavoriteArticleResponse':
         if (
           msg.result.tag === 'Ok' &&
           model.articles._tag === 'RemoteSuccess'
@@ -145,6 +174,23 @@ export const update =
                 ...model.articles.value,
                 articles: model.articles.value.articles.map((a) =>
                   a.slug === updated.slug ? updated : a,
+                ),
+              }),
+            },
+            Cmd.none(),
+          ]
+        } else if (model.articles._tag === 'RemoteSuccess') {
+          return [
+            {
+              ...model,
+              articles: RD.success({
+                ...model.articles.value,
+                articles: model.articles.value.articles.map((a) =>
+                  a.slug === msg.slug
+                    ? msg._tag === 'FavoriteArticleResponse'
+                      ? unfavoriteArticleUtil(a)
+                      : favoriteArticleUtil(a)
+                    : a,
                 ),
               }),
             },

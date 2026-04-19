@@ -13,7 +13,7 @@ interface Props {
   dispatch: (msg: Msg) => void
 }
 
-export const DebugPanel: React.FC<Props> = ({ model, dispatch }) => {
+export const DebugPanelComponent: React.FC<Props> = ({ model, dispatch }) => {
   const clearCacheAndReload = () => {
     localStorage.clear()
     window.location.reload()

@@ -48,6 +48,10 @@ export type Msg =
       _tag: 'FavoriteArticleResponse'
       result: Result<HttpErrorString, ArticleResponse>
     }
+  | {
+      _tag: 'UnfavoriteArticleResponse'
+      result: Result<HttpErrorString, ArticleResponse>
+    }
   | { _tag: 'FollowAuthor'; username: string }
   | { _tag: 'UnfollowAuthor'; username: string }
   | {

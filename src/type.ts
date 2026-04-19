@@ -1,7 +1,7 @@
 import type { Option } from 'fp-ts/lib/Option'
 
 import type { User } from './api/type'
-import type * as DebugPanel from './component/debug-panel/type'
+import type * as DebugPanel from './component/debug-panel'
 import type { AppRoute } from './data/route'
 import type * as Article from './page/article/type'
 import type * as Auth from './page/auth/type'

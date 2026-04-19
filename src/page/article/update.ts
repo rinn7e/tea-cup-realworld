@@ -13,6 +13,10 @@ import {
   unfavoriteArticle,
   unfollowUser,
 } from '@/api'
+import {
+  favoriteArticleUtil,
+  unfavoriteArticleUtil,
+} from '@/api/type/article'
 import type { Shared } from '@/type'
 
 import type { Model, Msg } from './type'
@@ -66,9 +70,17 @@ export const update =
           ]
         }
       case 'FavoriteArticle':
-        if (shared.token._tag === 'Some') {
+        if (
+          shared.token._tag === 'Some' &&
+          model.article._tag === 'RemoteSuccess'
+        ) {
           return [
-            model,
+            {
+              ...model,
+              article: RD.success({
+                article: favoriteArticleUtil(model.article.value.article),
+              }),
+            },
             attemptTE(
               favoriteArticle(shared.token.value, model.slug),
               (result): Msg => ({ _tag: 'FavoriteArticleResponse', result }),
@@ -77,22 +89,45 @@ export const update =
         }
         return [model, Cmd.none()]
       case 'UnfavoriteArticle':
-        if (shared.token._tag === 'Some') {
+        if (
+          shared.token._tag === 'Some' &&
+          model.article._tag === 'RemoteSuccess'
+        ) {
           return [
-            model,
+            {
+              ...model,
+              article: RD.success({
+                article: unfavoriteArticleUtil(model.article.value.article),
+              }),
+            },
             attemptTE(
               unfavoriteArticle(shared.token.value, model.slug),
-              (result): Msg => ({ _tag: 'FavoriteArticleResponse', result }),
+              (result): Msg => ({ _tag: 'UnfavoriteArticleResponse', result }),
             ),
           ]
         }
         return [model, Cmd.none()]
       case 'FavoriteArticleResponse':
+      case 'UnfavoriteArticleResponse':
         if (msg.result.tag === 'Ok') {
           return [
             { ...model, article: RD.success(msg.result.value) },
             Cmd.none(),
           ]
+        } else {
+          if (model.article._tag === 'RemoteSuccess') {
+            const revertedArticle =
+              msg._tag === 'FavoriteArticleResponse'
+                ? unfavoriteArticleUtil(model.article.value.article)
+                : favoriteArticleUtil(model.article.value.article)
+            return [
+              {
+                ...model,
+                article: RD.success({ article: revertedArticle }),
+              },
+              Cmd.none(),
+            ]
+          }
         }
         return [model, Cmd.none()]
       case 'FollowAuthor':

@@ -95,3 +95,14 @@ export type UpdateArticleRequest = {
     body?: string
   }
 }
+export const favoriteArticleUtil = (a: Article): Article => ({
+  ...a,
+  favorited: true,
+  favoritesCount: a.favorited ? a.favoritesCount : a.favoritesCount + 1,
+})
+
+export const unfavoriteArticleUtil = (a: Article): Article => ({
+  ...a,
+  favorited: false,
+  favoritesCount: a.favorited ? a.favoritesCount - 1 : a.favoritesCount,
+})

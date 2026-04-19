@@ -2,7 +2,7 @@ import * as RD from '@devexperts/remote-data-ts'
 import { cn } from '@rinn7e/tea-cup-prelude'
 import * as O from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/function'
-import { Heart, Pencil, Trash2, UserMinus, UserPlus } from 'lucide-react'
+import { Pencil, Trash2, UserMinus, UserPlus } from 'lucide-react'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 
@@ -11,6 +11,7 @@ import type {
   CommentsResponse,
   HttpErrorString,
 } from '@/api/type'
+import { favButtonView } from '@/component/fav-button'
 import { Link } from '@/component/link'
 import { assetPath } from '@/util'
 import { memoStrategy } from '@/util/memo-strategy'
@@ -118,26 +119,19 @@ function ArticleView({ model, token, dispatch }: Props) {
                         <UserPlus size={13} /> Follow {author.username}
                       </button>
                     ))}
-                  <button
-                    type='button'
-                    onClick={() =>
+                  {favButtonView({
+                    variant: 'detail',
+                    isLight,
+                    favorited: data.article.favorited,
+                    favoritesCount: data.article.favoritesCount,
+                    onClick: () =>
                       isLoggedIn &&
                       dispatch({
                         _tag: data.article.favorited
                           ? 'UnfavoriteArticle'
                           : 'FavoriteArticle',
-                      })
-                    }
-                    className={cn(
-                      'flex items-center gap-[4px] rounded border px-[12px] py-[4px] text-xs transition-colors',
-                      isLight
-                        ? 'border-green-500 text-green-400 hover:bg-green-900'
-                        : 'border-green-500 text-green-600 hover:bg-green-50',
-                    )}
-                  >
-                    <Heart size={13} /> Favorite Post{' '}
-                    <span>({data.article.favoritesCount})</span>
-                  </button>
+                      }),
+                  })}
                   {isLoggedIn && (
                     <>
                       <Link

@@ -1,7 +1,7 @@
 import * as RD from '@devexperts/remote-data-ts'
 import { cn } from '@rinn7e/tea-cup-prelude'
 import { pipe } from 'fp-ts/lib/function'
-import { Heart, Settings, UserPlus } from 'lucide-react'
+import { Settings, UserPlus } from 'lucide-react'
 import React from 'react'
 
 import type {
@@ -9,6 +9,7 @@ import type {
   HttpErrorString,
   ProfileResponse,
 } from '@/api/type'
+import { favButtonView } from '@/component/fav-button'
 import { Link } from '@/component/link'
 import { assetPath } from '@/util'
 import { memoStrategy } from '@/util/memo-strategy'
@@ -191,21 +192,17 @@ function ProfileView({ model, dispatch, isCurrentUser }: Props) {
                                       </span>
                                     </div>
                                   </div>
-                                  <button
-                                    type='button'
-                                    className='flex items-center gap-[4px] rounded border border-green-500 px-[8px] py-[4px] text-xs text-green-600 hover:bg-green-50'
-                                    onClick={() =>
+                                  {favButtonView({
+                                    favorited: article.favorited,
+                                    favoritesCount: article.favoritesCount,
+                                    onClick: () =>
                                       dispatch({
                                         _tag: article.favorited
                                           ? 'UnfavoriteArticle'
                                           : 'FavoriteArticle',
                                         slug: article.slug,
-                                      })
-                                    }
-                                  >
-                                    <Heart size={12} />
-                                    {article.favoritesCount}
-                                  </button>
+                                      }),
+                                  })}
                                 </div>
                                 <Link
                                   route={{

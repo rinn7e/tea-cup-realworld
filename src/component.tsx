@@ -2,7 +2,7 @@ import { cn } from '@rinn7e/tea-cup-prelude'
 import React from 'react'
 import type { Dispatcher } from 'tea-cup-fp'
 
-import { DebugPanel } from './component/debug-panel'
+import { DebugPanelComponent } from './component/debug-panel/component'
 import { Footer } from './component/footer'
 import { SetGlobalMsgContext } from './component/global-context'
 import { Navbar } from './component/navbar'
@@ -35,7 +35,7 @@ export const App: React.FC<Props> = ({ model, dispatch }) => {
         <main className='flex-grow'>{renderPage(model, dispatch)}</main>
         <Footer />
       </div>
-      <DebugPanel
+      <DebugPanelComponent
         model={model.debugPanel}
         dispatch={(msg) => dispatch({ _tag: 'DebugPanelMsg', subMsg: msg })}
       />

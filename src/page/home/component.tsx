@@ -9,6 +9,7 @@ import type {
   HttpErrorString,
   TagsResponse,
 } from '@/api/type'
+import { favButtonView } from '@/component/fav-button'
 import { Link } from '@/component/link'
 import { homePage } from '@/data/route'
 import { assetPath } from '@/util'
@@ -121,21 +122,17 @@ function HomeView({ model, dispatch }: Props) {
                                   </span>
                                 </div>
                               </div>
-                              <button
-                                type='button'
-                                className='flex items-center gap-[4px] rounded border border-green-500 px-[8px] py-[4px] text-xs text-green-600 hover:bg-green-50'
-                                onClick={() =>
+                              {favButtonView({
+                                favorited: article.favorited,
+                                favoritesCount: article.favoritesCount,
+                                onClick: () =>
                                   dispatch({
                                     _tag: article.favorited
                                       ? 'UnfavoriteArticle'
                                       : 'FavoriteArticle',
                                     slug: article.slug,
-                                  })
-                                }
-                              >
-                                <Heart size={12} />
-                                {article.favoritesCount}
-                              </button>
+                                  }),
+                              })}
                             </div>
                             <Link
                               route={{

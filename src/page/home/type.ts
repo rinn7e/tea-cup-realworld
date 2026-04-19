@@ -35,6 +35,12 @@ export type Msg =
   | { _tag: 'UnfavoriteArticle'; slug: string }
   | {
       _tag: 'FavoriteArticleResponse'
+      slug: string
+      result: Result<HttpErrorString, ArticleResponse>
+    }
+  | {
+      _tag: 'UnfavoriteArticleResponse'
+      slug: string
       result: Result<HttpErrorString, ArticleResponse>
     }
 
