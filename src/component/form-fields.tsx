@@ -3,6 +3,7 @@ import { cn } from '@rinn7e/tea-cup-prelude'
 import * as E from 'fp-ts/lib/Either'
 import * as O from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/function'
+import { Eye, EyeOff } from 'lucide-react'
 import React from 'react'
 
 export const standardInputUi =
@@ -22,6 +23,8 @@ export const standardInputUi =
       validationClass,
       sizeClass,
     )
+
+    const isPassword = O.toNullable(props.isPassword)
 
     const content = isTextarea ? (
       <textarea
@@ -59,46 +62,68 @@ export const standardInputUi =
         }}
       />
     ) : (
-      <input
-        name={props.key}
-        autoComplete='off'
-        className={inputClass}
-        type={
-          props.isPassword._tag === 'Some'
-            ? props.isPassword.value.revealPassword
-              ? 'text'
-              : 'password'
-            : 'text'
-        }
-        placeholder={props.placeholder}
-        value={props.currentValue}
-        onInput={(e) =>
-          props.dispatch({
-            _tag: 'UpdateForm',
-            key: props.key,
-            event: e as unknown as React.ChangeEvent<HTMLInputElement>,
-          })
-        }
-        onFocus={() =>
-          props.dispatch({
-            _tag: 'HandleFocus',
-            key: props.key,
-            isFocus: true,
-          })
-        }
-        onBlur={() =>
-          props.dispatch({
-            _tag: 'HandleFocus',
-            key: props.key,
-            isFocus: false,
-          })
-        }
-        onKeyDown={(e) => {
-          if (O.isSome(onKeyDown)) {
-            onKeyDown.value(e)
+      <div className='relative flex items-center'>
+        <input
+          name={props.key}
+          autoComplete='off'
+          className={cn(inputClass, isPassword && 'pr-[40px]')}
+          type={
+            isPassword
+              ? isPassword.revealPassword
+                ? 'text'
+                : 'password'
+              : 'text'
           }
-        }}
-      />
+          placeholder={props.placeholder}
+          value={props.currentValue}
+          onInput={(e) =>
+            props.dispatch({
+              _tag: 'UpdateForm',
+              key: props.key,
+              event: e as unknown as React.ChangeEvent<HTMLInputElement>,
+            })
+          }
+          onFocus={() =>
+            props.dispatch({
+              _tag: 'HandleFocus',
+              key: props.key,
+              isFocus: true,
+            })
+          }
+          onBlur={() =>
+            props.dispatch({
+              _tag: 'HandleFocus',
+              key: props.key,
+              isFocus: false,
+            })
+          }
+          onKeyDown={(e) => {
+            if (O.isSome(onKeyDown)) {
+              onKeyDown.value(e)
+            }
+          }}
+        />
+        {isPassword && (
+          <button
+            type='button'
+            className='absolute right-[6px] flex items-center justify-center p-2 text-gray-500 transition-colors hover:text-gray-700'
+            onClick={(e) =>
+              props.dispatch({
+                _tag: 'RevealPassword',
+                key: props.key,
+                revealed: !isPassword.revealPassword,
+                event: e,
+              })
+            }
+          >
+            {isPassword.revealPassword ? (
+              <EyeOff size={20} />
+            ) : (
+              <Eye size={20} />
+            )}
+          </button>
+        )}
+      </div>
     )
 
     return (
