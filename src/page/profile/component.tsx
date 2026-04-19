@@ -10,6 +10,7 @@ import type {
   ProfileResponse,
 } from '@/api/type'
 import { ArticleShortComponent } from '@/component/article-short/component'
+import { IndeterminateProgressBar } from '@/component/indeterminate-progress-bar'
 import { Link } from '@/component/link'
 import { assetPath } from '@/util'
 import { memoStrategy } from '@/util/memo-strategy'
@@ -22,16 +23,8 @@ function ProfilePageComponent({ model, dispatch, isCurrentUser }: Props) {
       {pipe(
         model.profile,
         RD.fold(
-          () => (
-            <div className='py-[24px] text-center text-sm text-gray-500'>
-              Loading profile...
-            </div>
-          ),
-          () => (
-            <div className='py-[24px] text-center text-sm text-gray-500'>
-              Loading profile...
-            </div>
-          ),
+          () => <IndeterminateProgressBar />,
+          () => <IndeterminateProgressBar />,
           (err: HttpErrorString) => (
             <div className='py-[24px] text-center text-sm text-red-500'>
               Error loading profile: {err.actualErr}
