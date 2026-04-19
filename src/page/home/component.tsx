@@ -9,6 +9,7 @@ import type {
   TagsResponse,
 } from '@/api/type'
 import { ArticleShortComponent } from '@/component/article-short/component'
+import { DotLoading } from '@/component/dot-loading'
 import { Link } from '@/component/link'
 import { homePage } from '@/data/route'
 import { memoStrategy } from '@/util/memo-strategy'
@@ -56,13 +57,13 @@ function HomePageComponent({ model, dispatch }: Props) {
                 model.articles,
                 RD.fold(
                   () => (
-                    <div className='py-[24px] text-sm text-gray-500'>
-                      Loading articles...
+                    <div className='py-[24px]'>
+                      <DotLoading className='text-2xl text-green-600' />
                     </div>
                   ),
                   () => (
-                    <div className='py-[24px] text-sm text-gray-500'>
-                      Loading articles...
+                    <div className='py-[24px]'>
+                      <DotLoading className='text-2xl text-green-600' />
                     </div>
                   ),
                   (err: HttpErrorString) => (
@@ -107,16 +108,8 @@ function HomePageComponent({ model, dispatch }: Props) {
                 {pipe(
                   model.tags,
                   RD.fold(
-                    () => (
-                      <span className='text-xs text-gray-400'>
-                        Loading tags...
-                      </span>
-                    ),
-                    () => (
-                      <span className='text-xs text-gray-400'>
-                        Loading tags...
-                      </span>
-                    ),
+                    () => <DotLoading className='text-2xl text-gray-400' />,
+                    () => <DotLoading className='text-2xl text-gray-400' />,
                     () => (
                       <span className='text-xs text-red-400'>
                         Error loading tags

@@ -10,6 +10,7 @@ import type {
   ProfileResponse,
 } from '@/api/type'
 import { ArticleShortComponent } from '@/component/article-short/component'
+import { DotLoading } from '@/component/dot-loading'
 import { IndeterminateProgressBar } from '@/component/indeterminate-progress-bar'
 import { Link } from '@/component/link'
 import { assetPath } from '@/util'
@@ -26,7 +27,7 @@ function ProfilePageComponent({ model, dispatch, isCurrentUser }: Props) {
           () => <IndeterminateProgressBar />,
           () => <IndeterminateProgressBar />,
           (err: HttpErrorString) => (
-            <div className='py-[24px] text-center text-sm text-red-500'>
+            <div className='py-[24px] text-sm text-red-500'>
               Error loading profile: {err.actualErr}
             </div>
           ),
@@ -119,13 +120,13 @@ function ProfilePageComponent({ model, dispatch, isCurrentUser }: Props) {
                     model.articles,
                     RD.fold(
                       () => (
-                        <div className='py-[24px] text-sm text-gray-500'>
-                          Loading articles...
+                        <div className='py-[24px]'>
+                          <DotLoading className='text-2xl text-green-600' />
                         </div>
                       ),
                       () => (
-                        <div className='py-[24px] text-sm text-gray-500'>
-                          Loading articles...
+                        <div className='py-[24px]'>
+                          <DotLoading className='text-2xl text-green-600' />
                         </div>
                       ),
                       (err: HttpErrorString) => (

@@ -11,7 +11,9 @@ import type {
   CommentsResponse,
   HttpErrorString,
 } from '@/api/type'
+import { DotLoading } from '@/component/dot-loading'
 import { favButtonView } from '@/component/fav-button'
+import { IndeterminateProgressBar } from '@/component/indeterminate-progress-bar'
 import { Link } from '@/component/link'
 import { assetPath } from '@/util'
 import { memoStrategy } from '@/util/memo-strategy'
@@ -24,18 +26,10 @@ function ArticlePageComponent({ model, token, dispatch }: Props) {
       {pipe(
         model.article,
         RD.fold(
-          () => (
-            <div className='py-[24px] text-center text-sm text-gray-500'>
-              Loading article...
-            </div>
-          ),
-          () => (
-            <div className='py-[24px] text-center text-sm text-gray-500'>
-              Loading article...
-            </div>
-          ),
+          () => <IndeterminateProgressBar />,
+          () => <IndeterminateProgressBar />,
           (err: HttpErrorString) => (
-            <div className='py-[24px] text-center text-sm text-red-500'>
+            <div className='py-[24px] text-sm text-red-500'>
               Error loading article: {err.actualErr}
             </div>
           ),
@@ -239,13 +233,13 @@ function ArticlePageComponent({ model, token, dispatch }: Props) {
                         model.comments,
                         RD.fold(
                           () => (
-                            <div className='py-[12px] text-sm text-gray-500'>
-                              Loading comments...
+                            <div className='py-[12px]'>
+                              <DotLoading className='text-2xl text-green-600' />
                             </div>
                           ),
                           () => (
-                            <div className='py-[12px] text-sm text-gray-500'>
-                              Loading comments...
+                            <div className='py-[12px]'>
+                              <DotLoading className='text-2xl text-green-600' />
                             </div>
                           ),
                           (err: HttpErrorString) => (

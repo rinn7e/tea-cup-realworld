@@ -2,6 +2,7 @@ import React from 'react'
 import type { Dispatcher } from 'tea-cup-fp'
 
 import { favButtonView } from '@/component/fav-button'
+import { DotLoading } from '@/component/dot-loading'
 import { Link } from '@/component/link'
 import { assetPath } from '@/util'
 
@@ -77,7 +78,9 @@ export const ArticleShortComponent: React.FC<Props> = ({ model, dispatch }) => {
           </p>
         </div>
         <div className='flex items-center justify-between'>
-          <span className='text-xs text-gray-400'>Read more...</span>
+          <span className='text-xs text-gray-400'>
+            Read more<DotLoading className='gap-[0px]' />
+          </span>
           <ul className='flex flex-wrap gap-[4px]'>
             {model.tagList.map((tag) => (
               <li

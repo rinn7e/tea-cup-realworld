@@ -82,4 +82,24 @@
     animation: indeterminate 1.5s infinite linear;
     transform-origin: 0% 50%;
   }
+
+  /* Dot Flicker Animation */
+  @keyframes flicker {
+    0%,
+    100% {
+      opacity: 0.2;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+  .animate-flicker {
+    animation: flicker 1.4s infinite both;
+  }
+  .delay-200 {
+    animation-delay: 0.2s;
+  }
+  .delay-400 {
+    animation-delay: 0.4s;
+  }
 }
