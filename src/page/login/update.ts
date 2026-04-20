@@ -1,7 +1,6 @@
 import * as RD from '@devexperts/remote-data-ts'
 import * as Form from '@rinn7e/tea-cup-form'
 import { attemptTE } from '@rinn7e/tea-cup-prelude'
-import * as O from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/function'
 import { Cmd } from 'tea-cup-fp'
 
@@ -23,9 +22,10 @@ const loginEmailFormItem = (): [string, Form.FormType] => [
     linkValidations: [],
     showValidation: false,
     isTextarea: false,
-    isPassword: O.none,
+    variant: { _tag: 'Email' },
+    autocomplete: true,
     isFocus: false,
-    ui: standardInputUi(false),
+    ui: standardInputUi(),
   },
 ]
 
@@ -40,9 +40,10 @@ const loginPasswordFormItem = (): [string, Form.FormType] => [
     linkValidations: [],
     showValidation: false,
     isTextarea: false,
-    isPassword: O.some({ revealPassword: false, disableAutocomplete: false }),
+    variant: { _tag: 'Password', reveal: false },
+    autocomplete: true,
     isFocus: false,
-    ui: standardInputUi(false),
+    ui: standardInputUi(),
   },
 ]
 

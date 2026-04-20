@@ -1,7 +1,6 @@
 import * as RD from '@devexperts/remote-data-ts'
 import * as Form from '@rinn7e/tea-cup-form'
 import { attemptTE } from '@rinn7e/tea-cup-prelude'
-import * as O from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/function'
 import { Cmd } from 'tea-cup-fp'
 
@@ -16,6 +15,24 @@ import {
   signupUsernameField,
 } from './type'
 
+const signupUsernameFormItem = (): [string, Form.FormType] => [
+  signupUsernameField,
+  {
+    _tag: 'TextType',
+    placeholder: 'Username',
+    label: 'Username',
+    currentValue: '',
+    validation: (s: string) => Form.nonEmptyValidator(s, 'Username'),
+    linkValidations: [],
+    showValidation: false,
+    isTextarea: false,
+    variant: { _tag: 'Text' },
+    autocomplete: false,
+    isFocus: false,
+    ui: standardInputUi(),
+  },
+]
+
 const signupEmailFormItem = (): [string, Form.FormType] => [
   signupEmailField,
   {
@@ -27,9 +44,10 @@ const signupEmailFormItem = (): [string, Form.FormType] => [
     linkValidations: [],
     showValidation: false,
     isTextarea: false,
-    isPassword: O.none,
+    variant: { _tag: 'Email' },
+    autocomplete: false,
     isFocus: false,
-    ui: standardInputUi(false),
+    ui: standardInputUi(),
   },
 ]
 
@@ -44,26 +62,10 @@ const signupPasswordFormItem = (): [string, Form.FormType] => [
     linkValidations: [],
     showValidation: false,
     isTextarea: false,
-    isPassword: O.some({ revealPassword: false, disableAutocomplete: false }),
+    variant: { _tag: 'Password', reveal: false },
+    autocomplete: false,
     isFocus: false,
-    ui: standardInputUi(false),
-  },
-]
-
-const signupUsernameFormItem = (): [string, Form.FormType] => [
-  signupUsernameField,
-  {
-    _tag: 'TextType',
-    placeholder: 'Username',
-    label: 'Username',
-    currentValue: '',
-    validation: (s: string) => Form.nonEmptyValidator(s, 'Username'),
-    linkValidations: [],
-    showValidation: false,
-    isTextarea: false,
-    isPassword: O.none,
-    isFocus: false,
-    ui: standardInputUi(false),
+    ui: standardInputUi(),
   },
 ]
 

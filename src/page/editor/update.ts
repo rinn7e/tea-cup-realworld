@@ -29,9 +29,10 @@ const editorTitleFormItem = (title: string): [string, Form.FormType] => [
     linkValidations: [],
     showValidation: false,
     isTextarea: false,
-    isPassword: O.none,
+    variant: { _tag: 'Text' },
+    autocomplete: false,
     isFocus: false,
-    ui: standardInputUi(false, O.none, true),
+    ui: standardInputUi(),
   },
 ]
 
@@ -48,9 +49,10 @@ const editorDescriptionFormItem = (
     linkValidations: [],
     showValidation: false,
     isTextarea: false,
-    isPassword: O.none,
+    variant: { _tag: 'Text' },
+    autocomplete: false,
     isFocus: false,
-    ui: standardInputUi(false, O.none, false),
+    ui: standardInputUi({ isSmall: true }),
   },
 ]
 
@@ -65,9 +67,10 @@ const editorBodyFormItem = (body: string): [string, Form.FormType] => [
     linkValidations: [],
     showValidation: false,
     isTextarea: true,
-    isPassword: O.none,
+    variant: { _tag: 'Text' },
+    autocomplete: false,
     isFocus: false,
-    ui: standardInputUi(true, O.none, false),
+    ui: standardInputUi({ isSmall: true }),
   },
 ]
 
@@ -82,9 +85,10 @@ const editorTagInputFormItem = (tagInput: string): [string, Form.FormType] => [
     linkValidations: [],
     showValidation: false,
     isTextarea: false,
-    isPassword: O.none,
+    variant: { _tag: 'Text' },
+    autocomplete: false,
     isFocus: false,
-    ui: standardInputUi(false),
+    ui: standardInputUi(),
   },
 ]
 

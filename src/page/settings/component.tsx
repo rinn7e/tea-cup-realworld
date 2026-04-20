@@ -104,13 +104,13 @@ function SettingsPageComponent({ model, dispatch }: Props) {
         <hr className='border-gray-200' />
 
         <div className='flex flex-col'>
-          <button
-            type='button'
-            className='self-start rounded border border-red-400 px-[16px] py-[8px] text-sm text-red-500 transition-colors hover:bg-red-50'
+          <a
+            role='button'
+            className='cursor-pointer self-start rounded border border-red-400 px-[16px] py-[8px] text-sm text-red-500 transition-colors hover:bg-red-50'
             onClick={() => dispatch({ _tag: 'Logout' })}
           >
             Or click here to logout.
-          </button>
+          </a>
         </div>
       </div>
     </div>

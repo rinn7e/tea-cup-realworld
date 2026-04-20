@@ -3,7 +3,6 @@ import * as Form from '@rinn7e/tea-cup-form'
 import { lookupForm, valueTextType } from '@rinn7e/tea-cup-form'
 import { attemptTE } from '@rinn7e/tea-cup-prelude'
 import * as E from 'fp-ts/lib/Either'
-import * as O from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/function'
 import { Cmd } from 'tea-cup-fp'
 
@@ -35,9 +34,10 @@ const settingsImageFormItem = (
     linkValidations: [],
     showValidation: false,
     isTextarea: false,
-    isPassword: O.none,
+    variant: { _tag: 'Text' },
+    autocomplete: false,
     isFocus: false,
-    ui: standardInputUi(false, O.none, false),
+    ui: standardInputUi({ isSmall: true }),
   },
 ]
 
@@ -54,9 +54,10 @@ const settingsUsernameFormItem = (
     linkValidations: [],
     showValidation: false,
     isTextarea: false,
-    isPassword: O.none,
+    variant: { _tag: 'Text' },
+    autocomplete: false,
     isFocus: false,
-    ui: standardInputUi(false),
+    ui: standardInputUi(),
   },
 ]
 
@@ -71,9 +72,10 @@ const settingsBioFormItem = (bio: string | null): [string, Form.FormType] => [
     linkValidations: [],
     showValidation: false,
     isTextarea: true,
-    isPassword: O.none,
+    variant: { _tag: 'Text' },
+    autocomplete: false,
     isFocus: false,
-    ui: standardInputUi(true),
+    ui: standardInputUi(),
   },
 ]
 
@@ -89,9 +91,10 @@ const settingsEmailFormItem = (email: string): [string, Form.FormType] => [
     linkValidations: [],
     showValidation: false,
     isTextarea: false,
-    isPassword: O.none,
+    variant: { _tag: 'Email' },
+    autocomplete: false,
     isFocus: false,
-    ui: standardInputUi(false),
+    ui: standardInputUi(),
   },
 ]
 
@@ -106,9 +109,10 @@ const settingsPasswordFormItem = (): [string, Form.FormType] => [
     linkValidations: [],
     showValidation: false,
     isTextarea: false,
-    isPassword: O.some({ revealPassword: false, disableAutocomplete: false }),
+    variant: { _tag: 'Password', reveal: false },
+    autocomplete: false,
     isFocus: false,
-    ui: standardInputUi(false),
+    ui: standardInputUi(),
   },
 ]
 
@@ -134,9 +138,10 @@ const settingsPasswordConfirmationFormItem = (): [string, Form.FormType] => [
     ],
     showValidation: false,
     isTextarea: false,
-    isPassword: O.some({ revealPassword: false, disableAutocomplete: false }),
+    variant: { _tag: 'Password', reveal: false },
+    autocomplete: false,
     isFocus: false,
-    ui: standardInputUi(false),
+    ui: standardInputUi(),
   },
 ]
 
