@@ -15,6 +15,7 @@ import type {
   ProfileResponse,
 } from '@/api/type'
 import * as ArticleShort from '@/component/article-short'
+import type { Route } from '@/type'
 
 export type Model = {
   profile: RD.RemoteData<HttpErrorString, ProfileResponse>
@@ -50,6 +51,7 @@ export type Props = {
   model: Model
   dispatch: Dispatcher<Msg>
   isCurrentUser: boolean
+  route: Route
 }
 
 export const PropsEq: EqClass.Eq<Props> = EqClass.struct({

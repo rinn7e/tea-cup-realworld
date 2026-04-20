@@ -107,7 +107,10 @@ const navigate =
 
     switch (newRoute.page._tag) {
       case 'HomePage': {
-        const [homeModel, homeCmd] = HomePage.init(model.shared)
+        const [homeModel, homeCmd] = HomePage.init(
+          newRoute.page.tab,
+          model.shared,
+        )
         return [
           {
             ...model,
@@ -360,10 +363,39 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
           msg.subMsg,
           model.pageModel.model,
         )
-        return [
-          { ...model, pageModel: { _tag: 'HomePageModel', model: homeModel } },
-          homeCmd.map((msg) => ({ _tag: 'HomePageMsg', subMsg: msg })),
-        ]
+        return pipe(
+          [
+            {
+              ...model,
+              pageModel: { _tag: 'HomePageModel', model: homeModel },
+            },
+            homeCmd.map(
+              (subMsg): Msg => ({
+                _tag: 'HomePageMsg',
+                subMsg,
+              }),
+            ),
+          ] as [Model, Cmd<Msg>],
+          updateAndCmd((m) => {
+            if (msg.subMsg._tag === 'ChangeTab') {
+              if (
+                msg.subMsg.tab === 'user-feed' &&
+                m.shared.user._tag === 'None'
+              ) {
+                return changeRouteHandler(
+                  { page: { _tag: 'LoginPage' } },
+                  true,
+                )(m)
+              }
+              // Change url according to the tab
+              else
+                return changeRouteNoReload({ page: homePage(msg.subMsg.tab) })(
+                  m,
+                )
+            }
+            return [m, Cmd.none()]
+          }),
+        )
       }
       return [model, Cmd.none()]
     case 'ArticlePageMsg':
@@ -424,7 +456,14 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
               return changeRouteHandler(
                 { page: homePage() },
                 true,
-              )({ ...m, shared: { ...m.shared, user: O.some(user) } })
+              )({
+                ...m,
+                shared: {
+                  ...m.shared,
+                  user: O.some(user),
+                  token: O.some(user.token),
+                },
+              })
             } else {
               return [m, Cmd.none()]
             }
@@ -464,7 +503,14 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
               return changeRouteHandler(
                 { page: homePage() },
                 true,
-              )({ ...m, shared: { ...m.shared, user: O.some(user) } })
+              )({
+                ...m,
+                shared: {
+                  ...m.shared,
+                  user: O.some(user),
+                  token: O.some(user.token),
+                },
+              })
             } else {
               return [m, Cmd.none()]
             }

@@ -95,9 +95,11 @@ const renderPage = (model: Model, dispatch: Dispatcher<Msg>) => {
           model={model.pageModel.model}
           dispatch={(msg) => dispatch({ _tag: 'ProfilePageMsg', subMsg: msg })}
           isCurrentUser={isCurrentUser}
+          route={model.route}
         />
       )
     }
+
     case 'EditorPageModel':
       return (
         <EditorPageMemo

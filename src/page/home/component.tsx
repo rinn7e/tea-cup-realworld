@@ -2,6 +2,7 @@ import * as RD from '@devexperts/remote-data-ts'
 import { cn } from '@rinn7e/tea-cup-prelude'
 import { pipe } from 'fp-ts/lib/function'
 import React from 'react'
+import { Dispatcher } from 'tea-cup-fp'
 
 import type {
   ArticlesResponse,
@@ -10,11 +11,9 @@ import type {
 } from '@/api/type'
 import { ArticleShortComponent } from '@/component/article-short/component'
 import { DotLoading } from '@/component/dot-loading'
-import { Link } from '@/component/link'
-import { homePage } from '@/data/route'
 import { memoStrategy } from '@/util/memo-strategy'
 
-import { Props, PropsEq } from './type'
+import { Msg, Props, PropsEq } from './type'
 
 function HomePageComponent({ model, dispatch }: Props) {
   return (
@@ -44,57 +43,17 @@ function HomePageComponent({ model, dispatch }: Props) {
           {/* Article List */}
           <div className='flex min-w-0 flex-1 flex-col'>
             <div className='flex border-b border-gray-200'>
-              <Link
-                className='border-b-2 border-green-600 px-[16px] py-[8px] text-sm font-medium text-green-600'
-                route={{ page: homePage() }}
-              >
-                Global Feed
-              </Link>
+              {renderTab(model.tab === 'user-feed', 'Your Feed', () =>
+                dispatch({ _tag: 'ChangeTab', tab: 'user-feed' }),
+              )}
+              {renderTab(model.tab === 'global-feed', 'Global Feed', () =>
+                dispatch({ _tag: 'ChangeTab', tab: 'global-feed' }),
+              )}
             </div>
 
             <div className='flex flex-col'>
-              {pipe(
-                model.articles,
-                RD.fold(
-                  () => (
-                    <div className='py-[24px]'>
-                      <DotLoading className='text-2xl text-green-600' />
-                    </div>
-                  ),
-                  () => (
-                    <div className='py-[24px]'>
-                      <DotLoading className='text-2xl text-green-600' />
-                    </div>
-                  ),
-                  (err: HttpErrorString) => (
-                    <div className='py-[24px] text-sm text-red-500'>
-                      Error loading articles: {err.actualErr}
-                    </div>
-                  ),
-                  (data: ArticlesResponse) =>
-                    data.articles.length === 0 ? (
-                      <div className='py-[24px] text-sm text-gray-500'>
-                        No articles are here... yet.
-                      </div>
-                    ) : (
-                      <div className='flex flex-col'>
-                        {data.articles.map((article) => (
-                          <ArticleShortComponent
-                            key={article.slug}
-                            model={article}
-                            dispatch={(subMsg) =>
-                              dispatch({
-                                _tag: 'ArticleShortMsg',
-                                slug: article.slug,
-                                subMsg,
-                              })
-                            }
-                          />
-                        ))}
-                      </div>
-                    ),
-                ),
-              )}
+              {renderArticles(model.articles, dispatch)}
+              {renderPagination(model.page, model.pageAmount, dispatch)}
             </div>
           </div>
 
@@ -136,6 +95,106 @@ function HomePageComponent({ model, dispatch }: Props) {
         </div>
       </div>
     </div>
+  )
+}
+
+function renderTab(active: boolean, label: string, onClick: () => void) {
+  return (
+    <button
+      type='button'
+      className={cn(
+        'px-[16px] py-[8px] text-sm font-medium transition-colors duration-200',
+        active
+          ? 'border-b-2 border-green-600 text-green-600'
+          : 'text-gray-400 hover:text-gray-600',
+      )}
+      onClick={onClick}
+    >
+      {label}
+    </button>
+  )
+}
+
+function renderArticles(
+  articles: RD.RemoteData<HttpErrorString, ArticlesResponse>,
+  dispatch: Dispatcher<Msg>,
+) {
+  return pipe(
+    articles,
+    RD.fold(
+      () => (
+        <div className='py-[24px]'>
+          <DotLoading className='text-2xl text-green-600' />
+        </div>
+      ),
+      () => (
+        <div className='py-[24px]'>
+          <DotLoading className='text-2xl text-green-600' />
+        </div>
+      ),
+      (err: HttpErrorString) => (
+        <div className='py-[24px] text-sm text-red-500'>
+          Error loading articles: {err.actualErr}
+        </div>
+      ),
+      (data: ArticlesResponse) =>
+        data.articles.length === 0 ? (
+          <div className='py-[24px] text-sm text-gray-500'>
+            No articles are here... yet.
+          </div>
+        ) : (
+          <div className='flex flex-col'>
+            {data.articles.map((article) => (
+              <ArticleShortComponent
+                key={article.slug}
+                model={article}
+                dispatch={(subMsg) =>
+                  dispatch({
+                    _tag: 'ArticleShortMsg',
+                    slug: article.slug,
+                    subMsg,
+                  })
+                }
+              />
+            ))}
+          </div>
+        ),
+    ),
+  )
+}
+
+function renderPagination(
+  currentPage: number,
+  pageAmount: number,
+  dispatch: Dispatcher<Msg>,
+) {
+  if (pageAmount <= 1) {
+    return null
+  }
+
+  const pages = Array.from({ length: pageAmount }, (_, i) => i + 1)
+
+  return (
+    <nav className='my-[24px]'>
+      <ul className='flex w-fit flex-wrap rounded-md border border-gray-200'>
+        {pages.map((p) => (
+          <li key={p} className='border-r border-gray-200 last:border-r-0'>
+            <button
+              type='button'
+              className={cn(
+                'flex h-[38px] min-w-[38px] items-center justify-center px-[12px] text-sm transition-colors duration-200 hover:bg-gray-100 focus:outline-none',
+                p === currentPage
+                  ? 'bg-gray-200 font-medium text-gray-700'
+                  : 'text-green-600',
+              )}
+              onClick={() => dispatch({ _tag: 'ChangePage', page: p })}
+            >
+              {p}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </nav>
   )
 }
 

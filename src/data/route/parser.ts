@@ -48,7 +48,13 @@ export const addBaseUrl = (path: string): string => {
 // Parser
 // ------------------------------------------------------------------
 
-const homeMatch = end
+const homeParams = t.exact(
+  t.partial({
+    tab: t.union([t.literal('global-feed'), t.literal('user-feed')]),
+  }),
+)
+
+const homeMatch = query(homeParams).and(end)
 const loginMatch = lit('login').and(end)
 const signupMatch = lit('signup').and(end)
 const settingsMatch = lit('settings').and(end)
@@ -59,6 +65,7 @@ const editorSlugMatch: Match<{ slug: string }> = lit('editor')
 const articleMatch: Match<{ slug: string }> = lit('article')
   .and(str('slug'))
   .and(end)
+
 const profileParams = t.exact(
   t.partial({
     favorites: t.string,
@@ -76,7 +83,7 @@ const anyStrings = new Match<object>(
 )
 
 const appRouter: Parser<AppPage> = zero<AppPage>()
-  .alt(homeMatch.parser.map(() => homePage()))
+  .alt(homeMatch.parser.map(({ tab }) => homePage(tab || 'global-feed')))
   .alt(loginMatch.parser.map(() => loginPage()))
   .alt(signupMatch.parser.map(() => signupPage()))
   .alt(settingsMatch.parser.map(() => settingsPage()))
@@ -104,7 +111,9 @@ export const toUrlString = (r: AppRoute): string => {
   const getPath = () => {
     switch (page._tag) {
       case 'HomePage':
-        return format(homeMatch.formatter, {})
+        return format(homeMatch.formatter, {
+          tab: page.tab === 'global-feed' ? undefined : page.tab,
+        })
       case 'LoginPage':
         return format(loginMatch.formatter, {})
       case 'SignupPage':

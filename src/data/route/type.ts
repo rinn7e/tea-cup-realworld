@@ -6,6 +6,7 @@ import * as S from 'fp-ts/lib/string'
 
 export type HomePage = {
   readonly _tag: 'HomePage'
+  tab: 'global-feed' | 'user-feed'
 }
 
 export type LoginPage = {
@@ -52,6 +53,7 @@ export type AppPage =
 
 export const HomePageEq: EqClass.Eq<HomePage> = EqClass.struct({
   _tag: S.Eq,
+  tab: S.Eq,
 })
 
 export const LoginPageEq: EqClass.Eq<LoginPage> = EqClass.struct({
@@ -119,10 +121,12 @@ export type AppRoute = {
 }
 
 export const defaultAppRoute = (): AppRoute => ({
-  page: { _tag: 'HomePage' },
+  page: homePage(),
 })
 
-export const homePage = (): AppPage => ({ _tag: 'HomePage' })
+export const homePage = (
+  tab: 'global-feed' | 'user-feed' = 'global-feed',
+): AppPage => ({ _tag: 'HomePage', tab })
 export const loginPage = (): AppPage => ({ _tag: 'LoginPage' })
 export const signupPage = (): AppPage => ({ _tag: 'SignupPage' })
 export const settingsPage = (): AppPage => ({ _tag: 'SettingsPage' })

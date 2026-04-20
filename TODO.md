@@ -10,11 +10,15 @@
 
 - [x] Fix form no validation
 
-- [ ] Implement haskell backend, the official api is buggy
+- [x] Add 'Your Feed'
 
-- [ ] Add pagination
+- [x] Add pagination to homepage
+
+- [ ] Make a re-use pagination component and use everywhere
 
 - [ ] fix tags link in homepage
+
+- [ ] Implement haskell backend, the official api is buggy
 
 ## extra
 

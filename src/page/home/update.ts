@@ -1,31 +1,39 @@
 import * as RD from '@devexperts/remote-data-ts'
-import { ArrayExtra, attemptTE } from '@rinn7e/tea-cup-prelude'
+import { ArrayExtra, attemptTE, cmdSucceed } from '@rinn7e/tea-cup-prelude'
 import * as A from 'fp-ts/lib/Array'
 import * as O from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/function'
 import { Cmd } from 'tea-cup-fp'
 
-import { getArticles, getTags } from '@/api'
+import { getArticles, getArticlesFeed, getTags } from '@/api'
 import * as ArticleShort from '@/component/article-short'
 import type { Shared } from '@/type'
 
 import type { Model, Msg } from './type'
+import { GET_ARTICLES_LIMIT } from './type'
 
-export const init = (shared: Shared): [Model, Cmd<Msg>] => {
+export const init = (
+  tab: 'global-feed' | 'user-feed',
+  shared: Shared,
+): [Model, Cmd<Msg>] => {
   const model: Model = {
     articles: RD.pending,
     tags: RD.pending,
+    tab,
+    page: 1,
+    pageAmount: 0,
   }
-
-  const articlesCmd = attemptTE(
-    getArticles(shared.token),
-    (result): Msg => ({ _tag: 'GetArticlesResponse', result }),
-  )
 
   return [
     model,
     Cmd.batch([
-      articlesCmd,
+      getArticlesBaseOnTabCmd(
+        tab,
+        shared,
+        getOffsetBaseOnPage(1),
+        GET_ARTICLES_LIMIT,
+      ),
+
       attemptTE(
         getTags(shared.token),
         (result): Msg => ({ _tag: 'GetTagsResponse', result }),
@@ -41,8 +49,14 @@ export const update =
       case 'GetArticlesResponse':
         if (msg.result.tag === 'Ok') {
           return [
-            { ...model, articles: RD.success(msg.result.value) },
-            Cmd.none(),
+            {
+              ...model,
+              articles: RD.success(msg.result.value),
+              pageAmount: getPageAmountFromArticlesCount(
+                msg.result.value.articlesCount,
+              ),
+            },
+            msg.shouldScrollToTop ? scrollToTopCmd() : Cmd.none(),
           ]
         } else {
           return [
@@ -93,5 +107,93 @@ export const update =
           )
         }
         return [model, Cmd.none()]
+      case 'ChangeTab': {
+        if (msg.tab === model.tab) {
+          return [model, Cmd.none()]
+        }
+        const newModel: Model = {
+          ...model,
+          tab: msg.tab,
+          articles: RD.pending,
+          page: 1,
+          pageAmount: 0,
+        }
+
+        return [
+          newModel,
+          getArticlesBaseOnTabCmd(
+            msg.tab,
+            shared,
+            getOffsetBaseOnPage(1),
+            GET_ARTICLES_LIMIT,
+            true,
+          ),
+        ]
+      }
+
+      case 'ChangePage': {
+        const newModel: Model = {
+          ...model,
+          page: msg.page,
+        }
+        return [
+          newModel,
+          getArticlesBaseOnTabCmd(
+            model.tab,
+            shared,
+            getOffsetBaseOnPage(msg.page),
+            GET_ARTICLES_LIMIT,
+            true,
+          ),
+        ]
+      }
+      case 'NoOp':
+        return [model, Cmd.none()]
     }
   }
+
+const getArticlesBaseOnTabCmd = (
+  tab: 'global-feed' | 'user-feed',
+  shared: Shared,
+  offset: number,
+  limit: number,
+  shouldScrollToTop?: true,
+): Cmd<Msg> =>
+  tab === 'global-feed'
+    ? attemptTE(
+        getArticles(shared.token, { offset, limit }),
+        (result): Msg => ({
+          _tag: 'GetArticlesResponse',
+          result,
+          shouldScrollToTop,
+        }),
+      )
+    : pipe(
+        shared.token,
+        O.fold(
+          () => Cmd.none<Msg>(),
+          (token) =>
+            attemptTE(
+              getArticlesFeed(token, { offset, limit }),
+              (result): Msg => ({
+                _tag: 'GetArticlesResponse',
+                result,
+                shouldScrollToTop,
+              }),
+            ),
+        ),
+      )
+
+const scrollToTopCmd = (): Cmd<Msg> =>
+  cmdSucceed(() =>
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    }),
+  )
+
+const getOffsetBaseOnPage = (page: number): number =>
+  (page - 1) * GET_ARTICLES_LIMIT
+
+const getPageAmountFromArticlesCount = (articlesCount: number): number =>
+  Math.ceil(articlesCount / GET_ARTICLES_LIMIT)
