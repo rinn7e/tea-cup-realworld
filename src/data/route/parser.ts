@@ -7,10 +7,13 @@ import {
   format,
   lit,
   parse,
+  query,
   str,
   zero,
 } from '@rinn7e/fp-ts-routing'
+import { booleanFromUndefinedWithDefault } from '@rinn7e/tea-cup-prelude'
 import * as O from 'fp-ts/lib/Option'
+import * as t from 'io-ts'
 
 import { BASE_URL } from '@/env'
 
@@ -33,7 +36,7 @@ export const removeBaseUrl = (href: string): string => {
   if (base !== '' && pathname.startsWith(base)) {
     pathname = pathname.slice(base.length)
   }
-  return pathname || '/'
+  return (pathname || '/') + url.search
 }
 
 export const addBaseUrl = (path: string): string => {
@@ -56,12 +59,15 @@ const editorSlugMatch: Match<{ slug: string }> = lit('editor')
 const articleMatch: Match<{ slug: string }> = lit('article')
   .and(str('slug'))
   .and(end)
-const profileMatch: Match<{ username: string }> = lit('profile')
+const profileParams = t.exact(
+  t.partial({
+    favorites: t.string,
+  }),
+)
+
+const profileMatch = lit('profile')
   .and(str('username'))
-  .and(end)
-const profileFavoritesMatch: Match<{ username: string }> = lit('profile')
-  .and(str('username'))
-  .and(lit('favorites'))
+  .and(query(profileParams))
   .and(end)
 
 const anyStrings = new Match<object>(
@@ -77,10 +83,9 @@ const appRouter: Parser<AppPage> = zero<AppPage>()
   .alt(editorMatch.parser.map(() => editorPage(O.none)))
   .alt(editorSlugMatch.parser.map(({ slug }) => editorPage(O.some(slug))))
   .alt(articleMatch.parser.map(({ slug }) => articlePage(slug)))
-  .alt(profileMatch.parser.map(({ username }) => profilePage(username, false)))
   .alt(
-    profileFavoritesMatch.parser.map(({ username }) =>
-      profilePage(username, true),
+    profileMatch.parser.map(({ username, favorites }) =>
+      profilePage(username, booleanFromUndefinedWithDefault(favorites, false)),
     ),
   )
   .alt(anyStrings.parser.map(() => notFoundPage()))
@@ -113,9 +118,10 @@ export const toUrlString = (r: AppRoute): string => {
       case 'ArticlePage':
         return format(articleMatch.formatter, { slug: page.slug })
       case 'ProfilePage':
-        return page.favorites
-          ? format(profileFavoritesMatch.formatter, { username: page.username })
-          : format(profileMatch.formatter, { username: page.username })
+        return format(profileMatch.formatter, {
+          username: page.username,
+          favorites: page.favorites ? 'true' : undefined,
+        })
       case 'NotFoundPage':
         return '404'
     }

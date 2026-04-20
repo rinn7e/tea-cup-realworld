@@ -279,6 +279,42 @@ const changeRouteHandler =
     return execChangeRoute(newRoute, isInternal)(model)
   }
 
+// Handlers
+// ---------------------------------------------
+
+// Modify the URL in the address bar without updating the route in the Model.
+// Sets `isInternal` to true to prevent re-navigation when the URL change is detected.
+// useful when we want to update the url to match app state
+export const changeRouteUrlNoReload =
+  (route: Route) =>
+  (model: Model): [Model, Cmd<Msg>] => {
+    const url = toUrlString(route)
+    return [
+      {
+        ...model,
+        isInternal: true,
+      },
+      Task.perform(newUrl(url), (): Msg => ({ _tag: 'NoOp' })),
+    ]
+  }
+
+// Modify the URL in the address bar and also update the route in the Model.
+// Sets `isInternal` to true to prevent re-navigation when the URL change is detected.
+// useful when we want to update the route,and url to match app state
+export const changeRouteNoReload =
+  (route: Route) =>
+  (model: Model): [Model, Cmd<Msg>] => {
+    const url = toUrlString(route)
+    return [
+      {
+        ...model,
+        route,
+        isInternal: true,
+      },
+      Task.perform(newUrl(url), (): Msg => ({ _tag: 'NoOp' })),
+    ]
+  }
+
 export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
   switch (msg._tag) {
     case 'NoOp':
@@ -494,24 +530,43 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
       }
     }
     case 'ProfilePageMsg':
-      if (model.pageModel._tag === 'ProfilePageModel') {
-        const username =
-          model.pageModel.model.profile._tag === 'RemoteSuccess'
-            ? model.pageModel.model.profile.value.profile.username
-            : model.route.page._tag === 'ProfilePage'
-              ? model.route.page.username
-              : ''
+      if (
+        model.pageModel._tag === 'ProfilePageModel' &&
+        model.route.page._tag === 'ProfilePage'
+      ) {
+        const username = model.route.page.username
+
         const [profileModel, profileCmd] = ProfilePage.update(
           username,
           model.shared,
         )(msg.subMsg, model.pageModel.model)
-        return [
-          {
-            ...model,
-            pageModel: { _tag: 'ProfilePageModel', model: profileModel },
-          },
-          profileCmd.map((m) => ({ _tag: 'ProfilePageMsg', subMsg: m })),
-        ]
+
+        return pipe(
+          [
+            {
+              ...model,
+              pageModel: { _tag: 'ProfilePageModel', model: profileModel },
+            },
+            profileCmd.map(
+              (m) => ({ _tag: 'ProfilePageMsg' as const, subMsg: m }) as Msg,
+            ),
+          ] as [Model, Cmd<Msg>],
+          updateAndCmd((m) => {
+            // Intercept `ToggleFavorites` to update the url accordingly
+            if (msg.subMsg._tag === 'ToggleFavorites') {
+              const route: Route = {
+                page: {
+                  _tag: 'ProfilePage',
+                  username,
+                  favorites: msg.subMsg.show,
+                },
+              }
+              return changeRouteNoReload(route)(m)
+            } else {
+              return [m, Cmd.none()]
+            }
+          }),
+        )
       }
       return [model, Cmd.none()]
     case 'EditorPageMsg': {
