@@ -10,7 +10,7 @@ import { memoStrategy } from '@/util/memo-strategy'
 
 import { Props, PropsEq, loginEmailField, loginPasswordField } from './type'
 
-function LoginPageComponent({ model, dispatch }: Props) {
+const LoginPageComponent = ({ model, dispatch }: Props) => {
   const signupRoute: Route = { page: { _tag: 'SignupPage' } }
 
   return (

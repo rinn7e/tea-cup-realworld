@@ -15,7 +15,7 @@ import {
   editorTitleField,
 } from './type'
 
-function EditorPageComponent({ model, dispatch }: Props) {
+const EditorPageComponent = ({ model, dispatch }: Props) => {
   const form = model.form
 
   return (

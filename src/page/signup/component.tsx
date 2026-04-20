@@ -16,7 +16,7 @@ import {
   signupUsernameField,
 } from './type'
 
-function SignupPageComponent({ model, dispatch }: Props) {
+const SignupPageComponent = ({ model, dispatch }: Props) => {
   const loginRoute: Route = { page: { _tag: 'LoginPage' } }
 
   return (

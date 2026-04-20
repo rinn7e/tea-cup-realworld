@@ -17,7 +17,7 @@ import {
   settingsUsernameField,
 } from './type'
 
-function SettingsPageComponent({ model, dispatch }: Props) {
+const SettingsPageComponent = ({ model, dispatch }: Props) => {
   const form = model.form
 
   return (

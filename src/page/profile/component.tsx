@@ -20,12 +20,12 @@ import { memoStrategy } from '@/util/memo-strategy'
 
 import { Props, PropsEq } from './type'
 
-function ProfilePageComponent({
+const ProfilePageComponent = ({
   model,
   dispatch,
   isCurrentUser,
   route,
-}: Props) {
+}: Props) => {
   return (
     <div className='flex min-h-full flex-col'>
       {pipe(
@@ -172,7 +172,7 @@ function ProfilePageComponent({
   )
 }
 
-function profileErrorView(route: Route) {
+const profileErrorView = (route: Route) => {
   const username = route.page._tag === 'ProfilePage' ? route.page.username : ''
 
   return (

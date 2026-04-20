@@ -15,7 +15,7 @@ import { memoStrategy } from '@/util/memo-strategy'
 
 import { Msg, Props, PropsEq } from './type'
 
-function HomePageComponent({ model, dispatch }: Props) {
+const HomePageComponent = ({ model, dispatch }: Props) => {
   return (
     <div className='flex min-h-full flex-col'>
       {/* Hero Section */}
@@ -43,16 +43,16 @@ function HomePageComponent({ model, dispatch }: Props) {
           {/* Article List */}
           <div className='flex min-w-0 flex-1 flex-col'>
             <div className='flex border-b border-gray-200'>
-              {renderTab(model.tab === 'user-feed', 'Your Feed', () =>
+              {renderTabView(model.tab === 'user-feed', 'Your Feed', () =>
                 dispatch({ _tag: 'ChangeTab', tab: 'user-feed' }),
               )}
-              {renderTab(model.tab === 'global-feed', 'Global Feed', () =>
+              {renderTabView(model.tab === 'global-feed', 'Global Feed', () =>
                 dispatch({ _tag: 'ChangeTab', tab: 'global-feed' }),
               )}
             </div>
 
             <div className='flex flex-col'>
-              {renderArticles(model.articles, dispatch)}
+              {renderArticlesView(model.articles, dispatch)}
               {renderPagination(model.page, model.pageAmount, dispatch)}
             </div>
           </div>
@@ -98,7 +98,7 @@ function HomePageComponent({ model, dispatch }: Props) {
   )
 }
 
-function renderTab(active: boolean, label: string, onClick: () => void) {
+const renderTabView = (active: boolean, label: string, onClick: () => void) => {
   return (
     <button
       type='button'
@@ -115,10 +115,10 @@ function renderTab(active: boolean, label: string, onClick: () => void) {
   )
 }
 
-function renderArticles(
+const renderArticlesView = (
   articles: RD.RemoteData<HttpErrorString, ArticlesResponse>,
   dispatch: Dispatcher<Msg>,
-) {
+) => {
   return pipe(
     articles,
     RD.fold(
@@ -163,11 +163,11 @@ function renderArticles(
   )
 }
 
-function renderPagination(
+const renderPagination = (
   currentPage: number,
   pageAmount: number,
   dispatch: Dispatcher<Msg>,
-) {
+) => {
   if (pageAmount <= 1) {
     return null
   }

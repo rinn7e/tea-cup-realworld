@@ -20,7 +20,7 @@ import { memoStrategy } from '@/util/memo-strategy'
 
 import { Props, PropsEq } from './type'
 
-function ArticlePageComponent({ model, token, dispatch }: Props) {
+const ArticlePageComponent = ({ model, token, dispatch }: Props) => {
   return (
     <div className='flex min-h-full flex-col'>
       {pipe(
