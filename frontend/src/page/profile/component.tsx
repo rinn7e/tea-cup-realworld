@@ -1,5 +1,6 @@
 import * as RD from '@devexperts/remote-data-ts'
 import { cn } from '@rinn7e/tea-cup-prelude'
+import * as O from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/function'
 import { RotateCw, Settings, UserPlus } from 'lucide-react'
 import React from 'react'
@@ -29,7 +30,7 @@ const ProfilePageComponent = ({
   route,
 }: Props) => {
   return (
-    <div className='flex min-h-full flex-col'>
+    <div className='profile-page flex min-h-full flex-col'>
       {pipe(
         model.profile,
         RD.fold(
@@ -40,7 +41,7 @@ const ProfilePageComponent = ({
           (data: ProfileResponse) => (
             <>
               {/* Header Banner */}
-              <div className='border-b border-gray-200 bg-gray-50 py-[40px] text-center shadow-inner'>
+              <div className='user-info border-b border-gray-200 bg-gray-50 py-[40px] text-center shadow-inner'>
                 <div className='mx-auto flex max-w-[1152px] flex-col items-center gap-[12px] px-[16px]'>
                   <img
                     src={assetPath(data.profile.image || '/default-avatar.svg')}
@@ -57,6 +58,34 @@ const ProfilePageComponent = ({
                       </p>
                     )}
                   </div>
+
+                  {pipe(
+                    model.followRd,
+                    RD.fold(
+                      () => null,
+                      () => null,
+                      (err) => (
+                        <div className='mb-[16px]'>
+                          <ErrorMessages error={err} />
+                        </div>
+                      ),
+                      () => null,
+                    ),
+                  )}
+
+                  {pipe(
+                    model.unfollowRd,
+                    RD.fold(
+                      () => null,
+                      () => null,
+                      (err) => (
+                        <div className='mb-[16px]'>
+                          <ErrorMessages error={err} />
+                        </div>
+                      ),
+                      () => null,
+                    ),
+                  )}
 
                   <div className='pt-[4px]'>
                     {isCurrentUser ? (

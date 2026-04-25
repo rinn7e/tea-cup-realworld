@@ -97,7 +97,7 @@ export const createArticle = (
   request: NewArticleRequest,
 ): TE.TaskEither<HttpError<ApiError>, ArticleResponse> =>
   pipe(
-    fetch(`${API_BASE}/articles`, {
+    fetch(`${API_BASE}/articles/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

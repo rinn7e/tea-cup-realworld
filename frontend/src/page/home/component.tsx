@@ -16,7 +16,7 @@ const HomePageComponent = ({ model, dispatch }: Props) => {
   return (
     <div className='flex min-h-full flex-col'>
       {/* Hero Section */}
-      <div className='bg-green-600 py-[48px] text-center text-white shadow-inner'>
+      <div className='banner bg-green-600 py-[48px] text-center text-white shadow-inner'>
         <div className='mx-auto flex max-w-[1152px] flex-col gap-[8px] px-[16px]'>
           <h1 className='text-4xl font-bold tracking-tight lg:text-5xl'>
             conduit
@@ -39,7 +39,7 @@ const HomePageComponent = ({ model, dispatch }: Props) => {
         >
           {/* Article List */}
           <div className='flex min-w-0 flex-1 flex-col'>
-            <div className='flex border-b border-gray-200'>
+            <div className='feed-toggle flex border-b border-gray-200'>
               {renderTabView(model.tab === 'user-feed', 'Your Feed', () =>
                 dispatch({ _tag: 'ChangeTab', tab: 'user-feed' }),
               )}

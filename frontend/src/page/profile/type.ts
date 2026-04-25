@@ -1,3 +1,4 @@
+import * as O from 'fp-ts/lib/Option'
 import * as RD from '@devexperts/remote-data-ts'
 import { EqAlways } from '@rinn7e/tea-cup-prelude'
 import * as EqClass from 'fp-ts/lib/Eq'
@@ -23,12 +24,16 @@ export type Model = {
   profile: RD.RemoteData<HttpError<ApiError>, ProfileResponse>
   articles: RD.RemoteData<HttpError<ApiError>, ArticlesResponse>
   showFavorites: boolean
+  followRd: RD.RemoteData<HttpError<ApiError>, ProfileResponse>
+  unfollowRd: RD.RemoteData<HttpError<ApiError>, ProfileResponse>
 }
 
 export const ModelEq = EqClass.struct<Model>({
   profile: RD.getEq(getHttpErrorEq(ApiErrorEq), ProfileResponseEq),
   articles: RD.getEq(getHttpErrorEq(ApiErrorEq), ArticlesResponseEq),
   showFavorites: B.Eq,
+  followRd: RD.getEq(getHttpErrorEq(ApiErrorEq), ProfileResponseEq),
+  unfollowRd: RD.getEq(getHttpErrorEq(ApiErrorEq), ProfileResponseEq),
 })
 
 export type Msg =
@@ -42,7 +47,15 @@ export type Msg =
     }
   | { _tag: 'ToggleFavorites'; show: boolean }
   | { _tag: 'Follow' }
+  | {
+      _tag: 'FollowResponse'
+      result: Result<HttpError<ApiError>, ProfileResponse>
+    }
   | { _tag: 'Unfollow' }
+  | {
+      _tag: 'UnfollowResponse'
+      result: Result<HttpError<ApiError>, ProfileResponse>
+    }
   | {
       _tag: 'ArticleShortMsg'
       slug: string

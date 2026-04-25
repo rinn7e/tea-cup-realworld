@@ -150,11 +150,11 @@ export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
   )
 
   return (
-    <nav className='sticky top-0 z-20 border-b border-gray-100 bg-white shadow-sm'>
+    <nav className='navbar sticky top-0 z-20 border-b border-gray-100 bg-white shadow-sm'>
       <div className='mx-auto max-w-[1152px] px-[16px]'>
         <div className='flex h-[56px] items-center justify-between'>
           <Link
-            className='text-xl font-bold tracking-tight text-green-600'
+            className='navbar-brand text-xl font-bold tracking-tight text-green-600'
             route={{ page: homePage() }}
           >
             conduit

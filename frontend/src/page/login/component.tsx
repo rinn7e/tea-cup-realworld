@@ -15,7 +15,7 @@ const LoginPageComponent = ({ model, dispatch }: Props) => {
   const signupRoute: Route = { page: { _tag: 'SignupPage' } }
 
   return (
-    <div className='flex min-h-full items-start justify-center px-[16px] pt-[64px] pb-[32px]'>
+    <div className='auth-page flex min-h-full items-start justify-center px-[16px] pt-[64px] pb-[32px]'>
       <div className='flex w-full max-w-[448px] flex-col gap-[24px]'>
         <div className='flex flex-col gap-[8px]'>
           <h1 className='text-center text-3xl font-bold text-gray-900'>

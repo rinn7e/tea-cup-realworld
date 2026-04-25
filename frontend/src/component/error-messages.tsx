@@ -28,7 +28,20 @@ export const ErrorMessages: React.FC<Props> = ({ error }) => {
         )
       }
       if (err?._tag === 'Generic') {
-        return [err.message]
+        const msg = err.message
+        if (
+          msg.toLowerCase().includes('failed to fetch') ||
+          msg.toLowerCase().includes('networkerror')
+        ) {
+          return ['Unable to connect']
+        }
+        return [msg]
+      }
+      if (
+        error.actualErr.toLowerCase().includes('failed to fetch') ||
+        error.actualErr.toLowerCase().includes('networkerror')
+      ) {
+        return ['Unable to connect']
       }
       return [error.actualErr]
     },

@@ -20,6 +20,8 @@ export const init = (
     profile: RD.pending,
     articles: RD.pending,
     showFavorites: favorites,
+    followRd: RD.initial,
+    unfollowRd: RD.initial,
   }
 
   const token = shared.token
@@ -88,25 +90,57 @@ export const update =
       case 'Follow':
         if (token._tag === 'Some') {
           return [
-            model,
+            { ...model, followRd: RD.pending },
             attemptTE(
               followUser(token.value, username),
-              (result): Msg => ({ _tag: 'GetProfileResponse', result }),
+              (result): Msg => ({ _tag: 'FollowResponse', result }),
             ),
           ]
         }
         return [model, Cmd.none()]
+      case 'FollowResponse':
+        if (msg.result.tag === 'Ok') {
+          return [
+            {
+              ...model,
+              profile: RD.success(msg.result.value),
+              followRd: RD.initial,
+            },
+            Cmd.none(),
+          ]
+        } else {
+          return [
+            { ...model, followRd: RD.failure(msg.result.err) },
+            Cmd.none(),
+          ]
+        }
       case 'Unfollow':
         if (token._tag === 'Some') {
           return [
-            model,
+            { ...model, unfollowRd: RD.pending },
             attemptTE(
               unfollowUser(token.value, username),
-              (result): Msg => ({ _tag: 'GetProfileResponse', result }),
+              (result): Msg => ({ _tag: 'UnfollowResponse', result }),
             ),
           ]
         }
         return [model, Cmd.none()]
+      case 'UnfollowResponse':
+        if (msg.result.tag === 'Ok') {
+          return [
+            {
+              ...model,
+              profile: RD.success(msg.result.value),
+              unfollowRd: RD.initial,
+            },
+            Cmd.none(),
+          ]
+        } else {
+          return [
+            { ...model, unfollowRd: RD.failure(msg.result.err) },
+            Cmd.none(),
+          ]
+        }
       case 'ArticleShortMsg':
         if (model.articles._tag === 'RemoteSuccess') {
           const articlesData = model.articles.value

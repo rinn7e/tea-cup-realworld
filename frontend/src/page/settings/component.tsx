@@ -22,7 +22,7 @@ const SettingsPageComponent = ({ model, dispatch }: Props) => {
   const form = model.form
 
   return (
-    <div className='flex min-h-full items-start justify-center px-[16px] pt-[64px] pb-[32px]'>
+    <div className='settings-page flex min-h-full items-start justify-center px-[16px] pt-[64px] pb-[32px]'>
       <div className='flex w-full max-w-[448px] flex-col gap-[24px]'>
         <h1 className='text-center text-3xl font-bold text-gray-900'>
           Your Settings
