@@ -3,32 +3,39 @@ import { pipe } from 'fp-ts/lib/function'
 
 import { API_BASE } from '@/env'
 
-import { type HttpErrorString } from '../type/common'
 import {
+  type ApiError,
+  type HttpError,
+  type HttpErrorString,
   type LoginRequest,
   type SignupRequest,
   type UpdateUserRequest,
   type UserResponse,
   UserResponseJson,
-} from '../type/user'
-import { decodeError, decodeSuccess, fetchToTaskEither } from './common'
+} from '../type'
+import {
+  decodeApiError,
+  decodeError,
+  decodeSuccess,
+  fetchToTaskEither,
+} from './common'
 
 export const getCurrentUser = (
   token: string,
-): TE.TaskEither<HttpErrorString, UserResponse> =>
+): TE.TaskEither<HttpError<ApiError>, UserResponse> =>
   pipe(
     fetch(`${API_BASE}/user`, {
       headers: { Authorization: `Token ${token}` },
     }),
     fetchToTaskEither,
     TE.chainEitherK(decodeSuccess(UserResponseJson)),
-    TE.mapLeft(decodeError),
+    TE.mapLeft(decodeApiError),
   )
 
 export const updateUser = (
   token: string,
   request: UpdateUserRequest,
-): TE.TaskEither<HttpErrorString, UserResponse> =>
+): TE.TaskEither<HttpError<ApiError>, UserResponse> =>
   pipe(
     fetch(`${API_BASE}/user`, {
       method: 'PUT',
@@ -40,12 +47,13 @@ export const updateUser = (
     }),
     fetchToTaskEither,
     TE.chainEitherK(decodeSuccess(UserResponseJson)),
-    TE.mapLeft(decodeError),
+    TE.mapLeft(decodeApiError),
   )
+
 
 export const login = (
   request: LoginRequest,
-): TE.TaskEither<HttpErrorString, UserResponse> =>
+): TE.TaskEither<HttpError<ApiError>, UserResponse> =>
   pipe(
     fetch(`${API_BASE}/users/login`, {
       method: 'POST',
@@ -54,12 +62,12 @@ export const login = (
     }),
     fetchToTaskEither,
     TE.chainEitherK(decodeSuccess(UserResponseJson)),
-    TE.mapLeft(decodeError),
+    TE.mapLeft(decodeApiError),
   )
 
 export const signup = (
   request: SignupRequest,
-): TE.TaskEither<HttpErrorString, UserResponse> =>
+): TE.TaskEither<HttpError<ApiError>, UserResponse> =>
   pipe(
     fetch(`${API_BASE}/users`, {
       method: 'POST',
@@ -68,5 +76,6 @@ export const signup = (
     }),
     fetchToTaskEither,
     TE.chainEitherK(decodeSuccess(UserResponseJson)),
-    TE.mapLeft(decodeError),
+    TE.mapLeft(decodeApiError),
   )
+

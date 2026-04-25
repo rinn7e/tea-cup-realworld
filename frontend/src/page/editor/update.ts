@@ -2,6 +2,9 @@ import * as RD from '@devexperts/remote-data-ts'
 import * as Form from '@rinn7e/tea-cup-form'
 import {
   lookupForm,
+  noExtraValidation,
+  runValidationForAll,
+  showAllValidation,
   valuePillTextType,
   valueTextType,
 } from '@rinn7e/tea-cup-form'
@@ -222,5 +225,16 @@ export const update =
             Cmd.none(),
           ]
         }
+      case 'ShowAllValidation':
+        return [
+          {
+            ...model,
+            form: {
+              ...model.form,
+              forms: showAllValidation(model.form.forms),
+            },
+          },
+          Cmd.none(),
+        ]
     }
   }

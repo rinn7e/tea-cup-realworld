@@ -4,13 +4,10 @@ import { pipe } from 'fp-ts/lib/function'
 import React from 'react'
 import { Dispatcher } from 'tea-cup-fp'
 
-import type {
-  ArticlesResponse,
-  HttpErrorString,
-  TagsResponse,
-} from '@/api/type'
+import type { ApiError, ArticlesResponse, HttpError, TagsResponse } from '@/api/type'
 import { ArticleShortComponent } from '@/component/article-short/component'
 import { DotLoading } from '@/component/dot-loading'
+import { ErrorMessages } from '@/component/error-messages'
 import { memoStrategy } from '@/util/memo-strategy'
 
 import { Msg, Props, PropsEq } from './type'
@@ -116,7 +113,7 @@ const renderTabView = (active: boolean, label: string, onClick: () => void) => {
 }
 
 const renderArticlesView = (
-  articles: RD.RemoteData<HttpErrorString, ArticlesResponse>,
+  articles: RD.RemoteData<HttpError<ApiError>, ArticlesResponse>,
   dispatch: Dispatcher<Msg>,
 ) => {
   return pipe(
@@ -132,9 +129,9 @@ const renderArticlesView = (
           <DotLoading className='text-2xl text-green-600' />
         </div>
       ),
-      (err: HttpErrorString) => (
-        <div className='py-[24px] text-sm text-red-500'>
-          Error loading articles: {err.actualErr}
+      (err: HttpError<ApiError>) => (
+        <div className='py-[24px]'>
+          <ErrorMessages error={err} />
         </div>
       ),
       (data: ArticlesResponse) =>

@@ -180,9 +180,19 @@ Implementations **must** expose this on `window.__conduit_debug__`:
 
 ```typescript
 interface ConduitDebug {
-  getToken(): string | null;
-  getAuthState(): 'authenticated' | 'unauthenticated' | 'unavailable' | 'loading';
-  getCurrentUser(): { username: string; email: string; bio: string | null; image: string | null; token: string } | null;
+  getToken(): string | null
+  getAuthState():
+    | 'authenticated'
+    | 'unauthenticated'
+    | 'unavailable'
+    | 'loading'
+  getCurrentUser(): {
+    username: string
+    email: string
+    bio: string | null
+    image: string | null
+    token: string
+  } | null
 }
 ```
 

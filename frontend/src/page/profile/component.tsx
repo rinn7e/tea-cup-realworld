@@ -5,12 +5,14 @@ import { RotateCw, Settings, UserPlus } from 'lucide-react'
 import React from 'react'
 
 import type {
+  ApiError,
   ArticlesResponse,
-  HttpErrorString,
+  HttpError,
   ProfileResponse,
 } from '@/api/type'
 import { ArticleShortComponent } from '@/component/article-short/component'
 import { DotLoading } from '@/component/dot-loading'
+import { ErrorMessages } from '@/component/error-messages'
 import { IndeterminateProgressBar } from '@/component/indeterminate-progress-bar'
 import { Link } from '@/component/link'
 import { API_BASE } from '@/env'
@@ -133,9 +135,9 @@ const ProfilePageComponent = ({
                           <DotLoading className='text-2xl text-green-600' />
                         </div>
                       ),
-                      (err: HttpErrorString) => (
-                        <div className='py-[24px] text-sm text-red-500'>
-                          Error loading articles: {err.actualErr}
+                      (err: HttpError<ApiError>) => (
+                        <div className='py-[24px]'>
+                          <ErrorMessages error={err} />
                         </div>
                       ),
                       (articlesData: ArticlesResponse) =>
@@ -162,6 +164,7 @@ const ProfilePageComponent = ({
                         ),
                     ),
                   )}
+
                 </div>
               </div>
             </>

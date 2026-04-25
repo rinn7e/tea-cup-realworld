@@ -86,7 +86,7 @@ export const initializeCmd = (location: Location): Cmd<Msg> => {
   return msgCmd({ _tag: 'Init', location, user: O.none })
 }
 
-const _getUserCmd = (storedToken: string): Cmd<Msg> =>
+const getUserCmd = (storedToken: string): Cmd<Msg> =>
   Task.attempt(taskFromTE(getCurrentUser(storedToken)), (res) => {
     const msg: Msg = {
       _tag: 'SetUser',

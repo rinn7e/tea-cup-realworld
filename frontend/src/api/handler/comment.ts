@@ -10,8 +10,13 @@ import {
   type CommentsResponse,
   CommentsResponseJson,
 } from '../type/comment'
-import { type HttpErrorString } from '../type/common'
 import {
+  type ApiError,
+  type HttpError,
+  type HttpErrorString,
+} from '../type/common'
+import {
+  decodeApiError,
   decodeError,
   decodeSuccess,
   ensureIsOk,
@@ -21,7 +26,7 @@ import {
 export const getComments = (
   token: Option<string>,
   slug: string,
-): TE.TaskEither<HttpErrorString, CommentsResponse> =>
+): TE.TaskEither<HttpError<ApiError>, CommentsResponse> =>
   pipe(
     fetch(`${API_BASE}/articles/${encodeURIComponent(slug)}/comments`, {
       headers:
@@ -29,14 +34,15 @@ export const getComments = (
     }),
     fetchToTaskEither,
     TE.chainEitherK(decodeSuccess(CommentsResponseJson)),
-    TE.mapLeft(decodeError),
+    TE.mapLeft(decodeApiError),
   )
+
 
 export const createComment = (
   token: string,
   slug: string,
   body: string,
-): TE.TaskEither<HttpErrorString, CommentResponse> =>
+): TE.TaskEither<HttpError<ApiError>, CommentResponse> =>
   pipe(
     fetch(`${API_BASE}/articles/${encodeURIComponent(slug)}/comments`, {
       method: 'POST',
@@ -48,14 +54,14 @@ export const createComment = (
     }),
     fetchToTaskEither,
     TE.chainEitherK(decodeSuccess(CommentResponseJson)),
-    TE.mapLeft(decodeError),
+    TE.mapLeft(decodeApiError),
   )
 
 export const deleteComment = (
   token: string,
   slug: string,
   id: number,
-): TE.TaskEither<HttpErrorString, true> =>
+): TE.TaskEither<HttpError<ApiError>, true> =>
   pipe(
     fetch(`${API_BASE}/articles/${encodeURIComponent(slug)}/comments/${id}`, {
       method: 'DELETE',
@@ -63,5 +69,5 @@ export const deleteComment = (
     }),
     fetchToTaskEither,
     TE.chainEitherK(ensureIsOk(true as const)),
-    TE.mapLeft(decodeError),
+    TE.mapLeft(decodeApiError),
   )

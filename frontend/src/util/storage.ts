@@ -1,4 +1,4 @@
-const TOKEN_KEY = 'realworld_token'
+const TOKEN_KEY = 'jwtToken'
 
 export const saveToken = (token: string): void => {
   localStorage.setItem(TOKEN_KEY, token)

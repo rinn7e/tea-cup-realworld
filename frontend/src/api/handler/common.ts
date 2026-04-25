@@ -2,7 +2,8 @@ import * as E from 'fp-ts/lib/Either'
 import * as TE from 'fp-ts/lib/TaskEither'
 import * as t from 'io-ts'
 
-import { type HttpErrorString, mkHttpError } from '../type/common'
+import { type ApiError, type HttpError, ApiErrorJson } from '../type/common'
+
 
 export type FetchToTaskEitherError = { err: string; status?: number }
 export type FetchToTaskEitherSuccess = {
@@ -47,5 +48,34 @@ export const ensureIsOk =
   (s: FetchToTaskEitherSuccess): E.Either<FetchToTaskEitherError, A> =>
     s.ok ? E.right(value) : E.left({ err: s.text, status: s.status })
 
-export const decodeError = (e: FetchToTaskEitherError): HttpErrorString =>
-  mkHttpError(e.status ?? 0, e.err)
+export const decodeError = (e: FetchToTaskEitherError): HttpError<ApiError> => ({
+  statusCode: e.status ?? 0,
+  err: { _tag: 'Generic', message: e.err },
+  actualErr: e.err,
+})
+
+
+export const decodeApiError = (e: FetchToTaskEitherError): HttpError<ApiError> => {
+  const statusCode = e.status ?? 0
+  try {
+    const json = JSON.parse(e.err)
+    const result = ApiErrorJson.decode(json)
+    if (result._tag === 'Right') {
+      return {
+        statusCode,
+        err: result.right,
+        actualErr: e.err,
+      }
+    }
+  } catch (err) {
+    // Not JSON or other error
+  }
+  return {
+    statusCode,
+    err: { _tag: 'Generic', message: e.err },
+    actualErr: e.err,
+  }
+}
+
+
+

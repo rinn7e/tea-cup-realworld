@@ -5,8 +5,8 @@ import * as EqClass from 'fp-ts/lib/Eq'
 import * as B from 'fp-ts/lib/boolean'
 import type { Dispatcher, Result } from 'tea-cup-fp'
 
-import { HttpErrorStringEq } from '@/api/type'
-import type { HttpErrorString, UserResponse } from '@/api/type'
+import { getHttpErrorEq, ApiErrorEq } from '@/api/type'
+import type { ApiError, HttpError, UserResponse } from '@/api/type'
 
 export const signupUsernameField = 'username'
 export const signupEmailField = 'email'
@@ -14,20 +14,21 @@ export const signupPasswordField = 'password'
 
 export type Model = {
   form: Form.Model
-  requestRd: RD.RemoteData<HttpErrorString, null>
+  requestRd: RD.RemoteData<HttpError<ApiError>, null>
   isFormValid: boolean
 }
 
 export const ModelEq = EqClass.struct<Model>({
   form: Form.ModelEq,
-  requestRd: RD.getEq(HttpErrorStringEq, EqAlways),
+  requestRd: RD.getEq(getHttpErrorEq(ApiErrorEq), EqAlways),
   isFormValid: B.Eq,
 })
 
 export type Msg =
   | { _tag: 'FormMsg'; subMsg: Form.Msg }
   | { _tag: 'Submit' }
-  | { _tag: 'SubmitResponse'; result: Result<HttpErrorString, UserResponse> }
+  | { _tag: 'SubmitResponse'; result: Result<HttpError<ApiError>, UserResponse> }
+
 
 export type Props = {
   model: Model

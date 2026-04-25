@@ -57,9 +57,10 @@ const renderPage = (model: Model, dispatch: Dispatcher<Msg>) => {
       return (
         <ArticlePageMemo
           model={model.pageModel.model}
-          token={model.shared.token}
+          user={model.shared.user}
           dispatch={(msg) => dispatch({ _tag: 'ArticlePageMsg', subMsg: msg })}
         />
+
       )
     case 'LoginPageModel':
       return (

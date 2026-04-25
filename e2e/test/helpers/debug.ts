@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import { Page } from '@playwright/test'
 
 /**
  * Debug interface helpers for e2e tests.
@@ -19,14 +19,18 @@ import { Page } from '@playwright/test';
  * ```
  */
 
-export type AuthState = 'authenticated' | 'unauthenticated' | 'unavailable' | 'loading';
+export type AuthState =
+  | 'authenticated'
+  | 'unauthenticated'
+  | 'unavailable'
+  | 'loading'
 
 export interface User {
-  username: string;
-  email: string;
-  bio: string | null;
-  image: string | null;
-  token: string;
+  username: string
+  email: string
+  bio: string | null
+  image: string | null
+  token: string
 }
 
 /**
@@ -34,7 +38,7 @@ export interface User {
  * Returns null if no token is set or debug interface is not available.
  */
 export async function getToken(page: Page): Promise<string | null> {
-  return page.evaluate(() => window.__conduit_debug__?.getToken() ?? null);
+  return page.evaluate(() => window.__conduit_debug__?.getToken() ?? null)
 }
 
 /**
@@ -42,7 +46,7 @@ export async function getToken(page: Page): Promise<string | null> {
  * Returns undefined if debug interface is not available.
  */
 export async function getAuthState(page: Page): Promise<AuthState | undefined> {
-  return page.evaluate(() => window.__conduit_debug__?.getAuthState());
+  return page.evaluate(() => window.__conduit_debug__?.getAuthState())
 }
 
 /**
@@ -50,7 +54,7 @@ export async function getAuthState(page: Page): Promise<AuthState | undefined> {
  * Returns null if not authenticated or debug interface is not available.
  */
 export async function getCurrentUser(page: Page): Promise<User | null> {
-  return page.evaluate(() => window.__conduit_debug__?.getCurrentUser() ?? null);
+  return page.evaluate(() => window.__conduit_debug__?.getCurrentUser() ?? null)
 }
 
 /**
@@ -62,8 +66,12 @@ export async function waitForAuthState(
   expectedState: AuthState,
   options: { timeout?: number } = {},
 ): Promise<void> {
-  const timeout = options.timeout ?? 5000;
-  await page.waitForFunction(state => window.__conduit_debug__?.getAuthState() === state, expectedState, { timeout });
+  const timeout = options.timeout ?? 5000
+  await page.waitForFunction(
+    (state) => window.__conduit_debug__?.getAuthState() === state,
+    expectedState,
+    { timeout },
+  )
 }
 
 /**
@@ -71,5 +79,5 @@ export async function waitForAuthState(
  * Can be used to skip tests if implementation doesn't support it.
  */
 export async function isDebugInterfaceAvailable(page: Page): Promise<boolean> {
-  return page.evaluate(() => typeof window.__conduit_debug__ !== 'undefined');
+  return page.evaluate(() => typeof window.__conduit_debug__ !== 'undefined')
 }

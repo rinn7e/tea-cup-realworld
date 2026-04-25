@@ -1,4 +1,4 @@
-import { type PlaywrightTestConfig, devices } from '@playwright/test';
+import { type PlaywrightTestConfig, devices } from '@playwright/test'
 
 /**
  * Base Playwright configuration for RealWorld e2e tests.
@@ -48,4 +48,4 @@ export const baseConfig: PlaywrightTestConfig = {
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-};
+}

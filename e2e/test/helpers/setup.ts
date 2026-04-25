@@ -1,12 +1,13 @@
-import { Page, Browser, APIRequestContext } from '@playwright/test';
-import { register, generateUniqueUser } from './auth';
-import { registerUserViaAPI, createManyArticles as createManyArticlesViaAPI } from './api';
-import { API_MODE } from './config';
+import { APIRequestContext, Browser, Page } from '@playwright/test'
+
+import { createManyArticles as createManyArticlesViaAPI } from './api'
+import { generateUniqueUser, register } from './auth'
+import { API_MODE } from './config'
 
 export interface UserCredentials {
-  username: string;
-  email: string;
-  password: string;
+  username: string
+  email: string
+  password: string
 }
 
 /**
@@ -17,12 +18,12 @@ export async function createUserInIsolation(
   browser: Browser,
   user?: UserCredentials,
 ): Promise<UserCredentials> {
-  const u = user || generateUniqueUser();
-  const ctx = await browser.newContext();
-  const page = await ctx.newPage();
-  await register(page, u.username, u.email, u.password);
-  await ctx.close();
-  return u;
+  const u = user || generateUniqueUser()
+  const ctx = await browser.newContext()
+  const page = await ctx.newPage()
+  await register(page, u.username, u.email, u.password)
+  await ctx.close()
+  return u
 }
 
 /**
@@ -37,21 +38,30 @@ export async function createManyArticles(
   token?: string,
 ): Promise<void> {
   if (API_MODE && request && token) {
-    await createManyArticlesViaAPI(request, token, count, tag);
+    await createManyArticlesViaAPI(request, token, count, tag)
   } else {
     // Form-based: fill out the editor for each article
-    const uniqueId = `${Date.now()}${Math.random().toString(36).substring(2, 8)}`;
+    const uniqueId = `${Date.now()}${Math.random().toString(36).substring(2, 8)}`
     for (let i = 0; i < count; i++) {
-      await page.goto('/editor', { waitUntil: 'load' });
-      await page.fill('input[name="title"]', `Test Article ${uniqueId} Number ${i}`);
-      await page.fill('input[name="description"]', `Description for test article ${i}`);
-      await page.fill('textarea[name="body"]', `Body content for test article ${i}. Created with ID ${uniqueId}.`);
-      await page.fill('input[placeholder="Enter tags"]', tag);
-      await page.press('input[placeholder="Enter tags"]', 'Enter');
+      await page.goto('/editor', { waitUntil: 'load' })
+      await page.fill(
+        'input[name="title"]',
+        `Test Article ${uniqueId} Number ${i}`,
+      )
+      await page.fill(
+        'input[name="description"]',
+        `Description for test article ${i}`,
+      )
+      await page.fill(
+        'textarea[name="body"]',
+        `Body content for test article ${i}. Created with ID ${uniqueId}.`,
+      )
+      await page.fill('input[placeholder="Enter tags"]', tag)
+      await page.press('input[placeholder="Enter tags"]', 'Enter')
       await Promise.all([
         page.waitForURL(/\/article\/.+/),
         page.click('button:has-text("Publish Article")'),
-      ]);
+      ])
     }
   }
 }

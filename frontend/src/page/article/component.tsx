@@ -7,11 +7,14 @@ import React from 'react'
 import ReactMarkdown from 'react-markdown'
 
 import type {
+  ApiError,
   ArticleResponse,
   CommentsResponse,
+  HttpError,
   HttpErrorString,
 } from '@/api/type'
 import { DotLoading } from '@/component/dot-loading'
+import { ErrorMessages } from '@/component/error-messages'
 import { favButtonView } from '@/component/fav-button'
 import { IndeterminateProgressBar } from '@/component/indeterminate-progress-bar'
 import { Link } from '@/component/link'
@@ -20,7 +23,7 @@ import { memoStrategy } from '@/util/memo-strategy'
 
 import { Props, PropsEq } from './type'
 
-const ArticlePageComponent = ({ model, token, dispatch }: Props) => {
+const ArticlePageComponent = ({ model, user, dispatch }: Props) => {
   return (
     <div className='article-page flex min-h-full flex-col'>
       {pipe(
@@ -28,13 +31,17 @@ const ArticlePageComponent = ({ model, token, dispatch }: Props) => {
         RD.fold(
           () => <IndeterminateProgressBar />,
           () => <IndeterminateProgressBar />,
-          (err: HttpErrorString) => (
-            <div className='py-[24px] text-sm text-red-500'>
-              Error loading article: {err.actualErr}
+          (err: HttpError<ApiError>) => (
+            <div className='mx-auto max-w-[1152px] px-[16px] py-[24px]'>
+              <ErrorMessages error={err} />
             </div>
           ),
+
+
           (data: ArticleResponse) => {
-            const isLoggedIn = O.isSome(token)
+            const isLoggedIn = O.isSome(user)
+            const isAuthor =
+              isLoggedIn && user.value.username === data.article.author.username
             const author = data.article.author
 
             const articleMeta = (isLight: boolean) => (
@@ -126,7 +133,7 @@ const ArticlePageComponent = ({ model, token, dispatch }: Props) => {
                           : 'FavoriteArticle',
                       }),
                   })}
-                  {isLoggedIn && (
+                  {isAuthor && (
                     <>
                       <Link
                         route={{
@@ -198,9 +205,12 @@ const ArticlePageComponent = ({ model, token, dispatch }: Props) => {
                     {articleMeta(false)}
 
                     <div className='flex w-full max-w-[700px] flex-col gap-[24px]'>
+                      {model.newCommentError && (
+                        <ErrorMessages error={model.newCommentError} />
+                      )}
                       {isLoggedIn && (
                         <form
-                          className='flex flex-col overflow-hidden rounded border border-gray-200'
+                          className='comment-form flex flex-col overflow-hidden rounded border border-gray-200'
                           onSubmit={(e) => {
                             e.preventDefault()
                             dispatch({ _tag: 'SubmitComment' })
@@ -210,7 +220,7 @@ const ArticlePageComponent = ({ model, token, dispatch }: Props) => {
                             className='min-h-[100px] w-full resize-none p-[12px] text-sm text-gray-800 outline-none'
                             rows={3}
                             placeholder='Write a comment...'
-                            value={model.commentInput}
+                            value={model.newCommentInput}
                             onChange={(e) =>
                               dispatch({
                                 _tag: 'SetCommentInput',
@@ -218,6 +228,7 @@ const ArticlePageComponent = ({ model, token, dispatch }: Props) => {
                               })
                             }
                           />
+
                           <div className='flex justify-end border-t border-gray-100 bg-gray-50 px-[12px] py-[8px]'>
                             <button
                               type='submit'
@@ -242,9 +253,9 @@ const ArticlePageComponent = ({ model, token, dispatch }: Props) => {
                               <DotLoading className='text-2xl text-green-600' />
                             </div>
                           ),
-                          (err: HttpErrorString) => (
-                            <div className='py-[12px] text-sm text-red-500'>
-                              Error loading comments: {err.actualErr}
+                          (err: HttpError<ApiError>) => (
+                            <div className='py-[12px]'>
+                              <ErrorMessages error={err} />
                             </div>
                           ),
                           (commentsData: CommentsResponse) => (
@@ -252,14 +263,14 @@ const ArticlePageComponent = ({ model, token, dispatch }: Props) => {
                               {commentsData.comments.map((comment) => (
                                 <div
                                   key={comment.id}
-                                  className='overflow-hidden rounded border border-gray-200'
+                                  className='card overflow-hidden rounded border border-gray-200'
                                 >
-                                  <div className='p-[16px]'>
+                                  <div className='card-block p-[16px]'>
                                     <p className='text-sm whitespace-pre-wrap text-gray-800'>
                                       {comment.body}
                                     </p>
                                   </div>
-                                  <div className='flex items-center gap-[8px] border-t border-gray-100 bg-gray-50 px-[16px] py-[8px] text-xs'>
+                                  <div className='card-footer flex items-center gap-[8px] border-t border-gray-100 bg-gray-50 px-[16px] py-[8px] text-xs'>
                                     <Link
                                       route={{
                                         page: {
@@ -274,7 +285,7 @@ const ArticlePageComponent = ({ model, token, dispatch }: Props) => {
                                           comment.author.image ||
                                             '/default-avatar.svg',
                                         )}
-                                        className='h-[20px] w-[20px] rounded-full object-cover'
+                                        className='comment-author-img h-[20px] w-[20px] rounded-full object-cover'
                                         alt=''
                                       />
                                     </Link>
@@ -295,20 +306,26 @@ const ArticlePageComponent = ({ model, token, dispatch }: Props) => {
                                         comment.createdAt,
                                       ).toDateString()}
                                     </span>
-                                    {isLoggedIn && (
-                                      <button
-                                        type='button'
-                                        onClick={() =>
-                                          dispatch({
-                                            _tag: 'DeleteComment',
-                                            id: comment.id,
-                                          })
-                                        }
-                                        className='ml-auto text-gray-400 transition-colors hover:text-red-500'
-                                      >
-                                        <Trash2 size={12} />
-                                      </button>
-                                    )}
+                                    {isLoggedIn &&
+                                      user.value.username ===
+                                        comment.author.username && (
+                                        <span className='mod-options ml-auto'>
+                                          <button
+                                            type='button'
+                                            onClick={() =>
+                                              dispatch({
+                                                _tag: 'DeleteComment',
+                                                id: comment.id,
+                                              })
+                                            }
+                                            className='text-gray-400 transition-colors hover:text-red-500'
+                                          >
+                                            <i className='ion-trash-a'>
+                                              <Trash2 size={12} />
+                                            </i>
+                                          </button>
+                                        </span>
+                                      )}
                                   </div>
                                 </div>
                               ))}

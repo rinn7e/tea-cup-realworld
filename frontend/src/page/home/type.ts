@@ -7,12 +7,14 @@ import type { Dispatcher, Result } from 'tea-cup-fp'
 
 import {
   ArticlesResponseEq,
-  HttpErrorStringEq,
+  getHttpErrorEq,
+  ApiErrorEq,
   TagsResponseEq,
 } from '@/api/type'
 import type {
+  ApiError,
   ArticlesResponse,
-  HttpErrorString,
+  HttpError,
   TagsResponse,
 } from '@/api/type'
 import * as ArticleShort from '@/component/article-short'
@@ -20,16 +22,16 @@ import * as ArticleShort from '@/component/article-short'
 export const GET_ARTICLES_LIMIT = 5
 
 export type Model = {
-  articles: RD.RemoteData<HttpErrorString, ArticlesResponse>
-  tags: RD.RemoteData<HttpErrorString, TagsResponse>
+  articles: RD.RemoteData<HttpError<ApiError>, ArticlesResponse>
+  tags: RD.RemoteData<HttpError<ApiError>, TagsResponse>
   tab: 'global-feed' | 'user-feed'
   page: number
   pageAmount: number
 }
 
 export const ModelEq = EqClass.struct<Model>({
-  articles: RD.getEq(HttpErrorStringEq, ArticlesResponseEq),
-  tags: RD.getEq(HttpErrorStringEq, TagsResponseEq),
+  articles: RD.getEq(getHttpErrorEq(ApiErrorEq), ArticlesResponseEq),
+  tags: RD.getEq(getHttpErrorEq(ApiErrorEq), TagsResponseEq),
   tab: S.Eq,
   page: N.Eq,
   pageAmount: N.Eq,
@@ -38,10 +40,10 @@ export const ModelEq = EqClass.struct<Model>({
 export type Msg =
   | {
       _tag: 'GetArticlesResponse'
-      result: Result<HttpErrorString, ArticlesResponse>
+      result: Result<HttpError<ApiError>, ArticlesResponse>
       shouldScrollToTop?: true
     }
-  | { _tag: 'GetTagsResponse'; result: Result<HttpErrorString, TagsResponse> }
+  | { _tag: 'GetTagsResponse'; result: Result<HttpError<ApiError>, TagsResponse> }
   | {
       _tag: 'ArticleShortMsg'
       slug: string

@@ -4,13 +4,22 @@ import { pipe } from 'fp-ts/lib/function'
 
 import { API_BASE } from '@/env'
 
-import { type HttpErrorString } from '../type/common'
+import {
+  type ApiError,
+  type HttpError,
+  type HttpErrorString,
+} from '../type/common'
 import { type TagsResponse, TagsResponseJson } from '../type/tag'
-import { decodeError, decodeSuccess, fetchToTaskEither } from './common'
+import {
+  decodeApiError,
+  decodeError,
+  decodeSuccess,
+  fetchToTaskEither,
+} from './common'
 
 export const getTags = (
   token: Option<string>,
-): TE.TaskEither<HttpErrorString, TagsResponse> =>
+): TE.TaskEither<HttpError<ApiError>, TagsResponse> =>
   pipe(
     fetch(
       `${API_BASE}/tags`,
@@ -20,5 +29,6 @@ export const getTags = (
     ),
     fetchToTaskEither,
     TE.chainEitherK(decodeSuccess(TagsResponseJson)),
-    TE.mapLeft(decodeError),
+    TE.mapLeft(decodeApiError),
   )
+

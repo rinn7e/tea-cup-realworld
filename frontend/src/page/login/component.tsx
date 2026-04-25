@@ -4,6 +4,7 @@ import { cn } from '@rinn7e/tea-cup-prelude'
 import { Loader2 } from 'lucide-react'
 import React from 'react'
 
+import { ErrorMessages } from '@/component/error-messages'
 import { Link } from '@/component/link'
 import type { Route } from '@/type'
 import { memoStrategy } from '@/util/memo-strategy'
@@ -31,9 +32,7 @@ const LoginPageComponent = ({ model, dispatch }: Props) => {
         </div>
 
         {RD.isFailure(model.requestRd) && (
-          <ul className='flex flex-col gap-[4px] rounded border border-red-200 bg-red-50 p-[12px] text-sm text-red-700'>
-            <li>{model.requestRd.error.actualErr}</li>
-          </ul>
+          <ErrorMessages error={model.requestRd.error} />
         )}
 
         <form

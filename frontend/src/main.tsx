@@ -5,9 +5,11 @@ import { ProgramWithNav } from 'react-tea-cup'
 import { Dispatcher, Sub } from 'tea-cup-fp'
 
 import { App } from './component'
+import { IS_RUNNING_E2E } from './env'
 import './index.css'
 import type { Model, Msg } from './type'
 import { preInit, preUpdate } from './update'
+import { assignConduitDebug } from './util/e2e'
 
 // Helper
 // ---------------------------------------------
@@ -20,8 +22,12 @@ const preLoadingView = () => {
   )
 }
 
-const preView = (dispatch: Dispatcher<Msg>, model: Model | null) =>
-  model ? <App model={model} dispatch={dispatch} /> : preLoadingView()
+const preView = (dispatch: Dispatcher<Msg>, model: Model | null) => {
+  if (IS_RUNNING_E2E) {
+    assignConduitDebug(model)
+  }
+  return model ? <App model={model} dispatch={dispatch} /> : preLoadingView()
+}
 
 // App
 // ---------------------------------------------

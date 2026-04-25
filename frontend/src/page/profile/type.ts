@@ -6,37 +6,39 @@ import type { Dispatcher, Result } from 'tea-cup-fp'
 
 import {
   ArticlesResponseEq,
-  HttpErrorStringEq,
+  getHttpErrorEq,
+  ApiErrorEq,
   ProfileResponseEq,
 } from '@/api/type'
 import type {
+  ApiError,
   ArticlesResponse,
-  HttpErrorString,
+  HttpError,
   ProfileResponse,
 } from '@/api/type'
 import * as ArticleShort from '@/component/article-short'
 import type { Route } from '@/type'
 
 export type Model = {
-  profile: RD.RemoteData<HttpErrorString, ProfileResponse>
-  articles: RD.RemoteData<HttpErrorString, ArticlesResponse>
+  profile: RD.RemoteData<HttpError<ApiError>, ProfileResponse>
+  articles: RD.RemoteData<HttpError<ApiError>, ArticlesResponse>
   showFavorites: boolean
 }
 
 export const ModelEq = EqClass.struct<Model>({
-  profile: RD.getEq(HttpErrorStringEq, ProfileResponseEq),
-  articles: RD.getEq(HttpErrorStringEq, ArticlesResponseEq),
+  profile: RD.getEq(getHttpErrorEq(ApiErrorEq), ProfileResponseEq),
+  articles: RD.getEq(getHttpErrorEq(ApiErrorEq), ArticlesResponseEq),
   showFavorites: B.Eq,
 })
 
 export type Msg =
   | {
       _tag: 'GetProfileResponse'
-      result: Result<HttpErrorString, ProfileResponse>
+      result: Result<HttpError<ApiError>, ProfileResponse>
     }
   | {
       _tag: 'GetArticlesResponse'
-      result: Result<HttpErrorString, ArticlesResponse>
+      result: Result<HttpError<ApiError>, ArticlesResponse>
     }
   | { _tag: 'ToggleFavorites'; show: boolean }
   | { _tag: 'Follow' }

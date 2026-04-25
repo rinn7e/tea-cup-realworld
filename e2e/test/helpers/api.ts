@@ -1,13 +1,17 @@
-import { APIRequestContext } from '@playwright/test';
-import { API_BASE } from './config';
+import { APIRequestContext } from '@playwright/test'
+
+import { API_BASE } from './config'
 
 export interface UserCredentials {
-  email: string;
-  password: string;
-  username: string;
+  email: string
+  password: string
+  username: string
 }
 
-export async function registerUserViaAPI(request: APIRequestContext, user: UserCredentials): Promise<string> {
+export async function registerUserViaAPI(
+  request: APIRequestContext,
+  user: UserCredentials,
+): Promise<string> {
   const response = await request.post(`${API_BASE}/users`, {
     data: {
       user: {
@@ -16,15 +20,19 @@ export async function registerUserViaAPI(request: APIRequestContext, user: UserC
         password: user.password,
       },
     },
-  });
+  })
   if (!response.ok()) {
-    throw new Error(`Failed to register user: ${response.status()}`);
+    throw new Error(`Failed to register user: ${response.status()}`)
   }
-  const data = await response.json();
-  return data.user.token;
+  const data = await response.json()
+  return data.user.token
 }
 
-export async function loginUserViaAPI(request: APIRequestContext, email: string, password: string): Promise<string> {
+export async function loginUserViaAPI(
+  request: APIRequestContext,
+  email: string,
+  password: string,
+): Promise<string> {
   const response = await request.post(`${API_BASE}/users/login`, {
     data: {
       user: {
@@ -32,18 +40,23 @@ export async function loginUserViaAPI(request: APIRequestContext, email: string,
         password,
       },
     },
-  });
+  })
   if (!response.ok()) {
-    throw new Error(`Failed to login: ${response.status()}`);
+    throw new Error(`Failed to login: ${response.status()}`)
   }
-  const data = await response.json();
-  return data.user.token;
+  const data = await response.json()
+  return data.user.token
 }
 
 export async function createArticleViaAPI(
   request: APIRequestContext,
   token: string,
-  article: { title: string; description: string; body: string; tagList?: string[] },
+  article: {
+    title: string
+    description: string
+    body: string
+    tagList?: string[]
+  },
 ): Promise<string> {
   const response = await request.post(`${API_BASE}/articles`, {
     headers: {
@@ -57,12 +70,12 @@ export async function createArticleViaAPI(
         tagList: article.tagList || [],
       },
     },
-  });
+  })
   if (!response.ok()) {
-    throw new Error(`Failed to create article: ${response.status()}`);
+    throw new Error(`Failed to create article: ${response.status()}`)
   }
-  const data = await response.json();
-  return data.article.slug;
+  const data = await response.json()
+  return data.article.slug
 }
 
 export async function updateUserViaAPI(
@@ -77,9 +90,9 @@ export async function updateUserViaAPI(
     data: {
       user: updates,
     },
-  });
+  })
   if (!response.ok()) {
-    throw new Error(`Failed to update user: ${response.status()}`);
+    throw new Error(`Failed to update user: ${response.status()}`)
   }
 }
 
@@ -89,18 +102,18 @@ export async function createManyArticles(
   count: number,
   tag: string = 'paginationtest',
 ): Promise<string[]> {
-  const slugs: string[] = [];
-  const uniqueId = `${Date.now()}${Math.random().toString(36).substring(2, 8)}`;
+  const slugs: string[] = []
+  const uniqueId = `${Date.now()}${Math.random().toString(36).substring(2, 8)}`
   for (let i = 0; i < count; i++) {
     const slug = await createArticleViaAPI(request, token, {
       title: `Test Article ${uniqueId} Number ${i}`,
       description: `Description for test article ${i}`,
       body: `Body content for test article ${i}. Created with ID ${uniqueId}.`,
       tagList: [tag],
-    });
-    slugs.push(slug);
+    })
+    slugs.push(slug)
     // Small pause between articles to avoid rate limits
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, 100))
   }
-  return slugs;
+  return slugs
 }

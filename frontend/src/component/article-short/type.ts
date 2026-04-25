@@ -1,6 +1,6 @@
 import type { Result } from 'tea-cup-fp'
 
-import type { Article, ArticleResponse, HttpErrorString } from '@/api/type'
+import type { ApiError, Article, ArticleResponse, HttpError } from '@/api/type'
 
 export type Model = Article
 
@@ -9,9 +9,10 @@ export type Msg =
   | { _tag: 'Unfavorite' }
   | {
       _tag: 'FavoriteResponse'
-      result: Result<HttpErrorString, ArticleResponse>
+      result: Result<HttpError<ApiError>, ArticleResponse>
     }
   | {
       _tag: 'UnfavoriteResponse'
-      result: Result<HttpErrorString, ArticleResponse>
+      result: Result<HttpError<ApiError>, ArticleResponse>
     }
+

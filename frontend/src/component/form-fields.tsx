@@ -1,6 +1,6 @@
 import {
-  TextTypeUiArg,
   TextPillTypeUiArg,
+  TextTypeUiArg,
   autocompleteToString,
   textInputVariantToString,
 } from '@rinn7e/tea-cup-form'
@@ -136,7 +136,9 @@ export const standardInputUi =
             props.validationResult,
             E.fold(
               (err) => (
-                <div className='px-[4px] text-xs text-red-600'>{err}</div>
+                <div className='fe-error-messages px-[4px] text-xs text-red-600'>
+                  {err}
+                </div>
               ),
               () => null,
             ),
@@ -187,11 +189,11 @@ export const textPillInputUi =
 
     return (
       <div className='flex flex-col gap-[4px] pb-[16px]'>
-        <div className={containerClass}>
+        <div className={cn(containerClass, 'tag-list')}>
           {props.allValues.map((tag: string, index: number) => (
             <span
               key={`${tag}-${index}`}
-              className='flex items-center gap-[4px] rounded-full bg-gray-200 px-[8px] py-[2px] text-sm text-gray-700'
+              className='tag-default tag-pill flex items-center gap-[4px] rounded-full bg-gray-200 px-[8px] py-[2px] text-sm text-gray-700'
             >
               {tag}
               <button
@@ -205,7 +207,9 @@ export const textPillInputUi =
                   })
                 }
               >
-                <X size={14} />
+                <i>
+                  <X size={14} />
+                </i>
               </button>
             </span>
           ))}
@@ -247,7 +251,9 @@ export const textPillInputUi =
             props.validationResult,
             E.fold(
               (err) => (
-                <div className='px-[4px] text-xs text-red-600'>{err}</div>
+                <div className='fe-error-messages px-[4px] text-xs text-red-600'>
+                  {err}
+                </div>
               ),
               () => null,
             ),

@@ -4,6 +4,7 @@ import { cn } from '@rinn7e/tea-cup-prelude'
 import { Loader2 } from 'lucide-react'
 import React from 'react'
 
+import { ErrorMessages } from '@/component/error-messages'
 import { memoStrategy } from '@/util/memo-strategy'
 
 import {
@@ -21,15 +22,17 @@ const EditorPageComponent = ({ model, dispatch }: Props) => {
   return (
     <div className='mx-auto flex w-full max-w-[768px] flex-col gap-[24px] px-[16px] py-[32px]'>
       {RD.isFailure(model.requestRd) && (
-        <ul className='flex flex-col gap-[4px] rounded border border-red-200 bg-red-50 p-[12px] text-sm text-red-700'>
-          <li>{model.requestRd.error.actualErr}</li>
-        </ul>
+        <ErrorMessages error={model.requestRd.error} />
       )}
 
       <form
         onSubmit={(e) => {
           e.preventDefault()
-          if (RD.isPending(model.requestRd) || !model.isFormValid) {
+          if (RD.isPending(model.requestRd)) {
+            return
+          }
+          if (!model.isFormValid) {
+            dispatch({ _tag: 'ShowAllValidation' })
             return
           }
           dispatch({ _tag: 'Submit' })
@@ -69,7 +72,6 @@ const EditorPageComponent = ({ model, dispatch }: Props) => {
               RD.isPending(model.requestRd) && 'pointer-events-none',
             )}
             type='submit'
-            disabled={!model.isFormValid}
           >
             <span className={cn(RD.isPending(model.requestRd) && 'opacity-0')}>
               Publish Article

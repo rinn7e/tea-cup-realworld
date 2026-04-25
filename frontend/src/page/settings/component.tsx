@@ -4,6 +4,7 @@ import { cn } from '@rinn7e/tea-cup-prelude'
 import { Loader2 } from 'lucide-react'
 import React from 'react'
 
+import { ErrorMessages } from '@/component/error-messages'
 import { memoStrategy } from '@/util/memo-strategy'
 
 import {
@@ -28,9 +29,7 @@ const SettingsPageComponent = ({ model, dispatch }: Props) => {
         </h1>
 
         {RD.isFailure(model.requestRd) && (
-          <ul className='flex flex-col gap-[4px] rounded border border-red-200 bg-red-50 p-[12px] text-sm text-red-700'>
-            <li>{model.requestRd.error.actualErr}</li>
-          </ul>
+          <ErrorMessages error={model.requestRd.error} />
         )}
 
         <form
@@ -104,13 +103,13 @@ const SettingsPageComponent = ({ model, dispatch }: Props) => {
         <hr className='border-gray-200' />
 
         <div className='flex flex-col'>
-          <a
-            role='button'
-            className='cursor-pointer self-start rounded border border-red-400 px-[16px] py-[8px] text-sm text-red-500 transition-colors hover:bg-red-50'
+          <button
+            type='button'
+            className='btn btn-outline-danger cursor-pointer self-start rounded border border-red-400 px-[16px] py-[8px] text-sm text-red-500 transition-colors hover:bg-red-50'
             onClick={() => dispatch({ _tag: 'Logout' })}
           >
             Or click here to logout.
-          </a>
+          </button>
         </div>
       </div>
     </div>

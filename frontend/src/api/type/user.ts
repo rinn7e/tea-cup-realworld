@@ -1,3 +1,6 @@
+import { NullableEq } from '@rinn7e/tea-cup-prelude'
+import * as EqClass from 'fp-ts/lib/Eq'
+import * as S from 'fp-ts/lib/string'
 import * as t from 'io-ts'
 
 export type User = {
@@ -7,6 +10,15 @@ export type User = {
   bio: string | null
   image: string | null
 }
+
+export const UserEq: EqClass.Eq<User> = EqClass.struct({
+  email: S.Eq,
+  token: S.Eq,
+  username: S.Eq,
+  bio: NullableEq(S.Eq),
+  image: NullableEq(S.Eq),
+})
+
 
 export const UserJson: t.Type<User> = t.type({
   email: t.string,

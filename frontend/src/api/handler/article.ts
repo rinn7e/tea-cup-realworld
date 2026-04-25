@@ -12,8 +12,13 @@ import {
   type NewArticleRequest,
   type UpdateArticleRequest,
 } from '../type/article'
-import { type HttpErrorString } from '../type/common'
 import {
+  type ApiError,
+  type HttpError,
+  type HttpErrorString,
+} from '../type/common'
+import {
+  decodeApiError,
   decodeError,
   decodeSuccess,
   ensureIsOk,
@@ -29,7 +34,7 @@ export const getArticles = (
     offset?: number
     limit?: number
   } = {},
-): TE.TaskEither<HttpErrorString, ArticlesResponse> => {
+): TE.TaskEither<HttpError<ApiError>, ArticlesResponse> => {
   const query = new URLSearchParams()
   if (params.tag !== undefined) query.set('tag', params.tag)
   if (params.author !== undefined) query.set('author', params.author)
@@ -55,7 +60,7 @@ export const getArticles = (
 export const getArticlesFeed = (
   token: string,
   params: { offset?: number; limit?: number } = {},
-): TE.TaskEither<HttpErrorString, ArticlesResponse> => {
+): TE.TaskEither<HttpError<ApiError>, ArticlesResponse> => {
   const query = new URLSearchParams()
   if (params.offset !== undefined) query.set('offset', String(params.offset))
   if (params.limit !== undefined) query.set('limit', String(params.limit))
@@ -73,7 +78,7 @@ export const getArticlesFeed = (
 export const getArticle = (
   token: Option<string>,
   slug: string,
-): TE.TaskEither<HttpErrorString, ArticleResponse> =>
+): TE.TaskEither<HttpError<ApiError>, ArticleResponse> =>
   pipe(
     fetch(
       `${API_BASE}/articles/${encodeURIComponent(slug)}`,
@@ -83,13 +88,14 @@ export const getArticle = (
     ),
     fetchToTaskEither,
     TE.chainEitherK(decodeSuccess(ArticleResponseJson)),
-    TE.mapLeft(decodeError),
+    TE.mapLeft(decodeApiError),
   )
+
 
 export const createArticle = (
   token: string,
   request: NewArticleRequest,
-): TE.TaskEither<HttpErrorString, ArticleResponse> =>
+): TE.TaskEither<HttpError<ApiError>, ArticleResponse> =>
   pipe(
     fetch(`${API_BASE}/articles`, {
       method: 'POST',
@@ -101,14 +107,14 @@ export const createArticle = (
     }),
     fetchToTaskEither,
     TE.chainEitherK(decodeSuccess(ArticleResponseJson)),
-    TE.mapLeft(decodeError),
+    TE.mapLeft(decodeApiError),
   )
 
 export const updateArticle = (
   token: string,
   slug: string,
   request: UpdateArticleRequest,
-): TE.TaskEither<HttpErrorString, ArticleResponse> =>
+): TE.TaskEither<HttpError<ApiError>, ArticleResponse> =>
   pipe(
     fetch(`${API_BASE}/articles/${encodeURIComponent(slug)}`, {
       method: 'PUT',
@@ -120,13 +126,13 @@ export const updateArticle = (
     }),
     fetchToTaskEither,
     TE.chainEitherK(decodeSuccess(ArticleResponseJson)),
-    TE.mapLeft(decodeError),
+    TE.mapLeft(decodeApiError),
   )
 
 export const deleteArticle = (
   token: string,
   slug: string,
-): TE.TaskEither<HttpErrorString, true> =>
+): TE.TaskEither<HttpError<ApiError>, true> =>
   pipe(
     fetch(`${API_BASE}/articles/${encodeURIComponent(slug)}`, {
       method: 'DELETE',
@@ -134,13 +140,13 @@ export const deleteArticle = (
     }),
     fetchToTaskEither,
     TE.chainEitherK(ensureIsOk(true as const)),
-    TE.mapLeft(decodeError),
+    TE.mapLeft(decodeApiError),
   )
 
 export const favoriteArticle = (
   token: string,
   slug: string,
-): TE.TaskEither<HttpErrorString, ArticleResponse> =>
+): TE.TaskEither<HttpError<ApiError>, ArticleResponse> =>
   pipe(
     fetch(`${API_BASE}/articles/${encodeURIComponent(slug)}/favorite`, {
       method: 'POST',
@@ -154,7 +160,7 @@ export const favoriteArticle = (
 export const unfavoriteArticle = (
   token: string,
   slug: string,
-): TE.TaskEither<HttpErrorString, ArticleResponse> =>
+): TE.TaskEither<HttpError<ApiError>, ArticleResponse> =>
   pipe(
     fetch(`${API_BASE}/articles/${encodeURIComponent(slug)}/favorite`, {
       method: 'DELETE',

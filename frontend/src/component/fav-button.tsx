@@ -16,13 +16,13 @@ const normalFavButton = ({
   onClick,
 }: FavButtonProps): React.ReactElement => (
   <button
-    type='button'
+    type="button"
     onClick={onClick}
     className={cn(
-      'flex items-center gap-[4px] rounded border px-[8px] py-[4px] text-xs',
+      'btn flex items-center gap-[4px] rounded border px-[8px] py-[4px] text-xs transition-colors',
       favorited
-        ? 'border-green-600 bg-green-600 text-white hover:bg-green-700'
-        : 'border-green-600 text-green-600 hover:bg-green-50',
+        ? 'btn-primary border-green-600 bg-green-600 text-white hover:bg-green-700'
+        : 'btn-outline-primary border-green-600 text-green-600 hover:bg-green-50',
     )}
   >
     <Heart size={12} fill={favorited ? 'currentColor' : 'none'} />
@@ -37,17 +37,24 @@ const detailFavButton = ({
   isLight = false,
 }: FavButtonProps): React.ReactElement => (
   <button
-    type='button'
+    type="button"
     onClick={onClick}
     className={cn(
-      'flex items-center gap-[4px] rounded border px-[12px] py-[4px] text-xs',
+      'btn flex items-center gap-[4px] rounded border px-[12px] py-[4px] text-xs transition-colors',
+      favorited
+        ? 'btn-primary border-green-600'
+        : 'btn-outline-primary border-green-600',
       isLight
-        ? 'border-green-500 text-green-400 hover:bg-green-900'
-        : 'border-green-500 text-green-600 hover:bg-green-50',
+        ? favorited
+          ? 'bg-green-600 text-white hover:bg-green-700'
+          : 'text-green-400 hover:bg-green-900'
+        : favorited
+          ? 'bg-green-600 text-white hover:bg-green-700'
+          : 'text-green-600 hover:bg-green-50',
     )}
   >
-    <Heart size={13} /> {favorited ? 'Unfavorite Post' : 'Favorite Post'}{' '}
-    <span>({favoritesCount})</span>
+    <Heart size={13} fill={favorited ? 'currentColor' : 'none'} />{' '}
+    {favorited ? 'Unfavorite Article' : 'Favorite Article'} <span>({favoritesCount})</span>
   </button>
 )
 

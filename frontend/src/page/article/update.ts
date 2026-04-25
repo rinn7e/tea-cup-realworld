@@ -23,7 +23,8 @@ export const init = (slug: string, shared: Shared): [Model, Cmd<Msg>] => {
     slug,
     article: RD.pending,
     comments: RD.pending,
-    commentInput: '',
+    newCommentInput: '',
+    newCommentError: null,
   }
 
   return [
@@ -180,13 +181,13 @@ export const update =
       case 'DeleteArticleResponse':
         return [model, Cmd.none()]
       case 'SetCommentInput':
-        return [{ ...model, commentInput: msg.value }, Cmd.none()]
+        return [{ ...model, newCommentInput: msg.value }, Cmd.none()]
       case 'SubmitComment':
-        if (shared.token._tag === 'Some' && model.commentInput.trim() !== '') {
+        if (shared.token._tag === 'Some' && model.newCommentInput.trim() !== '') {
           return [
-            { ...model, commentInput: '' },
+            { ...model, newCommentInput: '', newCommentError: null },
             attemptTE(
-              createComment(shared.token.value, model.slug, model.commentInput),
+              createComment(shared.token.value, model.slug, model.newCommentInput),
               (result): Msg => ({ _tag: 'SubmitCommentResponse', result }),
             ),
           ]
@@ -198,6 +199,7 @@ export const update =
             return [
               {
                 ...model,
+                newCommentError: null,
                 comments: RD.success({
                   comments: [
                     msg.result.value.comment,
@@ -208,12 +210,14 @@ export const update =
               Cmd.none(),
             ]
           }
+        } else {
+          return [{ ...model, newCommentError: msg.result.err }, Cmd.none()]
         }
         return [model, Cmd.none()]
       case 'DeleteComment':
         if (shared.token._tag === 'Some') {
           return [
-            model,
+            { ...model, newCommentError: null },
             attemptTE(
               deleteComment(shared.token.value, model.slug, msg.id),
               (result): Msg => ({
@@ -233,6 +237,7 @@ export const update =
           return [
             {
               ...model,
+              newCommentError: null,
               comments: RD.success({
                 comments: model.comments.value.comments.filter(
                   (c) => c.id !== msg.id,
@@ -241,7 +246,10 @@ export const update =
             },
             Cmd.none(),
           ]
+        } else if (msg.result.tag === 'Err') {
+          return [{ ...model, newCommentError: msg.result.err }, Cmd.none()]
         }
+
         return [model, Cmd.none()]
     }
   }

@@ -4,14 +4,23 @@ import { pipe } from 'fp-ts/lib/function'
 
 import { API_BASE } from '@/env'
 
-import { type HttpErrorString } from '../type/common'
+import {
+  type ApiError,
+  type HttpError,
+  type HttpErrorString,
+} from '../type/common'
 import { type ProfileResponse, ProfileResponseJson } from '../type/profile'
-import { decodeError, decodeSuccess, fetchToTaskEither } from './common'
+import {
+  decodeApiError,
+  decodeError,
+  decodeSuccess,
+  fetchToTaskEither,
+} from './common'
 
 export const getProfile = (
   token: Option<string>,
   username: string,
-): TE.TaskEither<HttpErrorString, ProfileResponse> =>
+): TE.TaskEither<HttpError<ApiError>, ProfileResponse> =>
   pipe(
     fetch(`${API_BASE}/profiles/${encodeURIComponent(username)}`, {
       headers:
@@ -19,13 +28,13 @@ export const getProfile = (
     }),
     fetchToTaskEither,
     TE.chainEitherK(decodeSuccess(ProfileResponseJson)),
-    TE.mapLeft(decodeError),
+    TE.mapLeft(decodeApiError),
   )
 
 export const followUser = (
   token: string,
   username: string,
-): TE.TaskEither<HttpErrorString, ProfileResponse> =>
+): TE.TaskEither<HttpError<ApiError>, ProfileResponse> =>
   pipe(
     fetch(`${API_BASE}/profiles/${encodeURIComponent(username)}/follow`, {
       method: 'POST',
@@ -33,13 +42,13 @@ export const followUser = (
     }),
     fetchToTaskEither,
     TE.chainEitherK(decodeSuccess(ProfileResponseJson)),
-    TE.mapLeft(decodeError),
+    TE.mapLeft(decodeApiError),
   )
 
 export const unfollowUser = (
   token: string,
   username: string,
-): TE.TaskEither<HttpErrorString, ProfileResponse> =>
+): TE.TaskEither<HttpError<ApiError>, ProfileResponse> =>
   pipe(
     fetch(`${API_BASE}/profiles/${encodeURIComponent(username)}/follow`, {
       method: 'DELETE',
@@ -47,5 +56,6 @@ export const unfollowUser = (
     }),
     fetchToTaskEither,
     TE.chainEitherK(decodeSuccess(ProfileResponseJson)),
-    TE.mapLeft(decodeError),
+    TE.mapLeft(decodeApiError),
   )
+
