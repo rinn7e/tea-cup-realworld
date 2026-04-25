@@ -1,6 +1,6 @@
 import {
-  CustomTextInputProps,
-  CustomTextPillInputProps,
+  TextTypeUiArg,
+  TextPillTypeUiArg,
   autocompleteToString,
   textInputVariantToString,
 } from '@rinn7e/tea-cup-form'
@@ -17,7 +17,7 @@ export type ExtraTextInputProps = {
 
 export const standardInputUi =
   (extra: ExtraTextInputProps = {}) =>
-  (props: CustomTextInputProps) => {
+  (props: TextTypeUiArg) => {
     const isSmall = extra.isSmall ?? false
     const isError = E.isLeft(props.validationResult) && props.showValidation
     const sizeClass = isSmall ? 'py-[8px] text-sm' : 'py-[12px] text-base'
@@ -147,7 +147,7 @@ export const standardInputUi =
 
 export const textPillInputUi =
   (extra: ExtraTextInputProps = {}) =>
-  (props: CustomTextPillInputProps) => {
+  (props: TextPillTypeUiArg) => {
     const isSmall = extra.isSmall ?? false
     const isError = E.isLeft(props.validationResult) && props.showValidation
     const sizeClass = isSmall ? 'py-[4px] text-sm' : 'py-[6px] text-base'
@@ -188,7 +188,7 @@ export const textPillInputUi =
     return (
       <div className='flex flex-col gap-[4px] pb-[16px]'>
         <div className={containerClass}>
-          {props.allValues.map((tag, index) => (
+          {props.allValues.map((tag: string, index: number) => (
             <span
               key={`${tag}-${index}`}
               className='flex items-center gap-[4px] rounded-full bg-gray-200 px-[8px] py-[2px] text-sm text-gray-700'
