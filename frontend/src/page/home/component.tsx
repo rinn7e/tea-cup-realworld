@@ -58,12 +58,12 @@ const HomePageComponent = ({ model, dispatch }: Props) => {
           </div>
 
           {/* Popular Tags */}
-          <div className='w-full shrink-0 lg:w-[224px]'>
+          <div className='sidebar w-full shrink-0 lg:w-[224px]'>
             <div className='flex flex-col gap-[12px] rounded-lg bg-gray-50 p-[16px]'>
               <p className='text-sm font-semibold text-gray-700'>
                 Popular Tags
               </p>
-              <div className='flex flex-wrap gap-[4px]'>
+              <div className='tag-list flex flex-wrap gap-[4px]'>
                 {pipe(
                   model.tags,
                   RD.fold(
@@ -80,7 +80,7 @@ const HomePageComponent = ({ model, dispatch }: Props) => {
                           <a
                             key={tag}
                             href='#'
-                            className='inline-block rounded-full bg-gray-200 px-[8px] py-[2px] text-xs text-gray-700 hover:bg-gray-300'
+                            className='tag-default tag-pill inline-block rounded-full bg-gray-200 px-[8px] py-[2px] text-xs text-gray-700 hover:bg-gray-300'
                           >
                             {tag}
                           </a>
@@ -176,9 +176,12 @@ const renderPagination = (
 
   return (
     <nav className='my-[24px]'>
-      <ul className='flex w-fit flex-wrap rounded-md border border-gray-200'>
+      <ul className='pagination flex w-fit flex-wrap rounded-md border border-gray-200'>
         {pages.map((p) => (
-          <li key={p} className='border-r border-gray-200 last:border-r-0'>
+          <li
+            key={p}
+            className='page-item border-r border-gray-200 last:border-r-0'
+          >
             <button
               type='button'
               className={cn(

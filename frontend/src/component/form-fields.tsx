@@ -1,18 +1,18 @@
 import {
   CustomTextInputProps,
+  CustomTextPillInputProps,
   autocompleteToString,
   textInputVariantToString,
 } from '@rinn7e/tea-cup-form'
 import { cn } from '@rinn7e/tea-cup-prelude'
 import * as E from 'fp-ts/lib/Either'
 import { pipe } from 'fp-ts/lib/function'
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, X } from 'lucide-react'
 import React from 'react'
 
 export type ExtraTextInputProps = {
-  // Note: good way to add custom keyboard shortcut, but not needed at the moment
-  // onKeyDown?: O.Option<(e: React.KeyboardEvent) => void>
   isSmall?: boolean
+  isTag?: boolean
 }
 
 export const standardInputUi =
@@ -29,6 +29,20 @@ export const standardInputUi =
       validationClass,
       sizeClass,
     )
+
+    const onKeyDown = (
+      e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
+    ) => {
+      if (extra.isTag && e.key === 'Enter') {
+        e.preventDefault()
+        props.dispatch({
+          _tag: 'UpdateFormManual',
+          key: props.key,
+          value: props.currentValue + ', ',
+        })
+      }
+      props.onKeyDown?.(e)
+    }
 
     const variant = props.variant
 
@@ -61,11 +75,7 @@ export const standardInputUi =
             isFocus: false,
           })
         }
-        // onKeyDown={(e) => {
-        //   if (O.isSome(onKeyDown)) {
-        //     onKeyDown.value(e)
-        //   }
-        // }}
+        onKeyDown={onKeyDown}
       />
     ) : (
       <div className='relative flex items-center'>
@@ -97,11 +107,7 @@ export const standardInputUi =
               isFocus: false,
             })
           }
-          // onKeyDown={(e) => {
-          //   if (O.isSome(onKeyDown)) {
-          //     onKeyDown.value(e)
-          //   }
-          // }}
+          onKeyDown={onKeyDown}
         />
         {variant._tag === 'Password' && (
           <button
@@ -125,6 +131,117 @@ export const standardInputUi =
     return (
       <div className='flex flex-col gap-[4px] pb-[16px]'>
         {content}
+        {props.showValidation &&
+          pipe(
+            props.validationResult,
+            E.fold(
+              (err) => (
+                <div className='px-[4px] text-xs text-red-600'>{err}</div>
+              ),
+              () => null,
+            ),
+          )}
+      </div>
+    )
+  }
+
+export const textPillInputUi =
+  (extra: ExtraTextInputProps = {}) =>
+  (props: CustomTextPillInputProps) => {
+    const isSmall = extra.isSmall ?? false
+    const isError = E.isLeft(props.validationResult) && props.showValidation
+    const sizeClass = isSmall ? 'py-[4px] text-sm' : 'py-[6px] text-base'
+    const validationClass = isError
+      ? 'border-red-500 focus-within:border-red-500 focus-within:ring-red-500'
+      : 'border-gray-300 focus-within:border-green-500 focus-within:ring-green-500'
+
+    const containerClass = cn(
+      'flex flex-wrap items-center gap-[6px] w-full rounded border px-[12px] bg-white outline-none focus-within:ring-1 transition-colors min-h-[46px]',
+      validationClass,
+    )
+
+    const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (
+        (e.key === 'Enter' || e.key === ',') &&
+        props.currentValue.trim() !== ''
+      ) {
+        e.preventDefault()
+        props.dispatch({
+          _tag: 'TextPillMsg',
+          key: props.key,
+          subMsg: { _tag: 'AddPill', value: props.currentValue.trim() },
+        })
+      }
+      if (
+        e.key === 'Backspace' &&
+        props.currentValue === '' &&
+        props.allValues.length > 0
+      ) {
+        props.dispatch({
+          _tag: 'TextPillMsg',
+          key: props.key,
+          subMsg: { _tag: 'RemovePill', index: props.allValues.length - 1 },
+        })
+      }
+    }
+
+    return (
+      <div className='flex flex-col gap-[4px] pb-[16px]'>
+        <div className={containerClass}>
+          {props.allValues.map((tag, index) => (
+            <span
+              key={`${tag}-${index}`}
+              className='flex items-center gap-[4px] rounded-full bg-gray-200 px-[8px] py-[2px] text-sm text-gray-700'
+            >
+              {tag}
+              <button
+                type='button'
+                className='transition-colors hover:text-red-500'
+                onClick={() =>
+                  props.dispatch({
+                    _tag: 'TextPillMsg',
+                    key: props.key,
+                    subMsg: { _tag: 'RemovePill', index },
+                  })
+                }
+              >
+                <X size={14} />
+              </button>
+            </span>
+          ))}
+          <input
+            name={props.key}
+            autoComplete={autocompleteToString(props.autocomplete)}
+            className={cn('flex-1 bg-transparent outline-none', sizeClass)}
+            placeholder={props.placeholder}
+            value={props.currentValue}
+            onInput={(e) =>
+              props.dispatch({
+                _tag: 'TextPillMsg',
+                key: props.key,
+                subMsg: {
+                  _tag: 'UpdateTextPill',
+                  event: e as unknown as React.FormEvent<HTMLInputElement>,
+                },
+              })
+            }
+            onFocus={() =>
+              props.dispatch({
+                _tag: 'HandleFocus',
+                key: props.key,
+                isFocus: true,
+              })
+            }
+            onBlur={() =>
+              props.dispatch({
+                _tag: 'HandleFocus',
+                key: props.key,
+                isFocus: false,
+              })
+            }
+            onKeyDown={onKeyDown}
+          />
+        </div>
         {props.showValidation &&
           pipe(
             props.validationResult,

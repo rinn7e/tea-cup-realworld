@@ -56,7 +56,7 @@ const homeParams = t.exact(
 
 const homeMatch = query(homeParams).and(end)
 const loginMatch = lit('login').and(end)
-const signupMatch = lit('signup').and(end)
+const signupMatch = lit('register').and(end)
 const settingsMatch = lit('settings').and(end)
 const editorMatch: Match<object> = lit('editor').and(end)
 const editorSlugMatch: Match<{ slug: string }> = lit('editor')

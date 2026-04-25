@@ -15,9 +15,9 @@ export interface Props {
 
 export const ArticleShortComponent: React.FC<Props> = ({ model, dispatch }) => {
   return (
-    <div className='flex flex-col gap-[12px] border-b border-gray-200 py-[24px]'>
+    <div className='article-preview flex flex-col gap-[12px] border-b border-gray-200 py-[24px]'>
       <div className='flex items-center justify-between'>
-        <div className='flex items-center gap-[12px]'>
+        <div className='article-meta flex items-center gap-[12px]'>
           <Link
             route={{
               page: {
@@ -33,7 +33,7 @@ export const ArticleShortComponent: React.FC<Props> = ({ model, dispatch }) => {
               alt=''
             />
           </Link>
-          <div className='flex flex-col'>
+          <div className='info flex flex-col'>
             <Link
               route={{
                 page: {
@@ -42,11 +42,11 @@ export const ArticleShortComponent: React.FC<Props> = ({ model, dispatch }) => {
                   favorites: false,
                 },
               }}
-              className='block text-sm font-medium text-green-600 hover:underline'
+              className='author block text-sm font-medium text-green-600 hover:underline'
             >
               {model.author.username}
             </Link>
-            <span className='text-xs text-gray-400'>
+            <span className='date text-xs text-gray-400'>
               {new Date(model.createdAt).toDateString()}
             </span>
           </div>
@@ -67,7 +67,7 @@ export const ArticleShortComponent: React.FC<Props> = ({ model, dispatch }) => {
             slug: model.slug,
           },
         }}
-        className='flex flex-col gap-[12px]'
+        className='preview-link flex flex-col gap-[12px]'
       >
         <div className='flex flex-col gap-[4px]'>
           <h1 className='line-clamp-2 text-xl font-bold text-gray-900'>
@@ -82,11 +82,11 @@ export const ArticleShortComponent: React.FC<Props> = ({ model, dispatch }) => {
             Read more
             <DotLoading className='gap-[0px]' />
           </span>
-          <ul className='flex flex-wrap gap-[4px]'>
+          <ul className='tag-list flex flex-wrap gap-[4px]'>
             {model.tagList.map((tag) => (
               <li
                 key={tag}
-                className='rounded-full border border-gray-300 px-[8px] py-[2px] text-xs text-gray-400'
+                className='tag-default tag-pill rounded-full border border-gray-300 px-[8px] py-[2px] text-xs text-gray-400'
               >
                 {tag}
               </li>

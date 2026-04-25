@@ -1,6 +1,10 @@
 import * as RD from '@devexperts/remote-data-ts'
 import * as Form from '@rinn7e/tea-cup-form'
-import { lookupForm, valueTextType } from '@rinn7e/tea-cup-form'
+import {
+  lookupForm,
+  valuePillTextType,
+  valueTextType,
+} from '@rinn7e/tea-cup-form'
 import { attemptTE } from '@rinn7e/tea-cup-prelude'
 import * as E from 'fp-ts/lib/Either'
 import * as O from 'fp-ts/lib/Option'
@@ -8,7 +12,7 @@ import { Cmd } from 'tea-cup-fp'
 
 import { createArticle, getArticle, updateArticle } from '@/api'
 import type { User } from '@/api/type'
-import { standardInputUi } from '@/component/form-fields'
+import { standardInputUi, textPillInputUi } from '@/component/form-fields'
 
 import type { Model, Msg } from './type'
 import {
@@ -74,21 +78,20 @@ const editorBodyFormItem = (body: string): [string, Form.FormType] => [
   },
 ]
 
-const editorTagInputFormItem = (tagInput: string): [string, Form.FormType] => [
+const editorTagInputFormItem = (tags: string[]): [string, Form.FormType] => [
   editorTagInputField,
   {
-    _tag: 'TextType',
+    _tag: 'TextPillType',
     placeholder: 'Enter tags',
     label: 'Tags',
-    currentValue: tagInput,
-    validation: (s: string) => E.right(s),
-    linkValidations: [],
+    allValues: tags,
+    currentValue: '',
+    validation: (s: string[]) => E.right(s),
     showValidation: false,
     isTextarea: false,
-    variant: { _tag: 'Text' },
     autocomplete: false,
     isFocus: false,
-    ui: standardInputUi(),
+    ui: textPillInputUi(),
   },
 ]
 
@@ -96,13 +99,13 @@ const editorFormConfigForEdit = (values: {
   title: string
   description: string
   body: string
-  tagInput: string
+  tagList: string[]
 }): Form.Forms =>
   new Map([
     editorTitleFormItem(values.title),
     editorDescriptionFormItem(values.description),
     editorBodyFormItem(values.body),
-    editorTagInputFormItem(values.tagInput),
+    editorTagInputFormItem(values.tagList),
   ])
 
 const editorFormConfig = (): Form.Forms =>
@@ -110,7 +113,7 @@ const editorFormConfig = (): Form.Forms =>
     editorTitleFormItem(''),
     editorDescriptionFormItem(''),
     editorBodyFormItem(''),
-    editorTagInputFormItem(''),
+    editorTagInputFormItem([]),
   ])
 
 const preprocessFormMsgHandler =
@@ -175,7 +178,7 @@ export const update =
                   title: a.title,
                   description: a.description,
                   body: a.body ?? '',
-                  tagInput: a.tagList.join(', '),
+                  tagList: a.tagList,
                 }),
               ),
             )({ ...model, requestRd: RD.success(null) }),
@@ -191,13 +194,9 @@ export const update =
           lookupForm(editorDescriptionField, form.forms),
         )
         const body = valueTextType(lookupForm(editorBodyField, form.forms))
-        const tagInput = valueTextType(
+        const tagList = valuePillTextType(
           lookupForm(editorTagInputField, form.forms),
         )
-        const tagList = tagInput
-          .split(',')
-          .map((s) => s.trim())
-          .filter((s) => s !== '')
 
         const request = {
           article: { title, description, body, tagList },

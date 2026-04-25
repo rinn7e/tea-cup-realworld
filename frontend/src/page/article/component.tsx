@@ -22,7 +22,7 @@ import { Props, PropsEq } from './type'
 
 const ArticlePageComponent = ({ model, token, dispatch }: Props) => {
   return (
-    <div className='flex min-h-full flex-col'>
+    <div className='article-page flex min-h-full flex-col'>
       {pipe(
         model.article,
         RD.fold(
@@ -38,7 +38,7 @@ const ArticlePageComponent = ({ model, token, dispatch }: Props) => {
             const author = data.article.author
 
             const articleMeta = (isLight: boolean) => (
-              <div className='flex flex-wrap items-center gap-[12px]'>
+              <div className='article-meta flex flex-wrap items-center gap-[12px]'>
                 <Link
                   route={{
                     page: {
@@ -64,13 +64,13 @@ const ArticlePageComponent = ({ model, token, dispatch }: Props) => {
                       },
                     }}
                     className={cn(
-                      'block text-sm font-medium hover:underline',
+                      'author block text-sm font-medium hover:underline',
                       isLight ? 'text-green-400' : 'text-green-600',
                     )}
                   >
                     {author.username}
                   </Link>
-                  <span className='text-xs text-gray-400'>
+                  <span className='date text-xs text-gray-400'>
                     {new Date(data.article.createdAt).toDateString()}
                   </span>
                 </div>
@@ -177,14 +177,14 @@ const ArticlePageComponent = ({ model, token, dispatch }: Props) => {
                 {/* Article Body */}
                 <div className='mx-auto flex w-full max-w-[1152px] flex-col gap-[32px] px-[16px] py-[32px]'>
                   <div className='flex flex-col gap-[16px]'>
-                    <div className='prose prose-gray prose-img:rounded-lg max-w-none'>
+                    <div className='article-content prose prose-gray prose-img:rounded-lg max-w-none'>
                       <ReactMarkdown>{data.article.body ?? ''}</ReactMarkdown>
                     </div>
-                    <ul className='flex flex-wrap gap-[4px]'>
+                    <ul className='tag-list flex flex-wrap gap-[4px]'>
                       {data.article.tagList.map((tag) => (
                         <li
                           key={tag}
-                          className='rounded-full border border-gray-300 px-[8px] py-[2px] text-xs text-gray-400'
+                          className='tag-default tag-pill rounded-full border border-gray-300 px-[8px] py-[2px] text-xs text-gray-400'
                         >
                           {tag}
                         </li>
