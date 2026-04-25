@@ -16,9 +16,9 @@
   "dependencies": {
     "@devexperts/remote-data-ts": "^2.1.1",
     "@heroicons/react": "^2.2.0",
+    "@rinn7e/fp-ts-routing": "github:rinn7e/fp-ts-routing#0d9ec901639572171d6ada5b75aeee6ff945dc43",
     "@rinn7e/tea-cup-form": "github:rinn7e/tea-cup-form#4d69bac875c3d64364ee3cb18a329725e9c05fac",
     "@rinn7e/tea-cup-prelude": "github:rinn7e/tea-cup-prelude#096c9d7eec9132cfee035fc27818dba96e48f2e9",
-    "@rinn7e/fp-ts-routing": "github:rinn7e/fp-ts-routing#0d9ec901639572171d6ada5b75aeee6ff945dc43",
     "clsx": "^2.1.1",
     "fp-ts": "^2.16.0",
     "io-ts": "^2.2.21",
@@ -32,13 +32,14 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.29.0",
-    "@trivago/prettier-plugin-sort-imports": "^6.0.2",
+    "@playwright/test": "^1.59.1",
     "@tailwindcss/vite": "^4.1.18",
+    "@trivago/prettier-plugin-sort-imports": "^6.0.2",
     "@types/node": "^20.3.3",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
-    "@vitejs/plugin-react": "^4.3.4",
     "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.14",
     "eslint": "^9.29.0",
     "eslint-plugin-import": "^2.32.0",
@@ -49,12 +50,12 @@
     "eslint-plugin-unused-imports": "^4.4.1",
     "globals": "^16.2.0",
     "postcss": "^8.5.9",
+    "prettier": "^3.8.1",
+    "prettier-plugin-tailwindcss": "^0.7.2",
     "tailwindcss": "^4.1.18",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.34.1",
     "vite": "^7.0.0",
-    "vite-tsconfig-paths": "^4.3.2",
-    "prettier": "^3.8.1",
-    "prettier-plugin-tailwindcss": "^0.7.2"
+    "vite-tsconfig-paths": "^4.3.2"
   }
 }
