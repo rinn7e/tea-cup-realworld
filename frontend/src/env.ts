@@ -8,4 +8,3 @@ export const API_BASE: string =
 
 export const IS_RUNNING_E2E: boolean =
   (import.meta as any).env?.VITE_IS_RUNNING_E2E !== 'false'
-

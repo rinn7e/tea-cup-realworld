@@ -12,14 +12,9 @@ import {
   type NewArticleRequest,
   type UpdateArticleRequest,
 } from '../type/article'
-import {
-  type ApiError,
-  type HttpError,
-  type HttpErrorString,
-} from '../type/common'
+import { type ApiError, type HttpError } from '../type/common'
 import {
   decodeApiError,
-  decodeError,
   decodeSuccess,
   ensureIsOk,
   fetchToTaskEither,
@@ -53,7 +48,7 @@ export const getArticles = (
     ),
     fetchToTaskEither,
     TE.chainEitherK(decodeSuccess(ArticlesResponseJson)),
-    TE.mapLeft(decodeError),
+    TE.mapLeft(decodeApiError),
   )
 }
 
@@ -71,7 +66,7 @@ export const getArticlesFeed = (
     }),
     fetchToTaskEither,
     TE.chainEitherK(decodeSuccess(ArticlesResponseJson)),
-    TE.mapLeft(decodeError),
+    TE.mapLeft(decodeApiError),
   )
 }
 
@@ -90,7 +85,6 @@ export const getArticle = (
     TE.chainEitherK(decodeSuccess(ArticleResponseJson)),
     TE.mapLeft(decodeApiError),
   )
-
 
 export const createArticle = (
   token: string,
@@ -154,7 +148,7 @@ export const favoriteArticle = (
     }),
     fetchToTaskEither,
     TE.chainEitherK(decodeSuccess(ArticleResponseJson)),
-    TE.mapLeft(decodeError),
+    TE.mapLeft(decodeApiError),
   )
 
 export const unfavoriteArticle = (
@@ -168,5 +162,5 @@ export const unfavoriteArticle = (
     }),
     fetchToTaskEither,
     TE.chainEitherK(decodeSuccess(ArticleResponseJson)),
-    TE.mapLeft(decodeError),
+    TE.mapLeft(decodeApiError),
   )

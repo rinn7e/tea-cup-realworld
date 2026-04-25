@@ -6,7 +6,7 @@ import * as B from 'fp-ts/lib/boolean'
 import * as S from 'fp-ts/lib/string'
 import type { Dispatcher, Result } from 'tea-cup-fp'
 
-import { getHttpErrorEq, ApiErrorEq } from '@/api/type'
+import { ApiErrorEq, getHttpErrorEq } from '@/api/type'
 import type { ApiError, ArticleResponse, HttpError } from '@/api/type'
 
 export const editorTitleField = 'title'
@@ -31,13 +31,15 @@ export const ModelEq = EqClass.struct<Model>({
 export type Msg =
   | { _tag: 'FormMsg'; subMsg: Form.Msg }
   | { _tag: 'Submit' }
-  | { _tag: 'SubmitResponse'; result: Result<HttpError<ApiError>, ArticleResponse> }
+  | {
+      _tag: 'SubmitResponse'
+      result: Result<HttpError<ApiError>, ArticleResponse>
+    }
   | { _tag: 'ShowAllValidation' }
   | {
       _tag: 'GetArticleResponse'
       result: Result<HttpError<ApiError>, ArticleResponse>
     }
-
 
 export type Props = {
   model: Model

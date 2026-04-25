@@ -5,7 +5,7 @@ import * as EqClass from 'fp-ts/lib/Eq'
 import * as B from 'fp-ts/lib/boolean'
 import type { Dispatcher, Result } from 'tea-cup-fp'
 
-import { getHttpErrorEq, ApiErrorEq } from '@/api/type'
+import { ApiErrorEq, getHttpErrorEq } from '@/api/type'
 import type { ApiError, HttpError, UserResponse } from '@/api/type'
 
 export const signupUsernameField = 'username'
@@ -27,8 +27,10 @@ export const ModelEq = EqClass.struct<Model>({
 export type Msg =
   | { _tag: 'FormMsg'; subMsg: Form.Msg }
   | { _tag: 'Submit' }
-  | { _tag: 'SubmitResponse'; result: Result<HttpError<ApiError>, UserResponse> }
-
+  | {
+      _tag: 'SubmitResponse'
+      result: Result<HttpError<ApiError>, UserResponse>
+    }
 
 export type Props = {
   model: Model

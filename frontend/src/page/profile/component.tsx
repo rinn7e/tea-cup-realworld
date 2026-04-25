@@ -1,6 +1,5 @@
 import * as RD from '@devexperts/remote-data-ts'
 import { cn } from '@rinn7e/tea-cup-prelude'
-import * as O from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/function'
 import { RotateCw, Settings, UserPlus } from 'lucide-react'
 import React from 'react'
@@ -193,7 +192,6 @@ const ProfilePageComponent = ({
                         ),
                     ),
                   )}
-
                 </div>
               </div>
             </>

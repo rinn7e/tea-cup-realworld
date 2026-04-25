@@ -10,14 +10,9 @@ import {
   type CommentsResponse,
   CommentsResponseJson,
 } from '../type/comment'
-import {
-  type ApiError,
-  type HttpError,
-  type HttpErrorString,
-} from '../type/common'
+import { type ApiError, type HttpError } from '../type/common'
 import {
   decodeApiError,
-  decodeError,
   decodeSuccess,
   ensureIsOk,
   fetchToTaskEither,
@@ -36,7 +31,6 @@ export const getComments = (
     TE.chainEitherK(decodeSuccess(CommentsResponseJson)),
     TE.mapLeft(decodeApiError),
   )
-
 
 export const createComment = (
   token: string,

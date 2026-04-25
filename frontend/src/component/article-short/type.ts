@@ -15,4 +15,3 @@ export type Msg =
       _tag: 'UnfavoriteResponse'
       result: Result<HttpError<ApiError>, ArticleResponse>
     }
-

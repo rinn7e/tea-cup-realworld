@@ -60,7 +60,6 @@ const renderPage = (model: Model, dispatch: Dispatcher<Msg>) => {
           user={model.shared.user}
           dispatch={(msg) => dispatch({ _tag: 'ArticlePageMsg', subMsg: msg })}
         />
-
       )
     case 'LoginPageModel':
       return (

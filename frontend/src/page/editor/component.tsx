@@ -21,10 +21,6 @@ const EditorPageComponent = ({ model, dispatch }: Props) => {
 
   return (
     <div className='editor-page mx-auto flex w-full max-w-[768px] flex-col gap-[24px] px-[16px] py-[32px]'>
-      {RD.isFailure(model.requestRd) && (
-        <ErrorMessages error={model.requestRd.error} />
-      )}
-
       <form
         onSubmit={(e) => {
           e.preventDefault()
@@ -64,6 +60,10 @@ const EditorPageComponent = ({ model, dispatch }: Props) => {
             dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
           />
         </fieldset>
+
+        {RD.isFailure(model.requestRd) && (
+          <ErrorMessages error={model.requestRd.error} />
+        )}
 
         <div className='flex justify-end pt-[24px]'>
           <button

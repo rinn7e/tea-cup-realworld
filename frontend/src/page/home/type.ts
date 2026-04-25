@@ -6,10 +6,10 @@ import * as S from 'fp-ts/lib/string'
 import type { Dispatcher, Result } from 'tea-cup-fp'
 
 import {
-  ArticlesResponseEq,
-  getHttpErrorEq,
   ApiErrorEq,
+  ArticlesResponseEq,
   TagsResponseEq,
+  getHttpErrorEq,
 } from '@/api/type'
 import type {
   ApiError,
@@ -19,7 +19,7 @@ import type {
 } from '@/api/type'
 import * as ArticleShort from '@/component/article-short'
 
-export const GET_ARTICLES_LIMIT = 5
+export const GET_ARTICLES_LIMIT = 10
 
 export type Model = {
   articles: RD.RemoteData<HttpError<ApiError>, ArticlesResponse>
@@ -43,7 +43,10 @@ export type Msg =
       result: Result<HttpError<ApiError>, ArticlesResponse>
       shouldScrollToTop?: true
     }
-  | { _tag: 'GetTagsResponse'; result: Result<HttpError<ApiError>, TagsResponse> }
+  | {
+      _tag: 'GetTagsResponse'
+      result: Result<HttpError<ApiError>, TagsResponse>
+    }
   | {
       _tag: 'ArticleShortMsg'
       slug: string

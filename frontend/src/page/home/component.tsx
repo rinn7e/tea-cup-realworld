@@ -4,7 +4,12 @@ import { pipe } from 'fp-ts/lib/function'
 import React from 'react'
 import { Dispatcher } from 'tea-cup-fp'
 
-import type { ApiError, ArticlesResponse, HttpError, TagsResponse } from '@/api/type'
+import type {
+  ApiError,
+  ArticlesResponse,
+  HttpError,
+  TagsResponse,
+} from '@/api/type'
 import { ArticleShortComponent } from '@/component/article-short/component'
 import { DotLoading } from '@/component/dot-loading'
 import { ErrorMessages } from '@/component/error-messages'
@@ -169,30 +174,70 @@ const renderPagination = (
     return null
   }
 
-  const pages = Array.from({ length: pageAmount }, (_, i) => i + 1)
+  const pages: ReadonlyArray<number | string> = pipe(pageAmount, (amount) => {
+    // If we have 7 or fewer pages, show all of them without truncation
+    if (amount <= 7) {
+      return Array.from({ length: amount }, (_, i) => i + 1)
+    }
+    // If current page is near the beginning, show first 5 pages and truncate the rest
+    if (currentPage <= 4) {
+      return [1, 2, 3, 4, 5, '...', amount]
+    }
+    // If current page is near the end, truncate early pages and show the last 5
+    if (currentPage >= amount - 3) {
+      return [1, '...', amount - 4, amount - 3, amount - 2, amount - 1, amount]
+    }
+    // If current page is in the middle, truncate both sides around the current page
+    return [
+      1,
+      '...',
+      currentPage - 1,
+      currentPage,
+      currentPage + 1,
+      '...',
+      amount,
+    ]
+  })
 
   return (
     <nav className='my-[24px]'>
       <ul className='pagination flex w-fit flex-wrap rounded-md border border-gray-200'>
-        {pages.map((p) => (
-          <li
-            key={p}
-            className='page-item border-r border-gray-200 last:border-r-0'
-          >
-            <button
-              type='button'
-              className={cn(
-                'flex h-[38px] min-w-[38px] items-center justify-center px-[12px] text-sm transition-colors duration-200 hover:bg-gray-100 focus:outline-none',
-                p === currentPage
-                  ? 'bg-gray-200 font-medium text-gray-700'
-                  : 'text-green-600',
-              )}
-              onClick={() => dispatch({ _tag: 'ChangePage', page: p })}
+        {pages.map((p, index) => {
+          if (p === '...') {
+            return (
+              <li
+                key={`ellipsis-${index}`}
+                className='page-item border-r border-gray-200 last:border-r-0'
+              >
+                <span className='flex h-[38px] min-w-[38px] items-center justify-center px-[12px] text-sm text-gray-500'>
+                  ...
+                </span>
+              </li>
+            )
+          }
+
+          return (
+            <li
+              key={p}
+              className='page-item border-r border-gray-200 last:border-r-0'
             >
-              {p}
-            </button>
-          </li>
-        ))}
+              <button
+                type='button'
+                className={cn(
+                  'flex h-[38px] min-w-[38px] items-center justify-center px-[12px] text-sm transition-colors duration-200 hover:bg-gray-100 focus:outline-none',
+                  p === currentPage
+                    ? 'bg-gray-200 font-medium text-gray-700'
+                    : 'text-green-600',
+                )}
+                onClick={() =>
+                  dispatch({ _tag: 'ChangePage', page: p as number })
+                }
+              >
+                {p}
+              </button>
+            </li>
+          )
+        })}
       </ul>
     </nav>
   )

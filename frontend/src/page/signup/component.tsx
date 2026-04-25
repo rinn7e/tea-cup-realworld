@@ -34,10 +34,6 @@ const SignupPageComponent = ({ model, dispatch }: Props) => {
           </p>
         </div>
 
-        {RD.isFailure(model.requestRd) && (
-          <ErrorMessages error={model.requestRd.error} />
-        )}
-
         <form
           className='flex flex-col gap-[24px]'
           autoComplete='off'
@@ -69,6 +65,11 @@ const SignupPageComponent = ({ model, dispatch }: Props) => {
               dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
             />
           </fieldset>
+
+          {RD.isFailure(model.requestRd) && (
+            <ErrorMessages error={model.requestRd.error} />
+          )}
+
           <div className='pt-[16px]'>
             <button
               className={cn(

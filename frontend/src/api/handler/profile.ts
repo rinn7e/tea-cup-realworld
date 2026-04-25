@@ -4,18 +4,9 @@ import { pipe } from 'fp-ts/lib/function'
 
 import { API_BASE } from '@/env'
 
-import {
-  type ApiError,
-  type HttpError,
-  type HttpErrorString,
-} from '../type/common'
+import { type ApiError, type HttpError } from '../type/common'
 import { type ProfileResponse, ProfileResponseJson } from '../type/profile'
-import {
-  decodeApiError,
-  decodeError,
-  decodeSuccess,
-  fetchToTaskEither,
-} from './common'
+import { decodeApiError, decodeSuccess, fetchToTaskEither } from './common'
 
 export const getProfile = (
   token: Option<string>,
@@ -58,4 +49,3 @@ export const unfollowUser = (
     TE.chainEitherK(decodeSuccess(ProfileResponseJson)),
     TE.mapLeft(decodeApiError),
   )
-

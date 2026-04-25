@@ -16,7 +16,7 @@ const normalFavButton = ({
   onClick,
 }: FavButtonProps): React.ReactElement => (
   <button
-    type="button"
+    type='button'
     onClick={onClick}
     className={cn(
       'btn flex items-center gap-[4px] rounded border px-[8px] py-[4px] text-xs transition-colors',
@@ -37,7 +37,7 @@ const detailFavButton = ({
   isLight = false,
 }: FavButtonProps): React.ReactElement => (
   <button
-    type="button"
+    type='button'
     onClick={onClick}
     className={cn(
       'btn flex items-center gap-[4px] rounded border px-[12px] py-[4px] text-xs transition-colors',
@@ -54,7 +54,8 @@ const detailFavButton = ({
     )}
   >
     <Heart size={13} fill={favorited ? 'currentColor' : 'none'} />{' '}
-    {favorited ? 'Unfavorite Article' : 'Favorite Article'} <span>({favoritesCount})</span>
+    {favorited ? 'Unfavorite Article' : 'Favorite Article'}{' '}
+    <span>({favoritesCount})</span>
   </button>
 )
 

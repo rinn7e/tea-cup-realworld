@@ -183,11 +183,18 @@ export const update =
       case 'SetCommentInput':
         return [{ ...model, newCommentInput: msg.value }, Cmd.none()]
       case 'SubmitComment':
-        if (shared.token._tag === 'Some' && model.newCommentInput.trim() !== '') {
+        if (
+          shared.token._tag === 'Some' &&
+          model.newCommentInput.trim() !== ''
+        ) {
           return [
             { ...model, newCommentInput: '', newCommentError: null },
             attemptTE(
-              createComment(shared.token.value, model.slug, model.newCommentInput),
+              createComment(
+                shared.token.value,
+                model.slug,
+                model.newCommentInput,
+              ),
               (result): Msg => ({ _tag: 'SubmitCommentResponse', result }),
             ),
           ]

@@ -19,7 +19,6 @@ export const UserEq: EqClass.Eq<User> = EqClass.struct({
   image: NullableEq(S.Eq),
 })
 
-
 export const UserJson: t.Type<User> = t.type({
   email: t.string,
   token: t.string,

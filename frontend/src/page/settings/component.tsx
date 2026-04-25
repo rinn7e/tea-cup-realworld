@@ -28,10 +28,6 @@ const SettingsPageComponent = ({ model, dispatch }: Props) => {
           Your Settings
         </h1>
 
-        {RD.isFailure(model.requestRd) && (
-          <ErrorMessages error={model.requestRd.error} />
-        )}
-
         <form
           className='flex flex-col gap-[24px]'
           onSubmit={(e) => {
@@ -77,6 +73,11 @@ const SettingsPageComponent = ({ model, dispatch }: Props) => {
               dispatch={(msg) => dispatch({ _tag: 'FormMsg', subMsg: msg })}
             />
           </fieldset>
+
+          {RD.isFailure(model.requestRd) && (
+            <ErrorMessages error={model.requestRd.error} />
+          )}
+
           <div className='flex justify-end pt-[16px]'>
             <button
               className={cn(

@@ -6,19 +6,13 @@ import { API_BASE } from '@/env'
 import {
   type ApiError,
   type HttpError,
-  type HttpErrorString,
   type LoginRequest,
   type SignupRequest,
   type UpdateUserRequest,
   type UserResponse,
   UserResponseJson,
 } from '../type'
-import {
-  decodeApiError,
-  decodeError,
-  decodeSuccess,
-  fetchToTaskEither,
-} from './common'
+import { decodeApiError, decodeSuccess, fetchToTaskEither } from './common'
 
 export const getCurrentUser = (
   token: string,
@@ -50,7 +44,6 @@ export const updateUser = (
     TE.mapLeft(decodeApiError),
   )
 
-
 export const login = (
   request: LoginRequest,
 ): TE.TaskEither<HttpError<ApiError>, UserResponse> =>
@@ -78,4 +71,3 @@ export const signup = (
     TE.chainEitherK(decodeSuccess(UserResponseJson)),
     TE.mapLeft(decodeApiError),
   )
-

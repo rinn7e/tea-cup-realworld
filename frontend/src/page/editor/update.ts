@@ -2,8 +2,6 @@ import * as RD from '@devexperts/remote-data-ts'
 import * as Form from '@rinn7e/tea-cup-form'
 import {
   lookupForm,
-  noExtraValidation,
-  runValidationForAll,
   showAllValidation,
   valuePillTextType,
   valueTextType,

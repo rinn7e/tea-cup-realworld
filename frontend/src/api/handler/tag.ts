@@ -4,18 +4,9 @@ import { pipe } from 'fp-ts/lib/function'
 
 import { API_BASE } from '@/env'
 
-import {
-  type ApiError,
-  type HttpError,
-  type HttpErrorString,
-} from '../type/common'
+import { type ApiError, type HttpError } from '../type/common'
 import { type TagsResponse, TagsResponseJson } from '../type/tag'
-import {
-  decodeApiError,
-  decodeError,
-  decodeSuccess,
-  fetchToTaskEither,
-} from './common'
+import { decodeApiError, decodeSuccess, fetchToTaskEither } from './common'
 
 export const getTags = (
   token: Option<string>,
@@ -31,4 +22,3 @@ export const getTags = (
     TE.chainEitherK(decodeSuccess(TagsResponseJson)),
     TE.mapLeft(decodeApiError),
   )
-

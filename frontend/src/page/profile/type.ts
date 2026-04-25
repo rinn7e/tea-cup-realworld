@@ -1,4 +1,3 @@
-import * as O from 'fp-ts/lib/Option'
 import * as RD from '@devexperts/remote-data-ts'
 import { EqAlways } from '@rinn7e/tea-cup-prelude'
 import * as EqClass from 'fp-ts/lib/Eq'
@@ -6,10 +5,10 @@ import * as B from 'fp-ts/lib/boolean'
 import type { Dispatcher, Result } from 'tea-cup-fp'
 
 import {
-  ArticlesResponseEq,
-  getHttpErrorEq,
   ApiErrorEq,
+  ArticlesResponseEq,
   ProfileResponseEq,
+  getHttpErrorEq,
 } from '@/api/type'
 import type {
   ApiError,

@@ -7,13 +7,12 @@ import * as S from 'fp-ts/lib/string'
 import type { Dispatcher, Result } from 'tea-cup-fp'
 
 import {
+  ApiErrorEq,
   ArticleResponseEq,
   CommentsResponseEq,
-  getHttpErrorEq,
-  ApiErrorEq,
   UserEq,
+  getHttpErrorEq,
 } from '@/api/type'
-
 import type {
   ApiError,
   ArticleResponse,
@@ -39,7 +38,6 @@ export const ModelEq = EqClass.struct<Model>({
   newCommentInput: S.Eq,
   newCommentError: NullableEq(getHttpErrorEq(ApiErrorEq)),
 })
-
 
 export type Msg =
   | {
@@ -84,7 +82,6 @@ export type Msg =
       id: number
       result: Result<HttpError<ApiError>, true>
     }
-
 
 export type Props = {
   model: Model

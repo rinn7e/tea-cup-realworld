@@ -11,7 +11,6 @@ import type {
   ArticleResponse,
   CommentsResponse,
   HttpError,
-  HttpErrorString,
 } from '@/api/type'
 import { DotLoading } from '@/component/dot-loading'
 import { ErrorMessages } from '@/component/error-messages'
@@ -36,7 +35,6 @@ const ArticlePageComponent = ({ model, user, dispatch }: Props) => {
               <ErrorMessages error={err} />
             </div>
           ),
-
 
           (data: ArticleResponse) => {
             const isLoggedIn = O.isSome(user)
@@ -205,9 +203,6 @@ const ArticlePageComponent = ({ model, user, dispatch }: Props) => {
                     {articleMeta(false)}
 
                     <div className='flex w-full max-w-[700px] flex-col gap-[24px]'>
-                      {model.newCommentError && (
-                        <ErrorMessages error={model.newCommentError} />
-                      )}
                       {isLoggedIn && (
                         <form
                           className='comment-form flex flex-col overflow-hidden rounded border border-gray-200'
@@ -228,6 +223,10 @@ const ArticlePageComponent = ({ model, user, dispatch }: Props) => {
                               })
                             }
                           />
+
+                          {model.newCommentError && (
+                            <ErrorMessages error={model.newCommentError} />
+                          )}
 
                           <div className='flex justify-end border-t border-gray-100 bg-gray-50 px-[12px] py-[8px]'>
                             <button
