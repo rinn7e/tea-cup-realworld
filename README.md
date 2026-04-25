@@ -21,12 +21,16 @@ A functional, type-safe implementation of the RealWorld Medium.com clone spec bu
 To run the application with a local API server:
 
 1.  Clone the repository.
-2.  Install dependencies:
+2.  Go to the `frontend` directory:
+    ```bash
+    cd frontend
+    ```
+3.  Install dependencies:
     ```bash
     npm install
     ```
-3.  Ensure you have a local [RealWorld backend](https://github.com/gothinkster/realworld) running (usually on `http://localhost:3000/api`).
-4.  Run the development server:
+4.  Ensure you have a local [RealWorld backend](https://github.com/gothinkster/realworld) running (usually on `http://localhost:3000/api`).
+5.  Run the development server:
     ```bash
     npm run dev
     ```
@@ -36,12 +40,16 @@ To run the application with a local API server:
 To run the application using the official RealWorld API server:
 
 ```bash
+cd frontend
 npm run dev -- --mode production
 ```
 
 This will use the base URL: `https://api.realworld.show/api`.
 
 ## Available Scripts
+
+> [!NOTE]
+> All scripts should be run from the `frontend/` directory.
 
 | Command             | Description                          |
 | ------------------- | ------------------------------------ |
