@@ -58,8 +58,41 @@ This will use the base URL: `https://api.realworld.show/api`.
 | `npm run preview`   | Preview the production build locally |
 | `npm run lint`      | Lint the codebase                    |
 | `npm run typecheck` | Run TypeScript type checking         |
+| `npm run check:watch` | Run Type checking in watch mode |
 
-## API spec
+## End-to-End Testing
+
+The project includes a standalone E2E test suite based on Playwright, located in the `e2e/` directory. These tests are generic and can be run against any RealWorld implementation.
+
+### Running tests locally
+
+1.  Navigate to the `e2e` directory:
+    ```bash
+    cd e2e
+    ```
+2.  Install dependencies (first time only):
+    ```bash
+    npm install
+    ```
+3.  Install Playwright browsers:
+    ```bash
+    npx playwright install chromium
+    ```
+4.  Run tests against your local frontend:
+    ```bash
+    BASE_URL=http://localhost:5173 npm run test:e2e
+    ```
+
+To run tests in interactive mode:
+```bash
+BASE_URL=http://localhost:5173 npm run test:e2e:ui
+```
+
+### Configuration
+
+You can configure the target environment using the following environment variables:
+- `BASE_URL`: The URL of the frontend application to test (default: `http://localhost:5173`).
+- `API_BASE`: The API endpoint to use for setup and direct API tests (default: `https://api.realworld.show/api`).
 
 The application implements the [RealWorld API spec](https://github.com/realworld-apps/realworld/tree/main/specs/api).
 
