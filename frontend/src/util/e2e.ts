@@ -24,6 +24,7 @@ export const assignConduitDebug = (model: Model | null) => {
         model?.shared.token._tag === 'Some' ? model.shared.token.value : null,
       getAuthState: () => {
         if (!model) return 'loading'
+        if (model.unavailableMode) return 'unavailable'
         return model.shared.user._tag === 'Some'
           ? 'authenticated'
           : 'unauthenticated'
