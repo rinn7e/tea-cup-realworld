@@ -8,6 +8,7 @@
 - [Functional Programming (fp-ts)](#functional-programming-fp-ts)
 - [Mutable Variables (let)](#mutable-variables-let)
 - [Algebraic Data Types (ADTs)](#algebraic-data-types-adts)
+- [Sum-Type Eq Instances](#sum-type-eq-instances)
 - [TEA Child Msg Interception](#tea-child-msg-interception)
 - [File Structure and Splitting](#file-structure-and-splitting)
   - [Tea Cup Components](#tea-cup-components)
@@ -138,6 +139,32 @@ switch (x._tag) {
     ...
   case 'CompoundBundlesDialog':
     ...
+}
+```
+
+---
+
+## Sum-Type Eq Instances
+
+When writing an `Eq` instance for a sum-type (union type), use an explicit branch check for each variant of the union to ensure type-safe comparison of its properties.
+
+```ts
+export const SystemMessageEq: EqClass.Eq<SystemMessage> = {
+  equals: (x, y) => {
+    if (x.type === 'sm_added' && y.type === 'sm_added') {
+      return EqClass.struct({
+        type: S.Eq,
+        contents: A.getEq(ContactFromApiEq),
+      }).equals(x, y)
+    } else if (x.type === 'sm_removed' && y.type === 'sm_removed') {
+      return EqClass.struct({
+        type: S.Eq,
+        contents: A.getEq(ContactFromApiEq),
+      }).equals(x, y)
+    } else {
+      return false
+    }
+  },
 }
 ```
 

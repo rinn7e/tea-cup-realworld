@@ -379,7 +379,7 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
           updateAndCmd((m) => {
             if (msg.subMsg._tag === 'ChangeTab') {
               if (
-                msg.subMsg.tab === 'user-feed' &&
+                msg.subMsg.tab._tag === 'UserFeedTab' &&
                 m.shared.user._tag === 'None'
               ) {
                 return changeRouteHandler(

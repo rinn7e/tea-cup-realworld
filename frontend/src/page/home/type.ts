@@ -18,13 +18,14 @@ import type {
   TagsResponse,
 } from '@/api/type'
 import * as ArticleShort from '@/component/article-short'
+import { HomeTab, HomeTabEq } from '@/data/route/type'
 
 export const GET_ARTICLES_LIMIT = 10
 
 export type Model = {
   articles: RD.RemoteData<HttpError<ApiError>, ArticlesResponse>
   tags: RD.RemoteData<HttpError<ApiError>, TagsResponse>
-  tab: 'global-feed' | 'user-feed'
+  tab: HomeTab
   page: number
   pageAmount: number
 }
@@ -32,7 +33,7 @@ export type Model = {
 export const ModelEq = EqClass.struct<Model>({
   articles: RD.getEq(getHttpErrorEq(ApiErrorEq), ArticlesResponseEq),
   tags: RD.getEq(getHttpErrorEq(ApiErrorEq), TagsResponseEq),
-  tab: S.Eq,
+  tab: HomeTabEq,
   page: N.Eq,
   pageAmount: N.Eq,
 })
@@ -52,7 +53,7 @@ export type Msg =
       slug: string
       subMsg: ArticleShort.Msg
     }
-  | { _tag: 'ChangeTab'; tab: 'global-feed' | 'user-feed' }
+  | { _tag: 'ChangeTab'; tab: HomeTab }
   | { _tag: 'ChangePage'; page: number }
   | { _tag: 'NoOp' }
 

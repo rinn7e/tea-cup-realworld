@@ -14,6 +14,11 @@ import { ArticleShortComponent } from '@/component/article-short/component'
 import { DotLoading } from '@/component/dot-loading'
 import { ErrorMessages } from '@/component/error-messages'
 import { memoStrategy } from '@/util/memo-strategy'
+import {
+  globalFeedTab,
+  tagFeedTab,
+  userFeedTab,
+} from '@/data/route/type'
 
 import { Msg, Props, PropsEq } from './type'
 
@@ -45,12 +50,16 @@ const HomePageComponent = ({ model, dispatch }: Props) => {
           {/* Article List */}
           <div className='flex min-w-0 flex-1 flex-col'>
             <div className='feed-toggle flex border-b border-gray-200'>
-              {renderTabView(model.tab === 'user-feed', 'Your Feed', () =>
-                dispatch({ _tag: 'ChangeTab', tab: 'user-feed' }),
+              {renderTabView(model.tab._tag === 'UserFeedTab', 'Your Feed', () =>
+                dispatch({ _tag: 'ChangeTab', tab: userFeedTab() }),
               )}
-              {renderTabView(model.tab === 'global-feed', 'Global Feed', () =>
-                dispatch({ _tag: 'ChangeTab', tab: 'global-feed' }),
+              {renderTabView(
+                model.tab._tag === 'GlobalFeedTab',
+                'Global Feed',
+                () => dispatch({ _tag: 'ChangeTab', tab: globalFeedTab() }),
               )}
+              {model.tab._tag === 'TagFeedTab' &&
+                renderTabView(true, `# ${model.tab.tag}`, () => {})}
             </div>
 
             <div className='flex flex-col'>
@@ -79,13 +88,19 @@ const HomePageComponent = ({ model, dispatch }: Props) => {
                     (data: TagsResponse) => (
                       <>
                         {data.tags.map((tag) => (
-                          <a
+                          <button
                             key={tag}
-                            href='#'
+                            type='button'
                             className='tag-default tag-pill inline-block rounded-full bg-gray-200 px-[8px] py-[2px] text-xs text-gray-700 hover:bg-gray-300'
+                            onClick={() =>
+                              dispatch({
+                                _tag: 'ChangeTab',
+                                tab: tagFeedTab(tag),
+                              })
+                            }
                           >
                             {tag}
-                          </a>
+                          </button>
                         ))}
                       </>
                     ),

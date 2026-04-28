@@ -4,9 +4,14 @@ import { type Option } from 'fp-ts/lib/Option'
 import * as B from 'fp-ts/lib/boolean'
 import * as S from 'fp-ts/lib/string'
 
+export type HomeTab =
+  | { _tag: 'GlobalFeedTab' }
+  | { _tag: 'UserFeedTab' }
+  | { _tag: 'TagFeedTab'; tag: string }
+
 export type HomePage = {
   readonly _tag: 'HomePage'
-  tab: 'global-feed' | 'user-feed'
+  tab: HomeTab
 }
 
 export type LoginPage = {
@@ -51,9 +56,30 @@ export type AppPage =
   | ProfilePage
   | NotFoundPage
 
+export const HomeTabEq: EqClass.Eq<HomeTab> = {
+  equals: (x, y) => {
+    if (x._tag === 'GlobalFeedTab' && y._tag === 'GlobalFeedTab') {
+      return EqClass.struct({
+        _tag: S.Eq,
+      }).equals(x, y)
+    } else if (x._tag === 'UserFeedTab' && y._tag === 'UserFeedTab') {
+      return EqClass.struct({
+        _tag: S.Eq,
+      }).equals(x, y)
+    } else if (x._tag === 'TagFeedTab' && y._tag === 'TagFeedTab') {
+      return EqClass.struct({
+        _tag: S.Eq,
+        tag: S.Eq,
+      }).equals(x, y)
+    } else {
+      return false
+    }
+  },
+}
+
 export const HomePageEq: EqClass.Eq<HomePage> = EqClass.struct({
   _tag: S.Eq,
-  tab: S.Eq,
+  tab: HomeTabEq,
 })
 
 export const LoginPageEq: EqClass.Eq<LoginPage> = EqClass.struct({
@@ -124,9 +150,14 @@ export const defaultAppRoute = (): AppRoute => ({
   page: homePage(),
 })
 
-export const homePage = (
-  tab: 'global-feed' | 'user-feed' = 'global-feed',
-): AppPage => ({ _tag: 'HomePage', tab })
+export const globalFeedTab = (): HomeTab => ({ _tag: 'GlobalFeedTab' })
+export const userFeedTab = (): HomeTab => ({ _tag: 'UserFeedTab' })
+export const tagFeedTab = (tag: string): HomeTab => ({ _tag: 'TagFeedTab', tag })
+
+export const homePage = (tab: HomeTab = globalFeedTab()): AppPage => ({
+  _tag: 'HomePage',
+  tab,
+})
 export const loginPage = (): AppPage => ({ _tag: 'LoginPage' })
 export const signupPage = (): AppPage => ({ _tag: 'SignupPage' })
 export const settingsPage = (): AppPage => ({ _tag: 'SettingsPage' })

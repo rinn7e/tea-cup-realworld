@@ -17,7 +17,7 @@ import * as t from 'io-ts'
 
 import { BASE_URL } from '@/env'
 
-import type { AppPage, AppRoute } from './type'
+import type { AppPage, AppRoute, HomeTab } from './type'
 import {
   articlePage,
   editorPage,
@@ -27,6 +27,9 @@ import {
   profilePage,
   settingsPage,
   signupPage,
+  globalFeedTab,
+  userFeedTab,
+  tagFeedTab,
 } from './type'
 
 export const removeBaseUrl = (href: string): string => {
@@ -50,9 +53,16 @@ export const addBaseUrl = (path: string): string => {
 
 const homeParams = t.exact(
   t.partial({
-    tab: t.union([t.literal('global-feed'), t.literal('user-feed')]),
+    tab: t.union([
+      t.literal('global-feed'),
+      t.literal('user-feed'),
+      t.literal('tag-feed'),
+    ]),
+    tag: t.string,
   }),
 )
+
+type HomeParams = t.TypeOf<typeof homeParams>
 
 const homeMatch = query(homeParams).and(end)
 const loginMatch = lit('login').and(end)
@@ -82,8 +92,36 @@ const anyStrings = new Match<object>(
   new Formatter((r) => r),
 )
 
+const tabFromParam = (
+  tab: 'global-feed' | 'user-feed' | 'tag-feed' | undefined,
+  tag: string | undefined,
+) => {
+  switch (tab) {
+    case 'user-feed':
+      return userFeedTab()
+    case 'tag-feed':
+      return tag ? tagFeedTab(tag) : globalFeedTab()
+    case 'global-feed':
+    default:
+      return globalFeedTab()
+  }
+}
+
+const tabToParams = (tab: HomeTab): HomeParams => {
+  switch (tab._tag) {
+    case 'GlobalFeedTab':
+      return {}
+    case 'UserFeedTab':
+      return { tab: 'user-feed' }
+    case 'TagFeedTab':
+      return { tab: 'tag-feed', tag: tab.tag }
+  }
+}
+
 const appRouter: Parser<AppPage> = zero<AppPage>()
-  .alt(homeMatch.parser.map(({ tab }) => homePage(tab || 'global-feed')))
+  .alt(
+    homeMatch.parser.map(({ tab, tag }) => homePage(tabFromParam(tab, tag))),
+  )
   .alt(loginMatch.parser.map(() => loginPage()))
   .alt(signupMatch.parser.map(() => signupPage()))
   .alt(settingsMatch.parser.map(() => settingsPage()))
@@ -111,9 +149,7 @@ export const toUrlString = (r: AppRoute): string => {
   const getPath = () => {
     switch (page._tag) {
       case 'HomePage':
-        return format(homeMatch.formatter, {
-          tab: page.tab === 'global-feed' ? undefined : page.tab,
-        })
+        return format(homeMatch.formatter, tabToParams(page.tab))
       case 'LoginPage':
         return format(loginMatch.formatter, {})
       case 'SignupPage':

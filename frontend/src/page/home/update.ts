@@ -8,14 +8,12 @@ import { Cmd } from 'tea-cup-fp'
 import { getArticles, getArticlesFeed, getTags } from '@/api'
 import * as ArticleShort from '@/component/article-short'
 import type { Shared } from '@/type'
+import { HomeTab, HomeTabEq } from '@/data/route/type'
 
 import type { Model, Msg } from './type'
 import { GET_ARTICLES_LIMIT } from './type'
 
-export const init = (
-  tab: 'global-feed' | 'user-feed',
-  shared: Shared,
-): [Model, Cmd<Msg>] => {
+export const init = (tab: HomeTab, shared: Shared): [Model, Cmd<Msg>] => {
   const model: Model = {
     articles: RD.pending,
     tags: RD.pending,
@@ -108,7 +106,7 @@ export const update =
         }
         return [model, Cmd.none()]
       case 'ChangeTab': {
-        if (msg.tab === model.tab) {
+        if (HomeTabEq.equals(msg.tab, model.tab)) {
           return [model, Cmd.none()]
         }
         const newModel: Model = {
@@ -153,14 +151,15 @@ export const update =
   }
 
 const getArticlesBaseOnTabCmd = (
-  tab: 'global-feed' | 'user-feed',
+  tab: HomeTab,
   shared: Shared,
   offset: number,
   limit: number,
   shouldScrollToTop?: true,
-): Cmd<Msg> =>
-  tab === 'global-feed'
-    ? attemptTE(
+): Cmd<Msg> => {
+  switch (tab._tag) {
+    case 'GlobalFeedTab':
+      return attemptTE(
         getArticles(shared.token, { offset, limit }),
         (result): Msg => ({
           _tag: 'GetArticlesResponse',
@@ -168,7 +167,8 @@ const getArticlesBaseOnTabCmd = (
           shouldScrollToTop,
         }),
       )
-    : pipe(
+    case 'UserFeedTab':
+      return pipe(
         shared.token,
         O.fold(
           () => Cmd.none<Msg>(),
@@ -183,6 +183,17 @@ const getArticlesBaseOnTabCmd = (
             ),
         ),
       )
+    case 'TagFeedTab':
+      return attemptTE(
+        getArticles(shared.token, { offset, limit, tag: tab.tag }),
+        (result): Msg => ({
+          _tag: 'GetArticlesResponse',
+          result,
+          shouldScrollToTop,
+        }),
+      )
+  }
+}
 
 const scrollToTopCmd = (): Cmd<Msg> =>
   cmdSucceed(() =>
