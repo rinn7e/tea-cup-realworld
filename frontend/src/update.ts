@@ -10,7 +10,7 @@ import { newUrl } from 'react-tea-cup'
 import { Cmd, Task } from 'tea-cup-fp'
 
 import { getCurrentUser } from './api'
-import type { User } from './api/type'
+import type { User, UserWithToken } from './api/type'
 import * as DebugPanel from './component/debug-panel'
 import {
   AppRouteEq,
@@ -55,15 +55,16 @@ export const preUpdate = (
 
 export const init = (
   location: Location,
-  user: O.Option<User>,
+  userWithToken: O.Option<UserWithToken>,
   isUnavailable: boolean,
 ): [Model, Cmd<Msg>] => {
   const route = parseAppRoute('', location.href)
   const token = pipe(
-    user,
+    userWithToken,
     O.map((u) => u.token),
     O.alt(() => O.fromNullable(getToken())),
   )
+  const user: O.Option<User> = userWithToken
   const model: Model = {
     route,
     unavailableMode: isUnavailable,
@@ -254,7 +255,7 @@ const navigate =
           return navigate({ page: { _tag: 'LoginPage' } }, isInternal)(model)
         }
         const [editorModel, editorCmd] = EditorPage.init(
-          model.shared.user.value,
+          model.shared,
           newRoute.page.slug,
         )
         return [
@@ -378,8 +379,9 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
       } else {
         removeToken()
       }
+      const user: O.Option<User> = msg.user
       return [
-        { ...model, shared: { ...model.shared, user: msg.user, token } },
+        { ...model, shared: { ...model.shared, user, token } },
         Cmd.none(),
       ]
     }
@@ -467,8 +469,9 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
               msg.subMsg._tag === 'SubmitResponse' &&
               msg.subMsg.result.tag === 'Ok'
             ) {
-              const user = msg.subMsg.result.value.user
-              saveToken(user.token)
+              const userWithToken = msg.subMsg.result.value.user
+              saveToken(userWithToken.token)
+              const user: User = userWithToken
               return changeRouteHandler(
                 { page: homePage() },
                 true,
@@ -477,7 +480,7 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
                 shared: {
                   ...m.shared,
                   user: O.some(user),
-                  token: O.some(user.token),
+                  token: O.some(userWithToken.token),
                 },
               })
             } else {
@@ -514,8 +517,9 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
               msg.subMsg._tag === 'SubmitResponse' &&
               msg.subMsg.result.tag === 'Ok'
             ) {
-              const user = msg.subMsg.result.value.user
-              saveToken(user.token)
+              const userWithToken = msg.subMsg.result.value.user
+              saveToken(userWithToken.token)
+              const user: User = userWithToken
               return changeRouteHandler(
                 { page: homePage() },
                 true,
@@ -524,7 +528,7 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
                 shared: {
                   ...m.shared,
                   user: O.some(user),
-                  token: O.some(user.token),
+                  token: O.some(userWithToken.token),
                 },
               })
             } else {
@@ -542,7 +546,7 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
         model.shared.user._tag === 'Some'
       ) {
         const [settingsModel, settingsCmd] = SettingsPage.update(
-          model.shared.user.value,
+          model.shared,
         )(msg.subMsg, model.pageModel.model)
 
         return pipe(
@@ -623,7 +627,7 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
         model.shared.user._tag === 'Some'
       ) {
         const [editorModel, editorCmd] = EditorPage.update(
-          model.shared.user.value,
+          model.shared,
         )(msg.subMsg, model.pageModel.model)
 
         return pipe(
@@ -716,9 +720,10 @@ const interceptLogoutFromSettingPage = (m: Model): [Model, Cmd<Msg>] => {
 }
 
 const interceptSubmitResponseOkFromSettingPage =
-  (user: User) =>
+  (userWithToken: UserWithToken) =>
   (m: Model): [Model, Cmd<Msg>] => {
-    saveToken(user.token)
+    saveToken(userWithToken.token)
+    const user: User = userWithToken
     // After a successful settings update, we redirect the user to their profile page
     // to see the changes. This matches the RealWorld spec and E2E test expectations.
     return changeRouteHandler(
@@ -735,7 +740,7 @@ const interceptSubmitResponseOkFromSettingPage =
       shared: {
         ...m.shared,
         user: O.some(user),
-        token: O.some(user.token),
+        token: O.some(userWithToken.token),
       },
     })
   }

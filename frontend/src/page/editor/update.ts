@@ -13,6 +13,7 @@ import { Cmd } from 'tea-cup-fp'
 
 import { createArticle, getArticle, updateArticle } from '@/api'
 import type { User } from '@/api/type'
+import { type Shared } from '@/type'
 import { standardInputUi, textPillInputUi } from '@/component/form-fields'
 
 import type { Model, Msg } from './type'
@@ -137,7 +138,10 @@ export const formMsgHandler =
     return preprocessFormMsgHandler(Form.update(subMsg)(model.form))(model)
   }
 
-export const init = (user: User, slug: O.Option<string>): [Model, Cmd<Msg>] => {
+export const init = (
+  shared: Shared,
+  slug: O.Option<string>,
+): [Model, Cmd<Msg>] => {
   const initialForm = Form.init(editorFormConfig())
   const baseModel: Model = {
     slug: slug._tag === 'Some' ? slug.value : null,
@@ -149,7 +153,7 @@ export const init = (user: User, slug: O.Option<string>): [Model, Cmd<Msg>] => {
   const model = preprocessFormMsgHandler(initialForm)(baseModel)
 
   if (slug._tag === 'Some') {
-    const token = O.some(user.token)
+    const token = shared.token
     return [
       { ...model, requestRd: RD.pending },
       attemptTE(
@@ -163,7 +167,7 @@ export const init = (user: User, slug: O.Option<string>): [Model, Cmd<Msg>] => {
 }
 
 export const update =
-  (user: User) =>
+  (shared: Shared) =>
   (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
     switch (msg._tag) {
       case 'FormMsg': {
@@ -202,9 +206,13 @@ export const update =
         const request = {
           article: { title, description, body, tagList },
         }
+        if (shared.token._tag === 'None') {
+          return [model, Cmd.none()]
+        }
+
         const task = model.slug
-          ? updateArticle(user.token, model.slug, request)
-          : createArticle(user.token, request)
+          ? updateArticle(shared.token.value, model.slug, request)
+          : createArticle(shared.token.value, request)
 
         return [
           { ...model, requestRd: RD.pending },

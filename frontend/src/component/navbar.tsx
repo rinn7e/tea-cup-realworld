@@ -38,7 +38,7 @@ export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
         <Link
           className={cn(
             // shared
-            'block rounded px-[12px] py-[6px] text-sm',
+            'nav-link block rounded px-[12px] py-[6px] text-sm',
             // state
             isHome ? activeCls : inactiveCls,
           )}
@@ -54,7 +54,7 @@ export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
               <Link
                 className={cn(
                   // shared
-                  'flex items-center gap-[4px] rounded px-[12px] py-[6px] text-sm',
+                  'nav-link flex items-center gap-[4px] rounded px-[12px] py-[6px] text-sm',
                   // state
                   isEditor ? activeCls : inactiveCls,
                 )}
@@ -68,7 +68,7 @@ export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
               <Link
                 className={cn(
                   // shared
-                  'flex items-center gap-[4px] rounded px-[12px] py-[6px] text-sm',
+                  'nav-link flex items-center gap-[4px] rounded px-[12px] py-[6px] text-sm',
                   // state
                   isSettings ? activeCls : inactiveCls,
                 )}
@@ -82,7 +82,7 @@ export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
               <Link
                 className={cn(
                   // shared
-                  'flex items-center gap-[8px] rounded px-[12px] py-[6px] text-sm',
+                  'nav-link flex items-center gap-[8px] rounded px-[12px] py-[6px] text-sm',
                   // state
                   isProfile ? activeCls : inactiveCls,
                 )}
@@ -109,7 +109,7 @@ export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
             <li>
               <Link
                 className={cn(
-                  'rounded px-[12px] py-[6px] text-sm',
+                  'nav-link rounded px-[12px] py-[6px] text-sm',
                   isLogin ? activeCls : inactiveCls,
                 )}
                 route={{ page: { _tag: 'LoginPage' } }}
@@ -120,7 +120,7 @@ export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
             <li>
               <Link
                 className={cn(
-                  'rounded px-[12px] py-[6px] text-sm',
+                  'nav-link rounded px-[12px] py-[6px] text-sm',
                   isSignup ? activeCls : inactiveCls,
                 )}
                 route={{ page: { _tag: 'SignupPage' } }}

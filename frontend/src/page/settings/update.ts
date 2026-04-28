@@ -8,6 +8,7 @@ import { Cmd } from 'tea-cup-fp'
 
 import { updateUser } from '@/api'
 import type { User } from '@/api/type'
+import { type Shared } from '@/type'
 import { standardInputUi } from '@/component/form-fields'
 import { minLengthIfExistValidator } from '@/util/form'
 
@@ -186,7 +187,7 @@ export const init = (user: User): [Model, Cmd<Msg>] => {
 }
 
 export const update =
-  (user: User) =>
+  (shared: Shared) =>
   (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
     switch (msg._tag) {
       case 'FormMsg': {
@@ -217,10 +218,14 @@ export const update =
           userUpdate.password = password
         }
 
+        if (shared.token._tag === 'None') {
+          return [model, Cmd.none()]
+        }
+
         return [
           { ...model, requestRd: RD.pending },
           attemptTE(
-            updateUser(user.token, { user: userUpdate }),
+            updateUser(shared.token.value, { user: userUpdate }),
             (result): Msg => ({ _tag: 'SubmitResponse', result }),
           ),
         ]

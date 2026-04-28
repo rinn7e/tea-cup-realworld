@@ -1,4 +1,5 @@
 import type { Model } from '@/type'
+import { getToken } from './storage'
 
 export interface ConduitDebug {
   getToken(): string | null
@@ -21,7 +22,7 @@ export const assignConduitDebug = (model: Model | null) => {
   if (typeof window !== 'undefined') {
     ;(window as any).__conduit_debug__ = {
       getToken: () =>
-        model?.shared.token._tag === 'Some' ? model.shared.token.value : null,
+        model?.shared.token._tag === 'Some' ? model.shared.token.value : getToken(),
       getAuthState: () => {
         if (!model) return 'loading'
         if (model.unavailableMode) return 'unavailable'
@@ -29,8 +30,18 @@ export const assignConduitDebug = (model: Model | null) => {
           ? 'authenticated'
           : 'unauthenticated'
       },
-      getCurrentUser: () =>
-        model?.shared.user._tag === 'Some' ? model.shared.user.value : null,
+      getCurrentUser: () => {
+        if (
+          model?.shared.user._tag === 'Some' &&
+          model.shared.token._tag === 'Some'
+        ) {
+          return {
+            ...model.shared.user.value,
+            token: model.shared.token.value,
+          }
+        }
+        return null
+      },
     } satisfies ConduitDebug
   }
 }

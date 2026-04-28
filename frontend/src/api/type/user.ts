@@ -5,13 +5,21 @@ import * as t from 'io-ts'
 
 export type User = {
   email: string
-  token: string
   username: string
   bio: string | null
   image: string | null
 }
 
+export type UserWithToken = User & { token: string }
+
 export const UserEq: EqClass.Eq<User> = EqClass.struct({
+  email: S.Eq,
+  username: S.Eq,
+  bio: NullableEq(S.Eq),
+  image: NullableEq(S.Eq),
+})
+
+export const UserWithTokenEq: EqClass.Eq<UserWithToken> = EqClass.struct({
   email: S.Eq,
   token: S.Eq,
   username: S.Eq,
@@ -19,7 +27,7 @@ export const UserEq: EqClass.Eq<User> = EqClass.struct({
   image: NullableEq(S.Eq),
 })
 
-export const UserJson: t.Type<User> = t.type({
+export const UserWithTokenJson: t.Type<UserWithToken> = t.type({
   email: t.string,
   token: t.string,
   username: t.string,
@@ -28,11 +36,11 @@ export const UserJson: t.Type<User> = t.type({
 })
 
 export type UserResponse = {
-  user: User
+  user: UserWithToken
 }
 
 export const UserResponseJson: t.Type<UserResponse> = t.type({
-  user: UserJson,
+  user: UserWithTokenJson,
 })
 
 export type LoginRequest = {

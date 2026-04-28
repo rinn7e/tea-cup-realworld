@@ -1,6 +1,6 @@
 import type { Option } from 'fp-ts/lib/Option'
 
-import type { User } from './api/type'
+import type { User, UserWithToken } from './api/type'
 import type * as DebugPanel from './component/debug-panel'
 import type { AppRoute } from './data/route'
 import type * as ArticlePage from './page/article/type'
@@ -54,12 +54,12 @@ export type Msg =
   | {
       _tag: 'Init'
       location: Location
-      user: Option<User>
+      user: Option<UserWithToken>
       isUnavailable: boolean
     }
   | { _tag: 'UrlChange'; location: Location }
   | { _tag: 'ChangeRoute'; route: Route }
-  | { _tag: 'SetUser'; user: Option<User> }
+  | { _tag: 'SetUser'; user: Option<UserWithToken> }
   | { _tag: 'HomePageMsg'; subMsg: HomePage.Msg }
   | { _tag: 'ArticlePageMsg'; subMsg: ArticlePage.Msg }
   | { _tag: 'LoginPageMsg'; subMsg: LoginPage.Msg }
