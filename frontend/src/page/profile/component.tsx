@@ -119,34 +119,36 @@ const ProfilePageComponent = ({
               {/* Main Content */}
               <div className='mx-auto flex w-full max-w-[1152px] flex-col gap-[24px] px-[16px] py-[24px]'>
                 <div className='flex border-b border-gray-200'>
-                  <button
-                    type='button'
+                  <a
+                    href='#'
                     className={cn(
-                      'border-b-2 px-[16px] py-[8px] text-sm font-medium transition-colors',
+                      'nav-link border-b-2 px-[16px] py-[8px] text-sm font-medium transition-colors',
                       !model.showFavorites
                         ? 'border-green-600 text-green-600'
                         : 'border-transparent text-gray-500 hover:text-gray-700',
                     )}
-                    onClick={() =>
+                    onClick={(e) => {
+                      e.preventDefault()
                       dispatch({ _tag: 'ToggleFavorites', show: false })
-                    }
+                    }}
                   >
                     My Articles
-                  </button>
-                  <button
-                    type='button'
+                  </a>
+                  <a
+                    href='#'
                     className={cn(
-                      'border-b-2 px-[16px] py-[8px] text-sm font-medium transition-colors',
+                      'nav-link border-b-2 px-[16px] py-[8px] text-sm font-medium transition-colors',
                       model.showFavorites
                         ? 'border-green-600 text-green-600'
                         : 'border-transparent text-gray-500 hover:text-gray-700',
                     )}
-                    onClick={() =>
+                    onClick={(e) => {
+                      e.preventDefault()
                       dispatch({ _tag: 'ToggleFavorites', show: true })
-                    }
+                    }}
                   >
                     Favorited Articles
-                  </button>
+                  </a>
                 </div>
 
                 <div className='flex flex-col'>

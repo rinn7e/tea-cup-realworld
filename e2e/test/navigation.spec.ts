@@ -199,7 +199,7 @@ test.describe('Navigation and Filtering', () => {
       await login(page, user.email, user.password)
       await createManyArticles(page, 12, uniqueTag)
     }
-    await page.goto(`/tag/${uniqueTag}`)
+    await page.goto(`/?tab=tag-feed&tag=${uniqueTag}`)
 
     await page.waitForSelector('.article-preview', { timeout: 3000 })
 

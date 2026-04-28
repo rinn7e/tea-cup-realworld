@@ -74,7 +74,6 @@ const HomePageComponent = ({ model, dispatch }: Props) => {
               <p className='text-sm font-semibold text-gray-700'>
                 Popular Tags
               </p>
-              <div className='tag-list flex flex-wrap gap-[4px]'>
                 {pipe(
                   model.tags,
                   RD.fold(
@@ -86,27 +85,27 @@ const HomePageComponent = ({ model, dispatch }: Props) => {
                       </span>
                     ),
                     (data: TagsResponse) => (
-                      <>
+                      <div className='tag-list flex flex-wrap gap-[4px]'>
                         {data.tags.map((tag) => (
-                          <button
+                          <a
                             key={tag}
-                            type='button'
+                            href='#'
                             className='tag-default tag-pill inline-block rounded-full bg-gray-200 px-[8px] py-[2px] text-xs text-gray-700 hover:bg-gray-300'
-                            onClick={() =>
+                            onClick={(e) => {
+                              e.preventDefault()
                               dispatch({
                                 _tag: 'ChangeTab',
                                 tab: tagFeedTab(tag),
                               })
-                            }
+                            }}
                           >
                             {tag}
-                          </button>
+                          </a>
                         ))}
-                      </>
+                      </div>
                     ),
                   ),
                 )}
-              </div>
             </div>
           </div>
         </div>
@@ -117,18 +116,21 @@ const HomePageComponent = ({ model, dispatch }: Props) => {
 
 const renderTabView = (active: boolean, label: string, onClick: () => void) => {
   return (
-    <button
-      type='button'
+    <a
+      href='#'
       className={cn(
-        'px-[16px] py-[8px] text-sm font-medium transition-colors duration-200',
+        'nav-link px-[16px] py-[8px] text-sm font-medium transition-colors duration-200',
         active
           ? 'border-b-2 border-green-600 text-green-600'
           : 'text-gray-400 hover:text-gray-600',
       )}
-      onClick={onClick}
+      onClick={(e) => {
+        e.preventDefault()
+        onClick()
+      }}
     >
       {label}
-    </button>
+    </a>
   )
 }
 
