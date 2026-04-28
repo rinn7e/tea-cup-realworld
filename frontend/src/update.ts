@@ -12,7 +12,13 @@ import { Cmd, Task } from 'tea-cup-fp'
 import { getCurrentUser } from './api'
 import type { User } from './api/type'
 import * as DebugPanel from './component/debug-panel'
-import { AppRouteEq, homePage, parseAppRoute, toUrlString } from './data/route'
+import {
+  AppRouteEq,
+  HomeTab,
+  homePage,
+  parseAppRoute,
+  toUrlString,
+} from './data/route'
 import * as ArticlePage from './page/article/update'
 import * as EditorPage from './page/editor/update'
 import * as HomePage from './page/home/update'
@@ -124,6 +130,7 @@ const navigate =
       case 'HomePage': {
         const [homeModel, homeCmd] = HomePage.init(
           newRoute.page.tab,
+          newRoute.page.page,
           model.shared,
         )
         return [
@@ -393,20 +400,10 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
           ] as [Model, Cmd<Msg>],
           updateAndCmd((m) => {
             if (msg.subMsg._tag === 'ChangeTab') {
-              if (
-                msg.subMsg.tab._tag === 'UserFeedTab' &&
-                m.shared.user._tag === 'None'
-              ) {
-                return changeRouteHandler(
-                  { page: { _tag: 'LoginPage' } },
-                  true,
-                )(m)
-              }
-              // Change url according to the tab
-              else
-                return changeRouteNoReload({ page: homePage(msg.subMsg.tab) })(
-                  m,
-                )
+              return interceptChangeTabFromHomePage(msg.subMsg.tab)(m)
+            }
+            if (msg.subMsg._tag === 'ChangePage') {
+              return interceptChangePageFromHomePage(msg.subMsg.page)(m)
             }
             return [m, Cmd.none()]
           }),
@@ -737,4 +734,24 @@ const interceptSubmitResponseOkFromSettingPage =
         token: O.some(user.token),
       },
     })
+  }
+const interceptChangeTabFromHomePage =
+  (tab: HomeTab) =>
+  (m: Model): [Model, Cmd<Msg>] => {
+    if (tab._tag === 'UserFeedTab' && m.shared.user._tag === 'None') {
+      return changeRouteHandler({ page: { _tag: 'LoginPage' } }, true)(m)
+    }
+    // Change url according to the tab
+    else return changeRouteNoReload({ page: homePage(tab) })(m)
+  }
+
+const interceptChangePageFromHomePage =
+  (page: number) =>
+  (m: Model): [Model, Cmd<Msg>] => {
+    if (m.route.page._tag === 'HomePage') {
+      return changeRouteNoReload({
+        page: homePage(m.route.page.tab, page),
+      })(m)
+    }
+    return [m, Cmd.none()]
   }

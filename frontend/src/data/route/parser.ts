@@ -59,6 +59,7 @@ const homeParams = t.exact(
       t.literal('tag-feed'),
     ]),
     tag: t.string,
+    page: t.string,
   }),
 )
 
@@ -118,9 +119,17 @@ const tabToParams = (tab: HomeTab): HomeParams => {
   }
 }
 
+const pageFromParam = (p: string | undefined): number => {
+  if (p === undefined) return 1
+  const n = parseInt(p, 10)
+  return isNaN(n) ? 1 : n
+}
+
 const appRouter: Parser<AppPage> = zero<AppPage>()
   .alt(
-    homeMatch.parser.map(({ tab, tag }) => homePage(tabFromParam(tab, tag))),
+    homeMatch.parser.map(({ tab, tag, page }) =>
+      homePage(tabFromParam(tab, tag), pageFromParam(page)),
+    ),
   )
   .alt(loginMatch.parser.map(() => loginPage()))
   .alt(signupMatch.parser.map(() => signupPage()))
@@ -149,7 +158,10 @@ export const toUrlString = (r: AppRoute): string => {
   const getPath = () => {
     switch (page._tag) {
       case 'HomePage':
-        return format(homeMatch.formatter, tabToParams(page.tab))
+        return format(homeMatch.formatter, {
+          ...tabToParams(page.tab),
+          page: page.page > 1 ? String(page.page) : undefined,
+        })
       case 'LoginPage':
         return format(loginMatch.formatter, {})
       case 'SignupPage':

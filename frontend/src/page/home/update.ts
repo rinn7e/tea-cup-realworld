@@ -13,12 +13,16 @@ import { HomeTab, HomeTabEq } from '@/data/route/type'
 import type { Model, Msg } from './type'
 import { GET_ARTICLES_LIMIT } from './type'
 
-export const init = (tab: HomeTab, shared: Shared): [Model, Cmd<Msg>] => {
+export const init = (
+  tab: HomeTab,
+  page: number,
+  shared: Shared,
+): [Model, Cmd<Msg>] => {
   const model: Model = {
     articles: RD.pending,
     tags: RD.pending,
     tab,
-    page: 1,
+    page,
     pageAmount: 0,
   }
 
@@ -28,7 +32,7 @@ export const init = (tab: HomeTab, shared: Shared): [Model, Cmd<Msg>] => {
       getArticlesBaseOnTabCmd(
         tab,
         shared,
-        getOffsetBaseOnPage(1),
+        getOffsetBaseOnPage(page),
         GET_ARTICLES_LIMIT,
       ),
 

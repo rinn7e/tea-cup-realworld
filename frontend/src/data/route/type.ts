@@ -2,6 +2,7 @@ import * as EqClass from 'fp-ts/lib/Eq'
 import * as O from 'fp-ts/lib/Option'
 import { type Option } from 'fp-ts/lib/Option'
 import * as B from 'fp-ts/lib/boolean'
+import * as N from 'fp-ts/lib/number'
 import * as S from 'fp-ts/lib/string'
 
 export type HomeTab =
@@ -12,6 +13,7 @@ export type HomeTab =
 export type HomePage = {
   readonly _tag: 'HomePage'
   tab: HomeTab
+  page: number
 }
 
 export type LoginPage = {
@@ -80,6 +82,7 @@ export const HomeTabEq: EqClass.Eq<HomeTab> = {
 export const HomePageEq: EqClass.Eq<HomePage> = EqClass.struct({
   _tag: S.Eq,
   tab: HomeTabEq,
+  page: N.Eq,
 })
 
 export const LoginPageEq: EqClass.Eq<LoginPage> = EqClass.struct({
@@ -154,9 +157,13 @@ export const globalFeedTab = (): HomeTab => ({ _tag: 'GlobalFeedTab' })
 export const userFeedTab = (): HomeTab => ({ _tag: 'UserFeedTab' })
 export const tagFeedTab = (tag: string): HomeTab => ({ _tag: 'TagFeedTab', tag })
 
-export const homePage = (tab: HomeTab = globalFeedTab()): AppPage => ({
+export const homePage = (
+  tab: HomeTab = globalFeedTab(),
+  page: number = 1,
+): AppPage => ({
   _tag: 'HomePage',
   tab,
+  page,
 })
 export const loginPage = (): AppPage => ({ _tag: 'LoginPage' })
 export const signupPage = (): AppPage => ({ _tag: 'SignupPage' })
