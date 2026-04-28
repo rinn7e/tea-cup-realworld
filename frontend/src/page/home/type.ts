@@ -2,7 +2,6 @@ import * as RD from '@devexperts/remote-data-ts'
 import { EqAlways } from '@rinn7e/tea-cup-prelude'
 import * as EqClass from 'fp-ts/lib/Eq'
 import * as N from 'fp-ts/lib/number'
-import * as S from 'fp-ts/lib/string'
 import type { Dispatcher, Result } from 'tea-cup-fp'
 
 import {

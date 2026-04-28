@@ -54,8 +54,9 @@ export type Msg =
   | {
       _tag: 'Init'
       location: Location
-      user: Option<UserWithToken>
+      user: Option<User>
       isUnavailable: boolean
+      token: Option<string>
     }
   | { _tag: 'UrlChange'; location: Location }
   | { _tag: 'ChangeRoute'; route: Route }

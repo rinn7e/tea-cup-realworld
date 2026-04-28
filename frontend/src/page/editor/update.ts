@@ -12,9 +12,8 @@ import * as O from 'fp-ts/lib/Option'
 import { Cmd } from 'tea-cup-fp'
 
 import { createArticle, getArticle, updateArticle } from '@/api'
-import type { User } from '@/api/type'
-import { type Shared } from '@/type'
 import { standardInputUi, textPillInputUi } from '@/component/form-fields'
+import { type Shared } from '@/type'
 
 import type { Model, Msg } from './type'
 import {

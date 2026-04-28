@@ -7,8 +7,8 @@ import { Cmd } from 'tea-cup-fp'
 
 import { getArticles, getArticlesFeed, getTags } from '@/api'
 import * as ArticleShort from '@/component/article-short'
-import type { Shared } from '@/type'
 import { HomeTab, HomeTabEq } from '@/data/route/type'
+import type { Shared } from '@/type'
 
 import type { Model, Msg } from './type'
 import { GET_ARTICLES_LIMIT } from './type'

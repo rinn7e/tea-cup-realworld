@@ -21,15 +21,15 @@ import type { AppPage, AppRoute, HomeTab } from './type'
 import {
   articlePage,
   editorPage,
+  globalFeedTab,
   homePage,
   loginPage,
   notFoundPage,
   profilePage,
   settingsPage,
   signupPage,
-  globalFeedTab,
-  userFeedTab,
   tagFeedTab,
+  userFeedTab,
 } from './type'
 
 export const removeBaseUrl = (href: string): string => {

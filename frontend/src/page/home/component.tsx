@@ -13,7 +13,7 @@ import type {
 import { ArticleShortComponent } from '@/component/article-short/component'
 import { DotLoading } from '@/component/dot-loading'
 import { ErrorMessages } from '@/component/error-messages'
-import { memoStrategy } from '@/util/memo-strategy'
+import { Link } from '@/component/link'
 import {
   AppRoute,
   globalFeedTab,
@@ -21,7 +21,7 @@ import {
   tagFeedTab,
   userFeedTab,
 } from '@/data/route/type'
-import { Link } from '@/component/link'
+import { memoStrategy } from '@/util/memo-strategy'
 
 import { Msg, Props, PropsEq } from './type'
 
@@ -53,22 +53,18 @@ const HomePageComponent = ({ model, dispatch }: Props) => {
           {/* Article List */}
           <div className='flex min-w-0 flex-1 flex-col'>
             <div className='feed-toggle flex border-b border-gray-200'>
-              {renderTabView(
-                model.tab._tag === 'UserFeedTab',
-                'Your Feed',
-                { page: homePage(userFeedTab()) },
-              )}
+              {renderTabView(model.tab._tag === 'UserFeedTab', 'Your Feed', {
+                page: homePage(userFeedTab()),
+              })}
               {renderTabView(
                 model.tab._tag === 'GlobalFeedTab',
                 'Global Feed',
                 { page: homePage(globalFeedTab()) },
               )}
               {model.tab._tag === 'TagFeedTab' &&
-                renderTabView(
-                  true,
-                  `# ${model.tab.tag}`,
-                  { page: homePage(tagFeedTab(model.tab.tag)) },
-                )}
+                renderTabView(true, `# ${model.tab.tag}`, {
+                  page: homePage(tagFeedTab(model.tab.tag)),
+                })}
             </div>
 
             <div className='flex flex-col'>
@@ -83,38 +79,38 @@ const HomePageComponent = ({ model, dispatch }: Props) => {
               <p className='text-sm font-semibold text-gray-700'>
                 Popular Tags
               </p>
-                {pipe(
-                  model.tags,
-                  RD.fold(
-                    () => <DotLoading className='text-2xl text-gray-400' />,
-                    () => <DotLoading className='text-2xl text-gray-400' />,
-                    () => (
-                      <span className='text-xs text-red-400'>
-                        Error loading tags
-                      </span>
-                    ),
-                    (data: TagsResponse) => (
-                      <div className='tag-list flex flex-wrap gap-[4px]'>
-                        {data.tags.map((tag) => (
-                          <a
-                            key={tag}
-                            href='#'
-                            className='tag-default tag-pill inline-block rounded-full bg-gray-200 px-[8px] py-[2px] text-xs text-gray-700 hover:bg-gray-300'
-                            onClick={(e) => {
-                              e.preventDefault()
-                              dispatch({
-                                _tag: 'ChangeTab',
-                                tab: tagFeedTab(tag),
-                              })
-                            }}
-                          >
-                            {tag}
-                          </a>
-                        ))}
-                      </div>
-                    ),
+              {pipe(
+                model.tags,
+                RD.fold(
+                  () => <DotLoading className='text-2xl text-gray-400' />,
+                  () => <DotLoading className='text-2xl text-gray-400' />,
+                  () => (
+                    <span className='text-xs text-red-400'>
+                      Error loading tags
+                    </span>
                   ),
-                )}
+                  (data: TagsResponse) => (
+                    <div className='tag-list flex flex-wrap gap-[4px]'>
+                      {data.tags.map((tag) => (
+                        <a
+                          key={tag}
+                          href='#'
+                          className='tag-default tag-pill inline-block rounded-full bg-gray-200 px-[8px] py-[2px] text-xs text-gray-700 hover:bg-gray-300'
+                          onClick={(e) => {
+                            e.preventDefault()
+                            dispatch({
+                              _tag: 'ChangeTab',
+                              tab: tagFeedTab(tag),
+                            })
+                          }}
+                        >
+                          {tag}
+                        </a>
+                      ))}
+                    </div>
+                  ),
+                ),
+              )}
             </div>
           </div>
         </div>

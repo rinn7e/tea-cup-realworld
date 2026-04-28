@@ -1,4 +1,5 @@
 import type { Model } from '@/type'
+
 import { getToken } from './storage'
 
 export interface ConduitDebug {
@@ -22,7 +23,9 @@ export const assignConduitDebug = (model: Model | null) => {
   if (typeof window !== 'undefined') {
     ;(window as any).__conduit_debug__ = {
       getToken: () =>
-        model?.shared.token._tag === 'Some' ? model.shared.token.value : getToken(),
+        model?.shared.token._tag === 'Some'
+          ? model.shared.token.value
+          : getToken(),
       getAuthState: () => {
         if (!model) return 'loading'
         if (model.unavailableMode) return 'unavailable'

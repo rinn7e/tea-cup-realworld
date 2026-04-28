@@ -8,8 +8,8 @@ import { Cmd } from 'tea-cup-fp'
 
 import { updateUser } from '@/api'
 import type { User } from '@/api/type'
-import { type Shared } from '@/type'
 import { standardInputUi } from '@/component/form-fields'
+import { type Shared } from '@/type'
 import { minLengthIfExistValidator } from '@/util/form'
 
 import type { Model, Msg } from './type'

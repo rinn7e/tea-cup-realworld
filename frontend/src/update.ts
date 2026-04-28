@@ -42,7 +42,7 @@ export const preUpdate = (
 ): [Model | null, Cmd<Msg>] => {
   if (model === null) {
     if (msg._tag === 'Init') {
-      return init(msg.location, msg.user, msg.isUnavailable)
+      return init(msg.location, msg.user, msg.isUnavailable, msg.token)
     }
     return [null, Cmd.none()]
   }
@@ -55,16 +55,14 @@ export const preUpdate = (
 
 export const init = (
   location: Location,
-  userWithToken: O.Option<UserWithToken>,
+  user: O.Option<User>,
   isUnavailable: boolean,
+  token: O.Option<string>,
 ): [Model, Cmd<Msg>] => {
   const route = parseAppRoute('', location.href)
-  const token = pipe(
-    userWithToken,
-    O.map((u) => u.token),
-    O.alt(() => O.fromNullable(getToken())),
-  )
-  const user: O.Option<User> = userWithToken
+  if (!isUnavailable && token._tag === 'None') {
+    removeToken()
+  }
   const model: Model = {
     route,
     unavailableMode: isUnavailable,
@@ -84,17 +82,42 @@ export const init = (
 export const initializeCmd = (location: Location): Cmd<Msg> => {
   const storedToken = getToken()
   if (storedToken) {
-    return Task.attempt(
-      taskFromTE(getCurrentUser(storedToken)),
-      (res): Msg => ({
+    return Task.attempt(taskFromTE(getCurrentUser(storedToken)), (res): Msg => {
+      // isUnavailable is true when the server is not responsive which results in not being able to validate if current token is valid or not.
+      const isUnavailable =
+        res.tag === 'Err' &&
+        (res.err.statusCode === 500 ||
+          res.err.statusCode === 0 ||
+          // Err but 200 mean we have malformed json
+          res.err.statusCode === 200)
+      const token =
+        res.tag === 'Ok'
+          ? O.some(res.value.user.token)
+          : // used stored token when isUnavailable
+            isUnavailable
+            ? O.some(storedToken)
+            : O.none
+
+      // Update local storage base on token value
+      if (token._tag === 'Some') saveToken(token.value)
+      else removeToken()
+
+      return {
         _tag: 'Init',
         location,
-        user: res.tag === 'Ok' ? O.some(res.value.user) : O.none,
-        isUnavailable: res.tag === 'Err' && res.err.statusCode === 500,
-      }),
-    )
+        user: res.tag === 'Ok' ? O.some(res.value.user as User) : O.none,
+        isUnavailable,
+        token: token,
+      }
+    })
   }
-  return msgCmd({ _tag: 'Init', location, user: O.none, isUnavailable: false })
+  return msgCmd({
+    _tag: 'Init',
+    location,
+    user: O.none,
+    isUnavailable: false,
+    token: O.none,
+  })
 }
 
 const _getUserCmd = (storedToken: string): Cmd<Msg> =>
@@ -545,9 +568,10 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
         model.pageModel._tag === 'SettingsPageModel' &&
         model.shared.user._tag === 'Some'
       ) {
-        const [settingsModel, settingsCmd] = SettingsPage.update(
-          model.shared,
-        )(msg.subMsg, model.pageModel.model)
+        const [settingsModel, settingsCmd] = SettingsPage.update(model.shared)(
+          msg.subMsg,
+          model.pageModel.model,
+        )
 
         return pipe(
           [
@@ -626,9 +650,10 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
         model.pageModel._tag === 'EditorPageModel' &&
         model.shared.user._tag === 'Some'
       ) {
-        const [editorModel, editorCmd] = EditorPage.update(
-          model.shared,
-        )(msg.subMsg, model.pageModel.model)
+        const [editorModel, editorCmd] = EditorPage.update(model.shared)(
+          msg.subMsg,
+          model.pageModel.model,
+        )
 
         return pipe(
           [

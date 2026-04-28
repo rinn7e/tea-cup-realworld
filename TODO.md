@@ -14,6 +14,12 @@
 
 - [x] Add pagination to homepage
 
+- [ ] Add e2e, make all the test pass
+
+- [ ] Update e2e test cases to use test id instead of class
+
+- [ ] Analyze e2e test such that we can re-create it for other project
+
 - [ ] Make a re-use pagination component and use everywhere
 
 - [ ] fix tags link in homepage

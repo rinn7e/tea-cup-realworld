@@ -155,7 +155,10 @@ export const defaultAppRoute = (): AppRoute => ({
 
 export const globalFeedTab = (): HomeTab => ({ _tag: 'GlobalFeedTab' })
 export const userFeedTab = (): HomeTab => ({ _tag: 'UserFeedTab' })
-export const tagFeedTab = (tag: string): HomeTab => ({ _tag: 'TagFeedTab', tag })
+export const tagFeedTab = (tag: string): HomeTab => ({
+  _tag: 'TagFeedTab',
+  tag,
+})
 
 export const homePage = (
   tab: HomeTab = globalFeedTab(),
