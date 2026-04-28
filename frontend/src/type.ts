@@ -41,6 +41,7 @@ export type Animate<A> = {
 
 export type Model = {
   route: Route
+  unavailableMode: boolean
   shared: Shared
   pageModel: PageModel
   isInternal: boolean
@@ -50,7 +51,7 @@ export type Model = {
 
 export type Msg =
   | { _tag: 'NoOp' }
-  | { _tag: 'Init'; location: Location; user: Option<User> }
+  | { _tag: 'Init'; location: Location; user: Option<User>; is500: boolean }
   | { _tag: 'UrlChange'; location: Location }
   | { _tag: 'ChangeRoute'; route: Route }
   | { _tag: 'SetUser'; user: Option<User> }

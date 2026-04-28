@@ -161,6 +161,13 @@ export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
             conduit
           </Link>
 
+          {model.unavailableMode && (
+            <span className='ml-[16px] flex items-center gap-[6px] text-sm text-gray-400'>
+              <div className='h-[8px] w-[8px] animate-pulse rounded-full bg-amber-400' />
+              Connecting
+            </span>
+          )}
+
           {/* mobile hamburger button */}
           <button
             type='button'

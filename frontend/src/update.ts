@@ -42,7 +42,7 @@ export const preUpdate = (
 ): [Model | null, Cmd<Msg>] => {
   if (model === null) {
     if (msg._tag === 'Init') {
-      return init(msg.location, msg.user)
+      return init(msg.location, msg.user, msg.is500)
     }
     return [null, Cmd.none()]
   }
@@ -56,6 +56,7 @@ export const preUpdate = (
 export const init = (
   location: Location,
   user: O.Option<User>,
+  is500: boolean,
 ): [Model, Cmd<Msg>] => {
   const route = parseAppRoute('', location.href)
   const token = pipe(
@@ -64,6 +65,7 @@ export const init = (
   )
   const model: Model = {
     route,
+    unavailableMode: is500,
     shared: {
       user,
       token,
@@ -86,10 +88,11 @@ export const initializeCmd = (location: Location): Cmd<Msg> => {
         _tag: 'Init',
         location,
         user: res.tag === 'Ok' ? O.some(res.value.user) : O.none,
+        is500: res.tag === 'Err' && res.err.statusCode === 500,
       }),
     )
   }
-  return msgCmd({ _tag: 'Init', location, user: O.none })
+  return msgCmd({ _tag: 'Init', location, user: O.none, is500: false })
 }
 
 const _getUserCmd = (storedToken: string): Cmd<Msg> =>

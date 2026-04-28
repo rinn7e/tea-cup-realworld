@@ -3,12 +3,12 @@ import { expect, test } from '@playwright/test'
 import { API_BASE, API_MODE } from './helpers/config'
 import { getAuthState, getToken } from './helpers/debug'
 
-// test.beforeEach(({}, testInfo) => {
-//   testInfo.skip(
-//     !API_MODE,
-//     'API-only: all tests use page.route() + localStorage',
-//   )
-// })
+test.beforeEach(({}, testInfo) => {
+  testInfo.skip(
+    !API_MODE,
+    'API-only: all tests use page.route() + localStorage',
+  )
+})
 
 // const API_BASE = 'https://api.realworld.show/api'
 
