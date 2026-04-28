@@ -239,5 +239,16 @@ export const update =
             Cmd.none(),
           ]
         }
+      case 'ShowAllValidation':
+        return [
+          {
+            ...model,
+            form: {
+              ...model.form,
+              forms: Form.showAllValidation(model.form.forms),
+            },
+          },
+          Cmd.none(),
+        ]
     }
   }

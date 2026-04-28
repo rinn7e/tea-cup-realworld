@@ -32,7 +32,11 @@ const SettingsPageComponent = ({ model, dispatch }: Props) => {
           className='flex flex-col gap-[24px]'
           onSubmit={(e) => {
             e.preventDefault()
-            if (RD.isPending(model.requestRd) || !model.isFormValid) {
+            if (RD.isPending(model.requestRd)) {
+              return
+            }
+            if (!model.isFormValid) {
+              dispatch({ _tag: 'ShowAllValidation' })
               return
             }
             dispatch({ _tag: 'Submit' })
@@ -85,7 +89,6 @@ const SettingsPageComponent = ({ model, dispatch }: Props) => {
                 RD.isPending(model.requestRd) && 'pointer-events-none',
               )}
               type='submit'
-              disabled={!model.isFormValid}
             >
               <span
                 className={cn(RD.isPending(model.requestRd) && 'opacity-0')}

@@ -31,6 +31,7 @@ export type Msg =
       _tag: 'SubmitResponse'
       result: Result<HttpError<ApiError>, UserResponse>
     }
+  | { _tag: 'ShowAllValidation' }
 
 export type Props = {
   model: Model

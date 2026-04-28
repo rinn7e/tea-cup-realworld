@@ -35,6 +35,7 @@ export type Msg =
       result: Result<HttpError<ApiError>, UserResponse>
     }
   | { _tag: 'Logout' }
+  | { _tag: 'ShowAllValidation' }
 
 export type Props = {
   model: Model

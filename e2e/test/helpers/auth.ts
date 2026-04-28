@@ -20,7 +20,8 @@ export async function register(
   } catch (error) {
     // If navigation fails, check for errors
     const errorMsg = await page
-      .locator('.error-messages')
+      .locator('.error-messages, .fe-error-messages')
+      .first()
       .textContent()
       .catch(() => '')
     if (errorMsg) {
@@ -44,7 +45,8 @@ export async function login(page: Page, email: string, password: string) {
   } catch (error) {
     // If navigation fails, check for errors
     const errorMsg = await page
-      .locator('.error-messages')
+      .locator('.error-messages, .fe-error-messages')
+      .first()
       .textContent()
       .catch(() => '')
     if (errorMsg) {
