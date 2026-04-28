@@ -96,6 +96,7 @@ export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
               >
                 <img
                   src={assetPath(optUser.value.image || '/default-avatar.svg')}
+                  // user-pic class is required by RealWorld spec and E2E tests
                   className='user-pic h-[28px] w-[28px] rounded-full object-cover'
                   alt=''
                 />

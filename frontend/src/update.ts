@@ -105,6 +105,21 @@ const navigate =
         )
       : Cmd.none<Msg>()
 
+    // Route Guard against unauth
+    // TODO: consider where to put the auth guard
+    // maybe in changeRouterHandler instead
+    const isLoggedIn = O.isSome(model.shared.user)
+
+    const isRouteRequiredAuth =
+      newRoute.page._tag === 'SettingsPage' ||
+      newRoute.page._tag === 'EditorPage' ||
+      (newRoute.page._tag === 'HomePage' &&
+        newRoute.page.tab._tag === 'UserFeedTab')
+
+    if (isRouteRequiredAuth && !isLoggedIn) {
+      return navigate({ page: { _tag: 'LoginPage' } }, true)(model)
+    }
+
     switch (newRoute.page._tag) {
       case 'HomePage': {
         const [homeModel, homeCmd] = HomePage.init(
@@ -544,28 +559,14 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
           ] as [Model, Cmd<Msg>],
           updateAndCmd((m) => {
             if (msg.subMsg._tag === 'Logout') {
-              removeToken()
-              return changeRouteHandler(
-                { page: homePage() },
-                true,
-              )({ ...m, shared: { ...m.shared, user: O.none, token: O.none } })
+              return interceptLogoutFromSettingPage(m)
             } else if (
               msg.subMsg._tag === 'SubmitResponse' &&
               msg.subMsg.result.tag === 'Ok'
             ) {
-              const user = msg.subMsg.result.value.user
-              saveToken(user.token)
-              return [
-                {
-                  ...m,
-                  shared: {
-                    ...m.shared,
-                    user: O.some(user),
-                    token: O.some(user.token),
-                  },
-                },
-                Cmd.none(),
-              ]
+              return interceptSubmitResponseOkFromSettingPage(
+                msg.subMsg.result.value.user,
+              )(m)
             } else {
               return [m, Cmd.none()]
             }
@@ -702,3 +703,38 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
       ]
   }
 }
+
+// Child Msg interception handler
+
+const interceptLogoutFromSettingPage = (m: Model): [Model, Cmd<Msg>] => {
+  removeToken()
+  return changeRouteHandler(
+    { page: homePage() },
+    true,
+  )({ ...m, shared: { ...m.shared, user: O.none, token: O.none } })
+}
+
+const interceptSubmitResponseOkFromSettingPage =
+  (user: User) =>
+  (m: Model): [Model, Cmd<Msg>] => {
+    saveToken(user.token)
+    // After a successful settings update, we redirect the user to their profile page
+    // to see the changes. This matches the RealWorld spec and E2E test expectations.
+    return changeRouteHandler(
+      {
+        page: {
+          _tag: 'ProfilePage',
+          username: user.username,
+          favorites: false,
+        },
+      },
+      true,
+    )({
+      ...m,
+      shared: {
+        ...m.shared,
+        user: O.some(user),
+        token: O.some(user.token),
+      },
+    })
+  }

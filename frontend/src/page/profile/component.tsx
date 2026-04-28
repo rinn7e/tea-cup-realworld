@@ -42,8 +42,10 @@ const ProfilePageComponent = ({
               {/* Header Banner */}
               <div className='user-info border-b border-gray-200 bg-gray-50 py-[40px] text-center shadow-inner'>
                 <div className='mx-auto flex max-w-[1152px] flex-col items-center gap-[12px] px-[16px]'>
+                  {/* Avatar */}
                   <img
                     src={assetPath(data.profile.image || '/default-avatar.svg')}
+                    // user-img and user-pic classes are required by RealWorld spec and E2E tests
                     className={cn(
                       'user-img user-pic h-[96px] w-[96px] rounded-full border-[4px] border-white object-cover shadow-sm',
                     )}
@@ -92,14 +94,14 @@ const ProfilePageComponent = ({
                     {isCurrentUser ? (
                       <Link
                         route={{ page: { _tag: 'SettingsPage' } }}
-                        className='inline-flex items-center gap-[6px] rounded border border-gray-400 px-[12px] py-[6px] text-sm text-gray-600 transition-colors hover:border-gray-600'
+                        className='action-btn btn btn-sm btn-outline-secondary inline-flex items-center gap-[6px] rounded border border-gray-400 px-[12px] py-[6px] text-sm text-gray-600 transition-colors hover:border-gray-600'
                       >
                         <Settings size={13} /> Edit Profile Settings
                       </Link>
                     ) : (
                       <button
                         type='button'
-                        className='inline-flex items-center gap-[6px] rounded border border-gray-400 px-[12px] py-[6px] text-sm text-gray-600 transition-colors hover:border-gray-600'
+                        className='action-btn btn btn-sm btn-outline-secondary inline-flex items-center gap-[6px] rounded border border-gray-400 px-[12px] py-[6px] text-sm text-gray-600 transition-colors hover:border-gray-600'
                         onClick={() =>
                           dispatch({
                             _tag: data.profile.following

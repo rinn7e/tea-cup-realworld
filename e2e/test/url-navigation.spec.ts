@@ -28,29 +28,29 @@ test.describe('URL-based Navigation (Realworld Issue #691)', () => {
     await expect(page).toHaveURL('/')
   })
 
-  test('/?feed=following should show Your Feed (authenticated)', async ({
+  test('/?tab=user-feed should show Your Feed (authenticated)', async ({
     page,
   }) => {
     const user = generateUniqueUser()
     await register(page, user.username, user.email, user.password)
-    await page.goto('/?feed=following')
+    await page.goto('/?tab=user-feed')
     // Should see Your Feed active
     await expect(page.locator('.nav-link:has-text("Your Feed")')).toHaveClass(
       /active/,
     )
-    // URL should have feed param
-    await expect(page).toHaveURL('/?feed=following')
+    // URL should have tab param
+    await expect(page).toHaveURL('/?tab=user-feed')
   })
 
-  test('/?feed=following should redirect to /login when not authenticated', async ({
+  test('/?tab=user-feed should redirect to /login when not authenticated', async ({
     page,
   }) => {
-    await page.goto('/?feed=following')
+    await page.goto('/?tab=user-feed')
     // Should be redirected to login
     await expect(page).toHaveURL('/login')
   })
 
-  test('/tag/:tag should filter by tag', async ({ page }) => {
+  test('/?tab=tag-feed&tag=:tag should filter by tag', async ({ page }) => {
     await page.goto('/')
     await page.waitForSelector('.sidebar .tag-list', { timeout: 2000 })
     // Get a tag from the sidebar
@@ -59,14 +59,15 @@ test.describe('URL-based Navigation (Realworld Issue #691)', () => {
       .first()
       .textContent()
     expect(firstTag).toBeTruthy()
+    const tag = firstTag?.trim() || ''
     // Navigate directly to the tag URL
-    await page.goto(`/tag/${firstTag?.trim()}`)
+    await page.goto(`/?tab=tag-feed&tag=${tag}`)
     // Should see the tag filter active
     await expect(
-      page.locator(`.nav-link:has-text("${firstTag?.trim()}")`),
+      page.locator(`.nav-link:has-text("${tag}")`),
     ).toBeVisible()
     await expect(
-      page.locator(`.nav-link:has-text("${firstTag?.trim()}")`),
+      page.locator(`.nav-link:has-text("${tag}")`),
     ).toHaveClass(/active/)
   })
 
@@ -75,15 +76,15 @@ test.describe('URL-based Navigation (Realworld Issue #691)', () => {
     await register(page, user.username, user.email, user.password)
     await page.goto('/')
     await page.waitForSelector('.feed-toggle', { timeout: 2000 })
-    // Your Feed should link to /?feed=following
+    // Your Feed should link to /?tab=user-feed
     const yourFeedLink = page.locator('.nav-link:has-text("Your Feed")')
-    await expect(yourFeedLink).toHaveAttribute('href', '/?feed=following')
+    await expect(yourFeedLink).toHaveAttribute('href', '/?tab=user-feed')
     // Global Feed should link to /
     const globalFeedLink = page.locator('.nav-link:has-text("Global Feed")')
     await expect(globalFeedLink).toHaveAttribute('href', '/')
   })
 
-  test('clicking Your Feed should navigate to /?feed=following', async ({
+  test('clicking Your Feed should navigate to /?tab=user-feed', async ({
     page,
   }) => {
     const user = generateUniqueUser()
@@ -92,8 +93,8 @@ test.describe('URL-based Navigation (Realworld Issue #691)', () => {
     await expect(page).toHaveURL('/')
     // Click Your Feed
     await page.click('.nav-link:has-text("Your Feed")')
-    // Should navigate to /?feed=following
-    await expect(page).toHaveURL('/?feed=following')
+    // Should navigate to /?tab=user-feed
+    await expect(page).toHaveURL('/?tab=user-feed')
     await expect(page.locator('.nav-link:has-text("Your Feed")')).toHaveClass(
       /active/,
     )
@@ -103,7 +104,7 @@ test.describe('URL-based Navigation (Realworld Issue #691)', () => {
     const user = generateUniqueUser()
     await register(page, user.username, user.email, user.password)
     // Go to Your Feed first
-    await page.goto('/?feed=following')
+    await page.goto('/?tab=user-feed')
     await expect(page.locator('.nav-link:has-text("Your Feed")')).toHaveClass(
       /active/,
     )
@@ -121,7 +122,7 @@ test.describe('URL-based Navigation (Realworld Issue #691)', () => {
   }) => {
     const user = generateUniqueUser()
     await register(page, user.username, user.email, user.password)
-    await page.goto('/?feed=following')
+    await page.goto('/?tab=user-feed')
     // Wait for loading to complete
     await page.waitForSelector('.empty-feed-message', { timeout: 2000 })
     // Should show helpful empty message
@@ -157,7 +158,7 @@ test.describe('Pagination', () => {
       await createManyArticles(page, 15, uniqueTag)
     }
     // Navigate to the tag page - this shows ONLY our articles
-    await page.goto(`/tag/${uniqueTag}`)
+    await page.goto(`/?tab=tag-feed&tag=${uniqueTag}`)
     await page.waitForSelector('.article-preview', { timeout: 2000 })
     // Should have pagination (15 articles = 2 pages with limit 10)
     await expect(page.locator('.pagination button:has-text("2")')).toBeVisible({
@@ -166,7 +167,7 @@ test.describe('Pagination', () => {
     // Click page 2
     await page.click('.pagination button:has-text("2")')
     // URL should have ?page=2
-    await expect(page).toHaveURL(new RegExp(`/tag/${uniqueTag}\\?page=2`))
+    await expect(page).toHaveURL(new RegExp(`\\?tab=tag-feed&tag=${uniqueTag}&page=2`))
     // Page 2 should be active
     await expect(
       page.locator('.pagination .page-item:has(button:has-text("2"))'),
@@ -191,7 +192,7 @@ test.describe('Pagination', () => {
       await createManyArticles(page, 15, uniqueTag)
     }
     // Go directly to page 2 of the tag
-    await page.goto(`/tag/${uniqueTag}?page=2`)
+    await page.goto(`/?tab=tag-feed&tag=${uniqueTag}&page=2`)
     await page.waitForSelector('.article-preview', { timeout: 2000 })
     // Page 2 should be active
     await expect(
@@ -202,14 +203,14 @@ test.describe('Pagination', () => {
     expect(url.searchParams.get('page')).toBe('2')
   })
 
-  test('pagination URL preserves feed=following parameter', async ({
+  test('pagination URL preserves feed parameter', async ({
     page,
   }) => {
     const user = generateUniqueUser()
     await register(page, user.username, user.email, user.password)
     // Your Feed shows articles from users you FOLLOW (not your own articles)
     // Just verify that if pagination exists on Your Feed, the URL is correct
-    await page.goto('/?feed=following')
+    await page.goto('/?tab=user-feed')
     // Wait for the page to load (might be empty or have articles)
     await page.waitForSelector('.article-preview, .empty-feed-message', {
       timeout: 2000,
@@ -221,14 +222,14 @@ test.describe('Pagination', () => {
       // Click page 2
       await page.click('.pagination button:has-text("2")')
       // URL should preserve feed param and add page
-      await expect(page).toHaveURL('/?feed=following&page=2')
+      await expect(page).toHaveURL('/?tab=user-feed&page=2')
     } else {
       // No pagination available - just verify URL structure is correct
-      await expect(page).toHaveURL('/?feed=following')
+      await expect(page).toHaveURL('/?tab=user-feed')
     }
   })
 
-  test('pagination should work with /tag/:tag', async ({
+  test('pagination should work with tag feed', async ({
     page,
     request,
     browser,
@@ -246,7 +247,7 @@ test.describe('Pagination', () => {
       await createManyArticles(page, 15, uniqueTag)
     }
     // Navigate to our tag
-    await page.goto(`/tag/${uniqueTag}`)
+    await page.goto(`/?tab=tag-feed&tag=${uniqueTag}`)
     await page.waitForSelector('.article-preview', { timeout: 2000 })
     // Should have pagination
     await expect(page.locator('.pagination button:has-text("2")')).toBeVisible({
@@ -255,7 +256,7 @@ test.describe('Pagination', () => {
     // Click page 2
     await page.click('.pagination button:has-text("2")')
     // Wait for URL to update after page navigation
-    await expect(page).toHaveURL(`/tag/${uniqueTag}?page=2`)
+    await expect(page).toHaveURL(`/?tab=tag-feed&tag=${uniqueTag}&page=2`)
   })
 
   test('page should reset when switching feeds', async ({
@@ -276,7 +277,7 @@ test.describe('Pagination', () => {
       await createManyArticles(page, 15, uniqueTag)
     }
     // Navigate to our tag
-    await page.goto(`/tag/${uniqueTag}`)
+    await page.goto(`/?tab=tag-feed&tag=${uniqueTag}`)
     await page.waitForSelector('.article-preview', { timeout: 2000 })
     // Should have pagination
     await expect(page.locator('.pagination button:has-text("2")')).toBeVisible({
@@ -284,7 +285,7 @@ test.describe('Pagination', () => {
     })
     // Go to page 2
     await page.click('.pagination button:has-text("2")')
-    await expect(page).toHaveURL(new RegExp(`/tag/${uniqueTag}\\?page=2`))
+    await expect(page).toHaveURL(new RegExp(`\\?tab=tag-feed&tag=${uniqueTag}&page=2`))
     // Click Global Feed and wait for URL to change to root path
     await page.click('.nav-link:has-text("Global Feed")')
     await expect(page).toHaveURL('/')
@@ -310,7 +311,7 @@ test.describe('Pagination', () => {
       await createManyArticles(page, 15, uniqueTag)
     }
     // Navigate to our tag
-    await page.goto(`/tag/${uniqueTag}`)
+    await page.goto(`/?tab=tag-feed&tag=${uniqueTag}`)
     await page.waitForSelector('.article-preview', { timeout: 2000 })
     // Should have pagination (15 articles = 2 pages)
     await expect(page.locator('.pagination button:has-text("2")')).toBeVisible({
@@ -329,7 +330,7 @@ test.describe('Pagination', () => {
     })
     await page.waitForSelector('.article-preview', { timeout: 2000 })
     // URL should show ?page=2
-    await expect(page).toHaveURL(new RegExp(`/tag/${uniqueTag}\\?page=2`))
+    await expect(page).toHaveURL(new RegExp(`\\?tab=tag-feed&tag=${uniqueTag}&page=2`))
     // Small wait for Angular to finish rendering the new page
     await page.waitForTimeout(500)
     // Second page should have 5 articles (15 - 10 = 5)

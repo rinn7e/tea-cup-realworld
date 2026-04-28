@@ -167,7 +167,7 @@ test.describe('Social Features', () => {
     await page.click('a:has-text("Favorited")')
 
     // Wait for URL to change then for articles to load
-    await expect(page).toHaveURL(`/profile/${user.username}/favorites`)
+    await expect(page).toHaveURL(new RegExp(`/profile/[^/]+\\?favorites=true`))
     await expect(page.locator('.article-preview').first()).toBeVisible({
       timeout: 3000,
     })

@@ -15,10 +15,13 @@ import { DotLoading } from '@/component/dot-loading'
 import { ErrorMessages } from '@/component/error-messages'
 import { memoStrategy } from '@/util/memo-strategy'
 import {
+  AppRoute,
   globalFeedTab,
+  homePage,
   tagFeedTab,
   userFeedTab,
 } from '@/data/route/type'
+import { Link } from '@/component/link'
 
 import { Msg, Props, PropsEq } from './type'
 
@@ -50,16 +53,22 @@ const HomePageComponent = ({ model, dispatch }: Props) => {
           {/* Article List */}
           <div className='flex min-w-0 flex-1 flex-col'>
             <div className='feed-toggle flex border-b border-gray-200'>
-              {renderTabView(model.tab._tag === 'UserFeedTab', 'Your Feed', () =>
-                dispatch({ _tag: 'ChangeTab', tab: userFeedTab() }),
+              {renderTabView(
+                model.tab._tag === 'UserFeedTab',
+                'Your Feed',
+                { page: homePage(userFeedTab()) },
               )}
               {renderTabView(
                 model.tab._tag === 'GlobalFeedTab',
                 'Global Feed',
-                () => dispatch({ _tag: 'ChangeTab', tab: globalFeedTab() }),
+                { page: homePage(globalFeedTab()) },
               )}
               {model.tab._tag === 'TagFeedTab' &&
-                renderTabView(true, `# ${model.tab.tag}`, () => {})}
+                renderTabView(
+                  true,
+                  `# ${model.tab.tag}`,
+                  { page: homePage(tagFeedTab(model.tab.tag)) },
+                )}
             </div>
 
             <div className='flex flex-col'>
@@ -114,23 +123,19 @@ const HomePageComponent = ({ model, dispatch }: Props) => {
   )
 }
 
-const renderTabView = (active: boolean, label: string, onClick: () => void) => {
+const renderTabView = (active: boolean, label: string, route: AppRoute) => {
   return (
-    <a
-      href='#'
+    <Link
+      route={route}
       className={cn(
-        'nav-link px-[16px] py-[8px] text-sm font-medium transition-colors duration-200',
+        'nav-link border-b-2 px-4 py-2 font-medium transition-colors',
         active
-          ? 'border-b-2 border-green-600 text-green-600'
-          : 'text-gray-400 hover:text-gray-600',
+          ? 'active border-green-500 text-green-500'
+          : 'border-transparent text-gray-500 hover:text-gray-700',
       )}
-      onClick={(e) => {
-        e.preventDefault()
-        onClick()
-      }}
     >
       {label}
-    </a>
+    </Link>
   )
 }
 
@@ -158,8 +163,15 @@ const renderArticlesView = (
       ),
       (data: ArticlesResponse) =>
         data.articles.length === 0 ? (
-          <div className='py-[24px] text-sm text-gray-500'>
-            No articles are here... yet.
+          <div className='empty-feed-message py-[24px] text-sm text-gray-500'>
+            Your feed is empty... yet. Why not check out the{' '}
+            <Link
+              route={{ page: homePage() }}
+              className='text-green-600 hover:underline'
+            >
+              Global Feed
+            </Link>
+            ?
           </div>
         ) : (
           <div className='flex flex-col'>
@@ -236,7 +248,10 @@ const renderPagination = (
           return (
             <li
               key={p}
-              className='page-item border-r border-gray-200 last:border-r-0'
+              className={cn(
+                'page-item border-r border-gray-200 last:border-r-0',
+                p === currentPage && 'active',
+              )}
             >
               <button
                 type='button'
