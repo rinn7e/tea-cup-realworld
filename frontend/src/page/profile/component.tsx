@@ -55,11 +55,9 @@ const ProfilePageComponent = ({
                     <h4 className='text-2xl font-bold text-gray-900'>
                       {data.profile.username}
                     </h4>
-                    {data.profile.bio && (
-                      <p className='max-w-[600px] text-sm text-gray-500'>
-                        {data.profile.bio}
-                      </p>
-                    )}
+                    <p className='max-w-[600px] text-sm text-gray-500'>
+                      {data.profile.bio || ''}
+                    </p>
                   </div>
 
                   {pipe(
