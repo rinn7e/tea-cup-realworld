@@ -44,7 +44,9 @@ const ProfilePageComponent = ({
                 <div className='mx-auto flex max-w-[1152px] flex-col items-center gap-[12px] px-[16px]'>
                   <img
                     src={assetPath(data.profile.image || '/default-avatar.svg')}
-                    className='h-[96px] w-[96px] rounded-full border-[4px] border-white object-cover shadow-sm'
+                    className={cn(
+                      'user-img user-pic h-[96px] w-[96px] rounded-full border-[4px] border-white object-cover shadow-sm',
+                    )}
                     alt=''
                   />
                   <div className='flex flex-col gap-[4px]'>

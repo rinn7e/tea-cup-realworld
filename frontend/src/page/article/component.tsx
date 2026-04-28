@@ -228,7 +228,22 @@ const ArticlePageComponent = ({ model, user, dispatch }: Props) => {
                             <ErrorMessages error={model.newCommentError} />
                           )}
 
-                          <div className='flex justify-end border-t border-gray-100 bg-gray-50 px-[12px] py-[8px]'>
+                          <div className='flex items-center justify-between border-t border-gray-100 bg-gray-50 px-[12px] py-[8px]'>
+                            {pipe(
+                              user,
+                              O.fold(
+                                () => null,
+                                (u) => (
+                                  <img
+                                    src={assetPath(
+                                      u.image || '/default-avatar.svg',
+                                    )}
+                                    className='comment-author-img h-[20px] w-[20px] rounded-full object-cover'
+                                    alt=''
+                                  />
+                                ),
+                              ),
+                            )}
                             <button
                               type='submit'
                               className='rounded bg-green-600 px-[12px] py-[4px] text-xs text-white transition-colors hover:bg-green-700'
