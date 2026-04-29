@@ -12,10 +12,15 @@ test.describe('Authentication', () => {
     await expect(page).toHaveURL('/')
     // Should see username in header
     await expect(
-      page.locator(`a[href="/profile/${user.username}"]`),
+      page
+        .getByTestId('nav-link')
+        .filter({ has: page.getByTestId('navbar-user-avatar') }),
     ).toBeVisible()
     // Should be able to access editor
-    await page.click('a[href="/editor"]')
+    await page
+      .getByTestId('nav-link')
+      .filter({ hasText: 'New Article' })
+      .click()
     await expect(page).toHaveURL('/editor')
   })
 
@@ -26,24 +31,26 @@ test.describe('Authentication', () => {
     // Logout
     await logout(page)
     // Should see Sign in link
-    await expect(page.locator('a[href="/login"]')).toBeVisible()
+    await expect(
+      page.getByTestId('nav-link').filter({ hasText: 'Sign in' }),
+    ).toBeVisible()
     // Login again
     await login(page, user.email, user.password)
     // Should be logged in
     await expect(
-      page.locator(`a[href="/profile/${user.username}"]`),
+      page
+        .getByTestId('nav-link')
+        .filter({ has: page.getByTestId('navbar-user-avatar') }),
     ).toBeVisible()
   })
 
   test('should show error for invalid login', async ({ page }) => {
     await page.goto('/login')
-    await page.fill('input[name="email"]', 'nonexistent@example.com')
-    await page.fill('input[name="password"]', 'wrongpassword')
-    await page.click('button[type="submit"]')
+    await page.getByTestId('email-input').fill('nonexistent@example.com')
+    await page.getByTestId('password-input').fill('wrongpassword')
+    await page.getByTestId('login-btn').click()
     // Should show error message
-    await expect(
-      page.locator('.error-messages, .fe-error-messages').first(),
-    ).toBeVisible()
+    await expect(page.getByTestId('be-input-error-list')).toBeVisible()
   })
 
   test('should fail login with wrong password', async ({ page }) => {
@@ -54,13 +61,11 @@ test.describe('Authentication', () => {
     await logout(page)
     // Try to login with correct email but wrong password
     await page.goto('/login')
-    await page.fill('input[name="email"]', user.email)
-    await page.fill('input[name="password"]', 'wrongpassword123')
-    await page.click('button[type="submit"]')
+    await page.getByTestId('email-input').fill(user.email)
+    await page.getByTestId('password-input').fill('wrongpassword123')
+    await page.getByTestId('login-btn').click()
     // Should show error message
-    await expect(
-      page.locator('.error-messages, .fe-error-messages').first(),
-    ).toBeVisible()
+    await expect(page.getByTestId('be-input-error-list')).toBeVisible()
     // Should still be on login page (not redirected)
     await expect(page).toHaveURL('/login')
   })
@@ -70,15 +75,21 @@ test.describe('Authentication', () => {
     await register(page, user.username, user.email, user.password)
     // User should be logged in
     await expect(
-      page.locator(`a[href="/profile/${user.username}"]`),
+      page
+        .getByTestId('nav-link')
+        .filter({ has: page.getByTestId('navbar-user-avatar') }),
     ).toBeVisible()
     // Logout
     await logout(page)
     // Should see Sign in link (user is logged out)
-    await expect(page.locator('a[href="/login"]')).toBeVisible()
+    await expect(
+      page.getByTestId('nav-link').filter({ hasText: 'Sign in' }),
+    ).toBeVisible()
     // Should not see profile link
     await expect(
-      page.locator(`a[href="/profile/${user.username}"]`),
+      page
+        .getByTestId('nav-link')
+        .filter({ has: page.getByTestId('navbar-user-avatar') }),
     ).not.toBeVisible()
   })
 
@@ -97,7 +108,9 @@ test.describe('Authentication', () => {
     await page.reload()
     // Should still be logged in
     await expect(
-      page.locator(`a[href="/profile/${user.username}"]`),
+      page
+        .getByTestId('nav-link')
+        .filter({ has: page.getByTestId('navbar-user-avatar') }),
     ).toBeVisible()
   })
 
@@ -113,8 +126,12 @@ test.describe('Authentication', () => {
     // Reload the page - this should NOT cause a blank screen
     await page.reload()
     // The app should still load and show the unauthenticated UI
-    await expect(page.locator('a[href="/login"]')).toBeVisible()
-    await expect(page.locator('a[href="/register"]')).toBeVisible()
+    await expect(
+      page.getByTestId('nav-link').filter({ hasText: 'Sign in' }),
+    ).toBeVisible()
+    await expect(
+      page.getByTestId('nav-link').filter({ hasText: 'Sign up' }),
+    ).toBeVisible()
     // The invalid token should be cleared (use debug interface)
     const token = await getToken(page)
     expect(token).toBeNull()

@@ -20,7 +20,10 @@ const EditorPageComponent = ({ model, dispatch }: Props) => {
   const form = model.form
 
   return (
-    <div className='editor-page mx-auto flex w-full max-w-[768px] flex-col gap-[24px] px-[16px] py-[32px]'>
+    <div
+      className='mx-auto flex w-full max-w-[768px] flex-col gap-[24px] px-[16px] py-[32px]'
+      data-test='editor-page'
+    >
       <form
         onSubmit={(e) => {
           e.preventDefault()

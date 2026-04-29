@@ -9,9 +9,9 @@ export async function register(
   password: string,
 ) {
   await page.goto('/register', { waitUntil: 'load' })
-  await page.fill('input[name="username"]', username)
-  await page.fill('input[name="email"]', email)
-  await page.fill('input[name="password"]', password)
+  await page.getByTestId('username-input').fill(username)
+  await page.getByTestId('email-input').fill(email)
+  await page.getByTestId('password-input').fill(password)
 
   // Wait for API response
   try {
@@ -23,7 +23,7 @@ export async function register(
   } catch (error) {
     // If navigation fails, check for errors
     const errorMsg = await page
-      .locator('.error-messages, .fe-error-messages')
+      .getByTestId('be-input-error-list')
       .first()
       .textContent()
       .catch(() => '')
@@ -36,8 +36,8 @@ export async function register(
 
 export async function login(page: Page, email: string, password: string) {
   await page.goto('/login', { waitUntil: 'load' })
-  await page.fill('input[name="email"]', email)
-  await page.fill('input[name="password"]', password)
+  await page.getByTestId('email-input').fill(email)
+  await page.getByTestId('password-input').fill(password)
 
   // Wait for API response
   try {
@@ -49,7 +49,7 @@ export async function login(page: Page, email: string, password: string) {
   } catch (error) {
     // If navigation fails, check for errors
     const errorMsg = await page
-      .locator('.error-messages, .fe-error-messages')
+      .getByTestId('be-input-error-list')
       .first()
       .textContent()
       .catch(() => '')
@@ -61,10 +61,10 @@ export async function login(page: Page, email: string, password: string) {
 }
 
 export async function logout(page: Page) {
-  await page.click('a[href="/settings"]')
+  await page.getByTestId('nav-link').filter({ hasText: 'Settings' }).click()
   await Promise.all([
     page.waitForURL('/'),
-    page.click('button:has-text("Or click here to logout")'),
+    page.getByTestId('logout-btn').click(),
   ])
 }
 

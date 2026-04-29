@@ -17,11 +17,11 @@ test.describe('URL-based Navigation (Realworld Issue #691)', () => {
   test('/ should show Global Feed for everyone', async ({ page }) => {
     await page.goto('/')
     // Should see Global Feed active
-    await expect(page.locator('.nav-link:has-text("Global Feed")')).toHaveClass(
-      /active/,
-    )
+    await expect(
+      page.getByTestId('home-tab').filter({ hasText: 'Global Feed' }),
+    ).toHaveAttribute('aria-current', 'page')
     // Should see articles
-    await expect(page.locator('.article-preview').first()).toBeVisible({
+    await expect(page.getByTestId('article-preview').first()).toBeVisible({
       timeout: 2000,
     })
     // URL should be /
@@ -35,9 +35,9 @@ test.describe('URL-based Navigation (Realworld Issue #691)', () => {
     await register(page, user.username, user.email, user.password)
     await page.goto('/?tab=user-feed')
     // Should see Your Feed active
-    await expect(page.locator('.nav-link:has-text("Your Feed")')).toHaveClass(
-      /active/,
-    )
+    await expect(
+      page.getByTestId('home-tab').filter({ hasText: 'Your Feed' }),
+    ).toHaveAttribute('aria-current', 'page')
     // URL should have tab param
     await expect(page).toHaveURL('/?tab=user-feed')
   })
@@ -52,33 +52,40 @@ test.describe('URL-based Navigation (Realworld Issue #691)', () => {
 
   test('/?tab=tag-feed&tag=:tag should filter by tag', async ({ page }) => {
     await page.goto('/')
-    await page.waitForSelector('.sidebar .tag-list', { timeout: 2000 })
+    await page
+      .getByTestId('home-sidebar')
+      .waitFor({ state: 'visible', timeout: 2000 })
     // Get a tag from the sidebar
-    const firstTag = await page
-      .locator('.sidebar .tag-list .tag-pill')
-      .first()
-      .textContent()
+    const firstTag = await page.getByTestId('tag-pill').first().textContent()
     expect(firstTag).toBeTruthy()
     const tag = firstTag?.trim() || ''
     // Navigate directly to the tag URL
     await page.goto(`/?tab=tag-feed&tag=${tag}`)
     // Should see the tag filter active
-    await expect(page.locator(`.nav-link:has-text("${tag}")`)).toBeVisible()
-    await expect(page.locator(`.nav-link:has-text("${tag}")`)).toHaveClass(
-      /active/,
-    )
+    await expect(
+      page.getByTestId('home-tab').filter({ hasText: `# ${tag}` }),
+    ).toBeVisible()
+    await expect(
+      page.getByTestId('home-tab').filter({ hasText: `# ${tag}` }),
+    ).toHaveAttribute('aria-current', 'page')
   })
 
   test('tabs should have correct href attributes', async ({ page }) => {
     const user = generateUniqueUser()
     await register(page, user.username, user.email, user.password)
     await page.goto('/')
-    await page.waitForSelector('.feed-toggle', { timeout: 2000 })
+    await page
+      .getByTestId('feed-toggle')
+      .waitFor({ state: 'visible', timeout: 2000 })
     // Your Feed should link to /?tab=user-feed
-    const yourFeedLink = page.locator('.nav-link:has-text("Your Feed")')
+    const yourFeedLink = page
+      .getByTestId('home-tab')
+      .filter({ hasText: 'Your Feed' })
     await expect(yourFeedLink).toHaveAttribute('href', '/?tab=user-feed')
     // Global Feed should link to /
-    const globalFeedLink = page.locator('.nav-link:has-text("Global Feed")')
+    const globalFeedLink = page
+      .getByTestId('home-tab')
+      .filter({ hasText: 'Global Feed' })
     await expect(globalFeedLink).toHaveAttribute('href', '/')
   })
 
@@ -90,12 +97,12 @@ test.describe('URL-based Navigation (Realworld Issue #691)', () => {
     // Should be at /
     await expect(page).toHaveURL('/')
     // Click Your Feed
-    await page.click('.nav-link:has-text("Your Feed")')
+    await page.getByTestId('home-tab').filter({ hasText: 'Your Feed' }).click()
     // Should navigate to /?tab=user-feed
     await expect(page).toHaveURL('/?tab=user-feed')
-    await expect(page.locator('.nav-link:has-text("Your Feed")')).toHaveClass(
-      /active/,
-    )
+    await expect(
+      page.getByTestId('home-tab').filter({ hasText: 'Your Feed' }),
+    ).toHaveAttribute('aria-current', 'page')
   })
 
   test('clicking Global Feed should navigate to /', async ({ page }) => {
@@ -103,16 +110,19 @@ test.describe('URL-based Navigation (Realworld Issue #691)', () => {
     await register(page, user.username, user.email, user.password)
     // Go to Your Feed first
     await page.goto('/?tab=user-feed')
-    await expect(page.locator('.nav-link:has-text("Your Feed")')).toHaveClass(
-      /active/,
-    )
+    await expect(
+      page.getByTestId('home-tab').filter({ hasText: 'Your Feed' }),
+    ).toHaveAttribute('aria-current', 'page')
     // Click Global Feed
-    await page.click('.nav-link:has-text("Global Feed")')
+    await page
+      .getByTestId('home-tab')
+      .filter({ hasText: 'Global Feed' })
+      .click()
     // Should navigate to /
     await expect(page).toHaveURL('/')
-    await expect(page.locator('.nav-link:has-text("Global Feed")')).toHaveClass(
-      /active/,
-    )
+    await expect(
+      page.getByTestId('home-tab').filter({ hasText: 'Global Feed' }),
+    ).toHaveAttribute('aria-current', 'page')
   })
 
   test('empty Your Feed shows helpful message with link to Global Feed', async ({
@@ -122,12 +132,16 @@ test.describe('URL-based Navigation (Realworld Issue #691)', () => {
     await register(page, user.username, user.email, user.password)
     await page.goto('/?tab=user-feed')
     // Wait for loading to complete
-    await page.waitForSelector('.empty-feed-message', { timeout: 2000 })
+    await page
+      .getByTestId('empty-feed-msg')
+      .waitFor({ state: 'visible', timeout: 2000 })
     // Should show helpful empty message
-    const emptyMessage = page.locator('.empty-feed-message')
+    const emptyMessage = page.getByTestId('empty-feed-msg')
     await expect(emptyMessage).toContainText('Your feed is empty')
     // Should have a link to Global Feed
-    const globalFeedLink = emptyMessage.locator('a[href="/"]')
+    const globalFeedLink = emptyMessage
+      .locator('a')
+      .filter({ hasText: 'Global Feed' })
     await expect(globalFeedLink).toBeVisible()
   })
 })
@@ -157,21 +171,29 @@ test.describe('Pagination', () => {
     }
     // Navigate to the tag page - this shows ONLY our articles
     await page.goto(`/?tab=tag-feed&tag=${uniqueTag}`)
-    await page.waitForSelector('.article-preview', { timeout: 2000 })
+    await page
+      .getByTestId('article-preview')
+      .first()
+      .waitFor({ state: 'visible', timeout: 2000 })
     // Should have pagination (15 articles = 2 pages with limit 10)
-    await expect(page.locator('.pagination button:has-text("2")')).toBeVisible({
+    await expect(
+      page.getByTestId('pagination-nav').getByRole('button', { name: '2' }),
+    ).toBeVisible({
       timeout: 2000,
     })
     // Click page 2
-    await page.click('.pagination button:has-text("2")')
+    await page
+      .getByTestId('pagination-nav')
+      .getByRole('button', { name: '2' })
+      .click()
     // URL should have ?page=2
     await expect(page).toHaveURL(
       new RegExp(`\\?tab=tag-feed&tag=${uniqueTag}&page=2`),
     )
     // Page 2 should be active
     await expect(
-      page.locator('.pagination .page-item:has(button:has-text("2"))'),
-    ).toHaveClass(/active/)
+      page.getByTestId('pagination-nav').getByRole('button', { name: '2' }),
+    ).toHaveAttribute('aria-current', 'page')
   })
 
   test('should load correct page when navigating directly to ?page=N', async ({
@@ -193,11 +215,14 @@ test.describe('Pagination', () => {
     }
     // Go directly to page 2 of the tag
     await page.goto(`/?tab=tag-feed&tag=${uniqueTag}&page=2`)
-    await page.waitForSelector('.article-preview', { timeout: 2000 })
+    await page
+      .getByTestId('article-preview')
+      .first()
+      .waitFor({ state: 'visible', timeout: 2000 })
     // Page 2 should be active
     await expect(
-      page.locator('.pagination .page-item:has(button:has-text("2"))'),
-    ).toHaveClass(/active/)
+      page.getByTestId('pagination-nav').getByRole('button', { name: '2' }),
+    ).toHaveAttribute('aria-current', 'page')
     // URL should have page=2
     const url = new URL(page.url())
     expect(url.searchParams.get('page')).toBe('2')
@@ -210,15 +235,22 @@ test.describe('Pagination', () => {
     // Just verify that if pagination exists on Your Feed, the URL is correct
     await page.goto('/?tab=user-feed')
     // Wait for the page to load (might be empty or have articles)
-    await page.waitForSelector('.article-preview, .empty-feed-message', {
-      timeout: 2000,
-    })
+    await page
+      .getByTestId('article-preview')
+      .or(page.getByTestId('empty-feed-msg'))
+      .first()
+      .waitFor({
+        state: 'visible',
+        timeout: 2000,
+      })
     // Check if pagination exists (depends on followed users having 11+ articles)
-    const page2Button = page.locator('.pagination button:has-text("2")')
+    const page2Button = page
+      .getByTestId('pagination-nav')
+      .getByRole('button', { name: '2' })
     const hasPage2 = await page2Button.isVisible().catch(() => false)
     if (hasPage2) {
       // Click page 2
-      await page.click('.pagination button:has-text("2")')
+      await page2Button.click()
       // URL should preserve feed param and add page
       await expect(page).toHaveURL('/?tab=user-feed&page=2')
     } else {
@@ -246,13 +278,21 @@ test.describe('Pagination', () => {
     }
     // Navigate to our tag
     await page.goto(`/?tab=tag-feed&tag=${uniqueTag}`)
-    await page.waitForSelector('.article-preview', { timeout: 2000 })
+    await page
+      .getByTestId('article-preview')
+      .first()
+      .waitFor({ state: 'visible', timeout: 2000 })
     // Should have pagination
-    await expect(page.locator('.pagination button:has-text("2")')).toBeVisible({
+    await expect(
+      page.getByTestId('pagination-nav').getByRole('button', { name: '2' }),
+    ).toBeVisible({
       timeout: 2000,
     })
     // Click page 2
-    await page.click('.pagination button:has-text("2")')
+    await page
+      .getByTestId('pagination-nav')
+      .getByRole('button', { name: '2' })
+      .click()
     // Wait for URL to update after page navigation
     await expect(page).toHaveURL(`/?tab=tag-feed&tag=${uniqueTag}&page=2`)
   })
@@ -276,21 +316,35 @@ test.describe('Pagination', () => {
     }
     // Navigate to our tag
     await page.goto(`/?tab=tag-feed&tag=${uniqueTag}`)
-    await page.waitForSelector('.article-preview', { timeout: 2000 })
+    await page
+      .getByTestId('article-preview')
+      .first()
+      .waitFor({ state: 'visible', timeout: 2000 })
     // Should have pagination
-    await expect(page.locator('.pagination button:has-text("2")')).toBeVisible({
+    await expect(
+      page.getByTestId('pagination-nav').getByRole('button', { name: '2' }),
+    ).toBeVisible({
       timeout: 2000,
     })
     // Go to page 2
-    await page.click('.pagination button:has-text("2")')
+    await page
+      .getByTestId('pagination-nav')
+      .getByRole('button', { name: '2' })
+      .click()
     await expect(page).toHaveURL(
       new RegExp(`\\?tab=tag-feed&tag=${uniqueTag}&page=2`),
     )
     // Click Global Feed and wait for URL to change to root path
-    await page.click('.nav-link:has-text("Global Feed")')
+    await page
+      .getByTestId('home-tab')
+      .filter({ hasText: 'Global Feed' })
+      .click()
     await expect(page).toHaveURL('/')
     // Verify articles loaded
-    await page.waitForSelector('.article-preview', { timeout: 2000 })
+    await page
+      .getByTestId('article-preview')
+      .first()
+      .waitFor({ state: 'visible', timeout: 2000 })
   })
 
   test('tag pagination shows correct articles per page', async ({
@@ -312,23 +366,34 @@ test.describe('Pagination', () => {
     }
     // Navigate to our tag
     await page.goto(`/?tab=tag-feed&tag=${uniqueTag}`)
-    await page.waitForSelector('.article-preview', { timeout: 2000 })
+    await page
+      .getByTestId('article-preview')
+      .first()
+      .waitFor({ state: 'visible', timeout: 2000 })
     // Should have pagination (15 articles = 2 pages)
-    await expect(page.locator('.pagination button:has-text("2")')).toBeVisible({
+    await expect(
+      page.getByTestId('pagination-nav').getByRole('button', { name: '2' }),
+    ).toBeVisible({
       timeout: 2000,
     })
     // First page should show 10 articles
-    const articlesOnPage1 = await page.locator('.article-preview').count()
+    const articlesOnPage1 = await page.getByTestId('article-preview').count()
     expect(articlesOnPage1).toBe(10)
     // Click page 2
-    await page.click('.pagination button:has-text("2")')
-    // Wait for page 2 to be active (Angular routing/rendering delay)
+    await page
+      .getByTestId('pagination-nav')
+      .getByRole('button', { name: '2' })
+      .click()
+    // Wait for page 2 to be active
     await expect(
-      page.locator('.pagination .page-item:has(button:has-text("2"))'),
-    ).toHaveClass(/active/, {
+      page.getByTestId('pagination-nav').getByRole('button', { name: '2' }),
+    ).toHaveAttribute('aria-current', 'page', {
       timeout: 2000,
     })
-    await page.waitForSelector('.article-preview', { timeout: 2000 })
+    await page
+      .getByTestId('article-preview')
+      .first()
+      .waitFor({ state: 'visible', timeout: 2000 })
     // URL should show ?page=2
     await expect(page).toHaveURL(
       new RegExp(`\\?tab=tag-feed&tag=${uniqueTag}&page=2`),
@@ -336,7 +401,7 @@ test.describe('Pagination', () => {
     // Small wait for Angular to finish rendering the new page
     await page.waitForTimeout(500)
     // Second page should have 5 articles (15 - 10 = 5)
-    const articlesOnPage2 = await page.locator('.article-preview').count()
+    const articlesOnPage2 = await page.getByTestId('article-preview').count()
     expect(articlesOnPage2).toBe(5)
   })
 })

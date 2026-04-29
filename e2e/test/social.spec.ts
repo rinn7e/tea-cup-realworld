@@ -36,10 +36,10 @@ test.describe('Social Features', () => {
     // }
 
     await followUser(page, targetUsername)
-    await expect(page.locator('button:has-text("Unfollow")')).toBeVisible()
+    await expect(page.getByTestId('follow-btn')).toContainText('Unfollow')
 
     await unfollowUser(page, targetUsername)
-    await expect(page.locator('button:has-text("Follow")')).toBeVisible()
+    await expect(page.getByTestId('follow-btn')).toContainText('Follow')
   })
 
   test('should view own profile', async ({ page }) => {
@@ -47,20 +47,21 @@ test.describe('Social Features', () => {
     await register(page, user.username, user.email, user.password)
 
     // Click on profile link
-    await page.click(`a[href="/profile/${user.username}"]`)
+    await page
+      .getByTestId('nav-link')
+      .filter({ has: page.getByTestId('navbar-user-avatar') })
+      .click()
 
     // Should show user information
-    await expect(page.locator('h4')).toHaveText(user.username)
+    await expect(page.getByRole('heading', { level: 4 })).toHaveText(
+      user.username,
+    )
 
     // Should see Edit Profile Settings button (own profile)
-    await expect(
-      page
-        .locator('a[href="/settings"]')
-        .filter({ hasText: 'Edit Profile Settings' }),
-    ).toBeVisible()
+    await expect(page.getByTestId('edit-profile-settings')).toBeVisible()
 
     // Should not see Follow button (can't follow yourself)
-    await expect(page.locator('button:has-text("Follow")')).not.toBeVisible()
+    await expect(page.getByTestId('follow-btn')).not.toBeVisible()
   })
 
   test('should view other user profile', async ({ page, browser }) => {
@@ -92,16 +93,16 @@ test.describe('Social Features', () => {
     // }
 
     await page.goto(`/profile/${targetUsername}`, { waitUntil: 'load' })
-    await page.waitForSelector('h4', { timeout: 10000 })
+    await page
+      .getByRole('heading', { level: 4 })
+      .waitFor({ state: 'visible', timeout: 10000 })
 
-    await expect(page.locator('h4')).toHaveText(targetUsername)
-    await expect(page.locator('button:has-text("Follow")')).toBeVisible()
-    await expect(
-      page
-        .locator('.user-info a[href="/settings"]')
-        .filter({ hasText: 'Edit Profile Settings' }),
-    ).not.toBeVisible()
-    await expect(page.locator('.article-preview').first()).toBeVisible()
+    await expect(page.getByRole('heading', { level: 4 })).toHaveText(
+      targetUsername,
+    )
+    await expect(page.getByTestId('follow-btn')).toBeVisible()
+    await expect(page.getByTestId('edit-profile-settings')).not.toBeVisible()
+    await expect(page.getByTestId('article-preview').first()).toBeVisible()
   })
 
   test('should display user articles on profile', async ({ page }) => {
@@ -117,12 +118,12 @@ test.describe('Social Features', () => {
     // Go to profile
     await page.goto(`/profile/${user.username}`)
 
-    // Both articles should be visible (use .first() to avoid strict mode violation)
+    // Both articles should be visible
     await expect(
-      page.locator(`h1:has-text("${article1.title}")`).first(),
+      page.getByRole('heading', { name: article1.title }).first(),
     ).toBeVisible()
     await expect(
-      page.locator(`h1:has-text("${article2.title}")`).first(),
+      page.getByRole('heading', { name: article2.title }).first(),
     ).toBeVisible()
   })
 
@@ -134,40 +135,59 @@ test.describe('Social Features', () => {
     await page.goto('/', { waitUntil: 'load' })
 
     // Wait for articles to load
-    await page.waitForSelector('.article-preview', { timeout: 10000 })
+    await page
+      .getByTestId('article-preview')
+      .first()
+      .waitFor({ state: 'visible', timeout: 10000 })
 
     // Check first article exists and click it
-    await expect(page.locator('.article-preview h1').first()).toBeVisible()
+    await expect(
+      page.getByTestId('article-preview').first().getByRole('heading'),
+    ).toBeVisible()
 
     // Click on first article to go to its detail page
-    await page.click('.article-preview h1:first-child')
-    await page.waitForURL(/\/article\/.+/, { timeout: 10000 })
+    const articleTitle = await page
+      .getByTestId('article-preview')
+      .first()
+      .getByRole('heading')
+      .innerText()
+    await page
+      .getByTestId('article-preview')
+      .first()
+      .getByRole('heading')
+      .click()
+    await page
+      .getByRole('heading', { name: articleTitle })
+      .waitFor({ state: 'visible', timeout: 10000 })
 
     // Wait for article page to load
-    await page.waitForSelector(
-      'button:has-text("Favorite"), button:has-text("Unfavorite")',
-      { timeout: 10000 },
-    )
+    await expect(page.getByTestId('fav-button').first()).toBeVisible({
+      timeout: 10000,
+    })
 
     // Check if already favorited, if not favorite it
-    const isFavorited =
-      (await page.locator('button:has-text("Unfavorite")').count()) > 0
+    const favButton = page.getByTestId('fav-button').first()
+    const isFavorited = (await favButton.innerText()).includes('Unfavorite')
     if (!isFavorited) {
-      await page.click('button.btn-outline-primary:has-text("Favorite")')
+      await favButton.click()
       // Wait for the favorite to complete
-      await page.waitForSelector('button.btn-primary:has-text("Unfavorite")', {
-        timeout: 10000,
-      })
+      await expect(favButton).toContainText('Unfavorite', { timeout: 10000 })
     }
 
     // Go to profile and click Favorited tab
     await page.goto(`/profile/${user.username}`, { waitUntil: 'load' })
-    await page.waitForSelector('a:has-text("Favorited")', { timeout: 3000 })
-    await page.click('a:has-text("Favorited")')
+    await page
+      .getByTestId('profile-tab')
+      .filter({ hasText: 'Favorited' })
+      .waitFor({ state: 'visible', timeout: 3000 })
+    await page
+      .getByTestId('profile-tab')
+      .filter({ hasText: 'Favorited' })
+      .click()
 
     // Wait for URL to change then for articles to load
     await expect(page).toHaveURL(new RegExp(`/profile/[^/]+\\?favorites=true`))
-    await expect(page.locator('.article-preview').first()).toBeVisible({
+    await expect(page.getByTestId('article-preview').first()).toBeVisible({
       timeout: 3000,
     })
   })
@@ -206,11 +226,16 @@ test.describe('Social Features', () => {
 
     // Go to home and click "Your Feed"
     await page.goto('/', { waitUntil: 'load' })
-    await page.waitForSelector('.feed-toggle', { timeout: 10000 })
-    await page.click('a:has-text("Your Feed")')
+    await page
+      .getByTestId('feed-toggle')
+      .waitFor({ state: 'visible', timeout: 10000 })
+    await page.getByTestId('home-tab').filter({ hasText: 'Your Feed' }).click()
 
     // Wait for articles to load
-    await page.waitForSelector('.article-preview', { timeout: 10000 })
-    await expect(page.locator('.article-preview').first()).toBeVisible()
+    await page
+      .getByTestId('article-preview')
+      .first()
+      .waitFor({ state: 'visible', timeout: 10000 })
+    await expect(page.getByTestId('article-preview').first()).toBeVisible()
   })
 })

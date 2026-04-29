@@ -10,6 +10,7 @@ export default defineConfig({
   use: {
     ...baseConfig.use,
     baseURL: process.env.BASE_URL,
+    testIdAttribute: 'data-test',
   },
   webServer: [
     ...(!isRemoteApi

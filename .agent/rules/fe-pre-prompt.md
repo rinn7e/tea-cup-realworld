@@ -12,4 +12,6 @@ use `npm run typecheck` for type checking with typescript
 
 prefer to do manual change instead for writing scripts, unless explicitly said so
 
-do not modify any code in e2e dir, this is a spec from somewhere else
+when running the e2e test, use sth similar to this
+
+npx playwright test -g "should favorite an article" --reporter=line

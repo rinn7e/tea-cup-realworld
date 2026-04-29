@@ -37,7 +37,7 @@ const editorTitleFormItem = (title: string): [string, Form.FormType] => [
     variant: { _tag: 'Text' },
     autocomplete: false,
     isFocus: false,
-    ui: standardInputUi(),
+    ui: standardInputUi({ testId: 'article-title-input' }),
   },
 ]
 
@@ -57,7 +57,7 @@ const editorDescriptionFormItem = (
     variant: { _tag: 'Text' },
     autocomplete: false,
     isFocus: false,
-    ui: standardInputUi({ isSmall: true }),
+    ui: standardInputUi({ isSmall: true, testId: 'article-desc-input' }),
   },
 ]
 
@@ -75,7 +75,7 @@ const editorBodyFormItem = (body: string): [string, Form.FormType] => [
     variant: { _tag: 'Text' },
     autocomplete: false,
     isFocus: false,
-    ui: standardInputUi({ isSmall: true }),
+    ui: standardInputUi({ isSmall: true, testId: 'article-body-textarea' }),
   },
 ]
 

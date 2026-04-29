@@ -38,9 +38,13 @@ test.describe('User Fetch Errors on App Initialization - 4XX (should logout)', (
     })
     await page.reload()
     // App should not crash - should show logged out state
-    await expect(page.locator('nav.navbar')).toBeVisible()
-    await expect(page.locator('a[href="/login"]')).toBeVisible()
-    await expect(page.locator('a[href="/register"]')).toBeVisible()
+    await expect(page.getByTestId('navbar')).toBeVisible()
+    await expect(
+      page.getByTestId('nav-link').filter({ hasText: 'Sign in' }),
+    ).toBeVisible()
+    await expect(
+      page.getByTestId('nav-link').filter({ hasText: 'Sign up' }),
+    ).toBeVisible()
     // Invalid token should be cleared
     const token = await getToken(page)
     expect(token).toBeNull()
@@ -62,11 +66,15 @@ test.describe('User Fetch Errors on App Initialization - 4XX (should logout)', (
     })
     await page.reload()
     // App should not crash - should show logged out state
-    await expect(page.locator('nav.navbar')).toBeVisible()
-    await expect(page.locator('a[href="/login"]')).toBeVisible()
-    await expect(page.locator('a[href="/register"]')).toBeVisible()
+    await expect(page.getByTestId('navbar')).toBeVisible()
+    await expect(
+      page.getByTestId('nav-link').filter({ hasText: 'Sign in' }),
+    ).toBeVisible()
+    await expect(
+      page.getByTestId('nav-link').filter({ hasText: 'Sign up' }),
+    ).toBeVisible()
     // 401 on /user shouldn't break unrelated features (articles should still load)
-    await expect(page.locator('.article-preview').first()).toBeVisible()
+    await expect(page.getByTestId('article-preview').first()).toBeVisible()
     // Invalid token should be cleared (use debug interface)
     const token = await getToken(page)
     expect(token).toBeNull()
@@ -88,9 +96,13 @@ test.describe('User Fetch Errors on App Initialization - 4XX (should logout)', (
     })
     await page.reload()
     // App should not crash - should show logged out state
-    await expect(page.locator('nav.navbar')).toBeVisible()
-    await expect(page.locator('a[href="/login"]')).toBeVisible()
-    await expect(page.locator('a[href="/register"]')).toBeVisible()
+    await expect(page.getByTestId('navbar')).toBeVisible()
+    await expect(
+      page.getByTestId('nav-link').filter({ hasText: 'Sign in' }),
+    ).toBeVisible()
+    await expect(
+      page.getByTestId('nav-link').filter({ hasText: 'Sign up' }),
+    ).toBeVisible()
     // Token should be cleared on 403
     const token = await getToken(page)
     expect(token).toBeNull()
@@ -110,9 +122,13 @@ test.describe('User Fetch Errors on App Initialization - 4XX (should logout)', (
     })
     await page.reload()
     // App should not crash - should show logged out state
-    await expect(page.locator('nav.navbar')).toBeVisible()
-    await expect(page.locator('a[href="/login"]')).toBeVisible()
-    await expect(page.locator('a[href="/register"]')).toBeVisible()
+    await expect(page.getByTestId('navbar')).toBeVisible()
+    await expect(
+      page.getByTestId('nav-link').filter({ hasText: 'Sign in' }),
+    ).toBeVisible()
+    await expect(
+      page.getByTestId('nav-link').filter({ hasText: 'Sign up' }),
+    ).toBeVisible()
     // Token should be cleared on 404
     const token = await getToken(page)
     expect(token).toBeNull()
@@ -136,8 +152,8 @@ test.describe('User Fetch Errors on App Initialization - 5XX (should enter unava
     })
     await page.reload()
     // App should not crash - should show "unavailable" mode with reconnect option
-    await expect(page.locator('nav.navbar')).toBeVisible()
-    await expect(page.locator('text=Connecting')).toBeVisible()
+    await expect(page.getByTestId('navbar')).toBeVisible()
+    await expect(page.getByText('Connecting')).toBeVisible()
     // Token should be KEPT (server error, not auth error)
     const token = await getToken(page)
     expect(token).not.toBeNull()
@@ -161,29 +177,29 @@ test.describe('User Fetch Errors on App Initialization - 5XX (should enter unava
     })
     await page.reload()
     // Verify we're in unavailable mode
-    await expect(page.locator('text=Connecting')).toBeVisible()
+    await expect(page.getByText('Connecting')).toBeVisible()
     const tokenBefore = await getToken(page)
     expect(tokenBefore).toBe('my-precious-token')
     // Browse the app - click on an article (Global Feed should be visible)
-    await expect(page.locator('text=Global Feed')).toBeVisible()
+    await expect(page.getByText('Global Feed')).toBeVisible()
     // Click on a tag to filter articles (tests navigation within the app)
-    const firstTag = page.locator('.tag-pill').first()
+    const firstTag = page.getByTestId('tag-pill').first()
     if (await firstTag.isVisible()) {
       await firstTag.click()
-      await expect(page.locator('nav.navbar')).toBeVisible()
+      await expect(page.getByTestId('navbar')).toBeVisible()
     }
     // Navigate to home via navbar
-    await page.click('a.nav-link:has-text("Home")')
-    await expect(page.locator('text=Global Feed')).toBeVisible()
+    await page.getByTestId('nav-link').filter({ hasText: 'Home' }).click()
+    await expect(page.getByText('Global Feed')).toBeVisible()
     // Manually reload the page (simulating user pressing F5)
     await page.reload()
     // Token should STILL be there after manual reload
     const tokenAfterReload = await getToken(page)
     expect(tokenAfterReload).toBe('my-precious-token')
     // Should still be in unavailable mode (server still returning 500)
-    await expect(page.locator('text=Connecting')).toBeVisible()
+    await expect(page.getByText('Connecting')).toBeVisible()
     // App should still be functional
-    await expect(page.locator('text=Global Feed')).toBeVisible()
+    await expect(page.getByText('Global Feed')).toBeVisible()
   })
 
   test('should handle network timeout on /api/user', async ({ page }) => {
@@ -196,8 +212,8 @@ test.describe('User Fetch Errors on App Initialization - 5XX (should enter unava
     })
     await page.reload()
     // App should not crash - should show "unavailable" mode
-    await expect(page.locator('nav.navbar')).toBeVisible()
-    await expect(page.locator('text=Connecting')).toBeVisible()
+    await expect(page.getByTestId('navbar')).toBeVisible()
+    await expect(page.getByText('Connecting')).toBeVisible()
     // Token should be KEPT (network error, not auth error)
     const token = await getToken(page)
     expect(token).not.toBeNull()
@@ -213,8 +229,8 @@ test.describe('User Fetch Errors on App Initialization - 5XX (should enter unava
     })
     await page.reload()
     // App should not crash - should show "unavailable" mode
-    await expect(page.locator('nav.navbar')).toBeVisible()
-    await expect(page.locator('text=Connecting')).toBeVisible()
+    await expect(page.getByTestId('navbar')).toBeVisible()
+    await expect(page.getByText('Connecting')).toBeVisible()
     // Token should be KEPT (network error, not auth error)
     const token = await getToken(page)
     expect(token).not.toBeNull()
@@ -234,7 +250,7 @@ test.describe('User Fetch Errors on App Initialization - 5XX (should enter unava
     })
     await page.reload()
     // App should not crash (empty 200 is a server bug, app may stay in loading state)
-    await expect(page.locator('nav.navbar')).toBeVisible()
+    await expect(page.getByTestId('navbar')).toBeVisible()
   })
 
   test('should handle malformed JSON on /api/user', async ({ page }) => {
@@ -251,8 +267,8 @@ test.describe('User Fetch Errors on App Initialization - 5XX (should enter unava
     })
     await page.reload()
     // App should not crash - should show "unavailable" mode (parsing error)
-    await expect(page.locator('nav.navbar')).toBeVisible()
-    await expect(page.locator('text=Connecting')).toBeVisible()
+    await expect(page.getByTestId('navbar')).toBeVisible()
+    await expect(page.getByText('Connecting')).toBeVisible()
     // Token should be KEPT (parsing error, not auth error)
     const token = await getToken(page)
     expect(token).not.toBeNull()
@@ -277,7 +293,7 @@ test.describe('User Fetch Errors - Protected Routes', () => {
     })
     await page.goto('/settings')
     // Should redirect to login or home, not show blank screen
-    await expect(page.locator('nav.navbar')).toBeVisible()
+    await expect(page.getByTestId('navbar')).toBeVisible()
     await expect(page).not.toHaveURL('/settings')
   })
 
@@ -291,7 +307,7 @@ test.describe('User Fetch Errors - Protected Routes', () => {
     })
     await page.goto('/editor')
     // Should redirect to login or home, not show blank screen
-    await expect(page.locator('nav.navbar')).toBeVisible()
+    await expect(page.getByTestId('navbar')).toBeVisible()
     await expect(page).not.toHaveURL('/editor')
   })
 
@@ -307,7 +323,7 @@ test.describe('User Fetch Errors - Protected Routes', () => {
     })
     await page.goto('/settings')
     // App should not crash
-    await expect(page.locator('nav.navbar')).toBeVisible()
+    await expect(page.getByTestId('navbar')).toBeVisible()
   })
 
   test('should handle network error on /settings gracefully', async ({
@@ -318,6 +334,6 @@ test.describe('User Fetch Errors - Protected Routes', () => {
     })
     await page.goto('/settings')
     // App should not crash
-    await expect(page.locator('nav.navbar')).toBeVisible()
+    await expect(page.getByTestId('navbar')).toBeVisible()
   })
 })

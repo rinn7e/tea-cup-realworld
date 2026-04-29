@@ -34,7 +34,10 @@ export const ErrorMessages: React.FC<Props> = ({ error }) => {
   })
 
   return (
-    <ul className='error-messages flex flex-col gap-[4px] rounded border border-red-200 bg-red-50 p-[12px] text-sm text-red-700'>
+    <ul
+      className='flex flex-col gap-[4px] rounded border border-red-200 bg-red-50 p-[12px] text-sm text-red-700'
+      data-test='be-input-error-list'
+    >
       {messages.map((message, index) => (
         <li key={index}>{message}</li>
       ))}

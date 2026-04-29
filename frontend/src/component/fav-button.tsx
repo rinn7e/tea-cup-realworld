@@ -18,11 +18,12 @@ const normalFavButton = ({
   <button
     type='button'
     onClick={onClick}
+    data-test='fav-button'
     className={cn(
       'btn flex items-center gap-[4px] rounded border px-[8px] py-[4px] text-xs transition-colors',
       favorited
-        ? 'btn-primary border-green-600 bg-green-600 text-white hover:bg-green-700'
-        : 'btn-outline-primary border-green-600 text-green-600 hover:bg-green-50',
+        ? 'border-green-600 bg-green-600 text-white hover:bg-green-700'
+        : 'border-green-600 text-green-600 hover:bg-green-50',
     )}
   >
     <Heart size={12} fill={favorited ? 'currentColor' : 'none'} />
@@ -39,11 +40,10 @@ const detailFavButton = ({
   <button
     type='button'
     onClick={onClick}
+    data-test='fav-button'
     className={cn(
       'btn flex items-center gap-[4px] rounded border px-[12px] py-[4px] text-xs transition-colors',
-      favorited
-        ? 'btn-primary border-green-600'
-        : 'btn-outline-primary border-green-600',
+      favorited ? 'border-green-600' : 'border-green-600',
       isLight
         ? favorited
           ? 'bg-green-600 text-white hover:bg-green-700'

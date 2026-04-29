@@ -39,13 +39,13 @@ test.describe('Articles', () => {
     await expect(page).toHaveURL(/\/article\/.+/)
 
     // Should show article content
-    await expect(page.locator('h1')).toHaveText(article.title)
-    await expect(page.locator('.article-content p')).toContainText(article.body)
+    await expect(page.getByTestId('article-page')).toContainText(article.title)
+    await expect(page.getByTestId('article-body')).toContainText(article.body)
 
     // Should show tags
     for (const tag of article.tags || []) {
       await expect(
-        page.locator(`.tag-list .tag-default:has-text("${tag}")`),
+        page.getByTestId('article-tag').filter({ hasText: tag }),
       ).toBeVisible()
     }
   })
@@ -68,7 +68,9 @@ test.describe('Articles', () => {
     await editArticle(page, slug, updates)
 
     // Should show updated content
-    await expect(page.locator('h1')).toHaveText(updates.title)
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+      updates.title,
+    )
   })
 
   test('should delete an article', async ({ page }) => {
@@ -83,9 +85,9 @@ test.describe('Articles', () => {
     await expect(page).toHaveURL('/')
 
     // Article should not appear on home page
-    await expect(
-      page.locator(`h1:has-text("${article.title}")`),
-    ).not.toBeVisible()
+    await page
+      .getByRole('heading', { name: article.title })
+      .waitFor({ state: 'hidden', timeout: 10000 })
   })
 
   /**
@@ -136,16 +138,18 @@ test.describe('Articles', () => {
     await page.goto('/', { waitUntil: 'load' })
 
     // Click on the first article to go to its detail page
-    await page.click('.article-preview h1')
+    await page
+      .getByTestId('article-preview')
+      .first()
+      .getByRole('heading')
+      .click()
     await page.waitForLoadState('load')
 
     // Favorite the article using the helper (which expects to be on article detail page)
     await favoriteArticle(page)
 
     // Should see unfavorite button (use .first() since there are 2 buttons on the page)
-    await expect(
-      page.locator('button:has-text("Unfavorite")').first(),
-    ).toBeVisible()
+    await expect(page.getByTestId('fav-button').first()).toBeVisible()
   })
 
   test('should unfavorite an article', async ({ page }) => {
@@ -153,20 +157,25 @@ test.describe('Articles', () => {
     await page.goto('/', { waitUntil: 'load' })
 
     // Wait for articles to load
-    await page.waitForSelector('.article-preview', { timeout: 10000 })
+    await page
+      .getByTestId('article-preview')
+      .first()
+      .waitFor({ state: 'visible', timeout: 10000 })
 
     // Get the username of the currently logged in user from the navbar
     const currentUsername = await page
-      .locator('nav a[href^="/profile/"]')
-      .first()
+      .getByTestId('nav-link')
+      .filter({ has: page.getByTestId('navbar-user-avatar') })
       .textContent()
 
     // Find an article that's NOT from the current user
-    const articles = await page.locator('.article-preview').all()
+    const articles = await page.getByTestId('article-preview').all()
     let articleToFavorite = null
 
     for (const article of articles) {
-      const authorName = await article.locator('.author').textContent()
+      const authorName = await article
+        .getByTestId('article-author')
+        .textContent()
       if (authorName?.trim() !== currentUsername?.trim()) {
         articleToFavorite = article
         break
@@ -178,13 +187,14 @@ test.describe('Articles', () => {
     }
 
     // Click on the article
-    await articleToFavorite.locator('h1').click()
+    await articleToFavorite.getByRole('heading').click()
     await page.waitForURL(/\/article\/.+/)
 
     // Wait for article page to load - should see Favorite button (not Delete button)
-    await page.waitForSelector('button:has-text("Favorite")', {
-      timeout: 10000,
-    })
+    await page
+      .getByRole('button', { name: 'Favorite' })
+      .first()
+      .waitFor({ state: 'visible', timeout: 10000 })
 
     // Favorite it first
     await favoriteArticle(page)
@@ -193,9 +203,7 @@ test.describe('Articles', () => {
     await unfavoriteArticle(page)
 
     // Should see favorite button again (use .first() since there are 2 buttons on the page)
-    await expect(
-      page.locator('button:has-text("Favorite")').first(),
-    ).toBeVisible()
+    await expect(page.getByTestId('fav-button').first()).toBeVisible()
   })
 
   test('should view article from home feed', async ({ page }) => {
@@ -207,22 +215,25 @@ test.describe('Articles', () => {
     await page.goto('/', { waitUntil: 'load' })
 
     // Wait for articles to load
-    await page.waitForSelector('.article-preview', { timeout: 10000 })
+    await page
+      .getByTestId('article-preview')
+      .first()
+      .waitFor({ state: 'visible', timeout: 10000 })
 
     // Wait for our specific article to appear
-    await page.waitForSelector(`h1:has-text("${article.title}")`, {
-      timeout: 10000,
-    })
+    await page
+      .getByRole('heading', { name: article.title })
+      .waitFor({ state: 'visible', timeout: 30000 })
 
-    // Click on the article link in the feed (h1 is inside a link)
+    // Click on the article link in the feed
     await Promise.all([
       page.waitForURL(/\/article\/.+/),
-      page.locator(`h1:has-text("${article.title}")`).first().click(),
+      page.getByRole('heading', { name: article.title }).first().click(),
     ])
 
     // Should be on article page
     await expect(page).toHaveURL(/\/article\/.+/)
-    await expect(page.locator('h1')).toHaveText(article.title)
+    await expect(page.getByTestId('article-page')).toContainText(article.title)
   })
 
   test('should display article preview correctly', async ({ page }) => {
@@ -234,17 +245,19 @@ test.describe('Articles', () => {
     await page.goto('/')
 
     // Article preview should show correct information
-    const preview = page.locator('.article-preview').first()
-    await expect(preview.locator('h1')).toHaveText(article.title)
-    await expect(preview.locator('p')).toContainText(article.description)
+    const preview = page.getByTestId('article-preview').first()
+    await expect(preview.getByRole('heading')).toHaveText(article.title)
+    await expect(preview.getByTestId('article-description')).toContainText(
+      article.description,
+    )
 
     // Should show author info
-    await expect(preview.locator('.author')).toBeVisible()
+    await expect(preview.getByTestId('article-author')).toBeVisible()
 
     // Should show tags
     for (const tag of article.tags || []) {
       await expect(
-        preview.locator(`.tag-list .tag-default:has-text("${tag}")`),
+        preview.getByTestId('article-tag').filter({ hasText: tag }),
       ).toBeVisible()
     }
   })
@@ -257,7 +270,7 @@ test.describe('Articles', () => {
     // Should show tags on the article page
     for (const tag of article.tags || []) {
       await expect(
-        page.locator(`.tag-list .tag-default:has-text("${tag}")`),
+        page.getByTestId('article-tag').filter({ hasText: tag }),
       ).toBeVisible()
     }
 
@@ -269,19 +282,12 @@ test.describe('Articles', () => {
     await page.goto(`/editor/${slug}`, { waitUntil: 'load' })
 
     // Wait for the form to be populated
-    const titleInput = page.locator('input[name="title"]')
+    const titleInput = page.getByTestId('article-title-input')
     await expect(titleInput).not.toHaveValue('', { timeout: 10000 })
 
     // Remove all tag pills by clicking their delete icons
-    while (
-      (await page
-        .locator('.tag-list .tag-pill i, .tag-list .tag-default i')
-        .count()) > 0
-    ) {
-      await page
-        .locator('.tag-list .tag-pill i, .tag-list .tag-default i')
-        .first()
-        .click()
+    while ((await page.getByTestId('tag-pill').count()) > 0) {
+      await page.getByTestId('tag-pill').first().getByRole('button').click()
       await page.waitForTimeout(100)
     }
 
@@ -311,7 +317,7 @@ test.describe('Articles', () => {
     }
 
     // Verify no tags on the article page
-    await expect(page.locator('.tag-list .tag-default')).toHaveCount(0)
+    await expect(page.getByTestId('article-tag')).toHaveCount(0)
   })
 
   test('should only allow author to edit/delete article', async ({
@@ -336,9 +342,11 @@ test.describe('Articles', () => {
     await page2.goto(articleUrl)
 
     // Should not see Edit/Delete buttons
-    await expect(page2.locator('a:has-text("Edit Article")')).not.toBeVisible()
     await expect(
-      page2.locator('button:has-text("Delete Article")'),
+      page2.getByRole('link', { name: 'Edit Article' }),
+    ).not.toBeVisible()
+    await expect(
+      page2.getByRole('button', { name: 'Delete Article' }),
     ).not.toBeVisible()
 
     await context2.close()

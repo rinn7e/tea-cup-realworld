@@ -16,14 +16,14 @@ export async function createArticle(
 
   await page.goto('/editor', { waitUntil: 'load' })
 
-  await page.fill('input[name="title"]', article.title)
-  await page.fill('input[name="description"]', article.description)
-  await page.fill('textarea[name="body"]', article.body)
+  await page.getByTestId('article-title-input').fill(article.title)
+  await page.getByTestId('article-desc-input').fill(article.description)
+  await page.getByTestId('article-body-textarea').fill(article.body)
 
   if (article.tags && article.tags.length > 0) {
     for (const tag of article.tags) {
-      await page.fill('input[placeholder="Enter tags"]', tag)
-      await page.press('input[placeholder="Enter tags"]', 'Enter')
+      await page.getByTestId('tagInput-input').fill(tag)
+      await page.getByTestId('tagInput-input').press('Enter')
     }
   }
 
@@ -47,20 +47,20 @@ export async function editArticle(
   await page.goto(`/editor/${slug}`, { waitUntil: 'load' })
 
   // Wait for the API data to populate the form (not just for the input to exist)
-  const titleInput = page.locator('input[name="title"]')
+  const titleInput = page.getByTestId('article-title-input')
   await expect(titleInput).not.toHaveValue('', { timeout: 10000 })
 
   if (updates.title) {
-    await page.fill('input[name="title"]', '')
-    await page.fill('input[name="title"]', updates.title)
+    await page.getByTestId('article-title-input').fill('')
+    await page.getByTestId('article-title-input').fill(updates.title)
   }
   if (updates.description) {
-    await page.fill('input[name="description"]', '')
-    await page.fill('input[name="description"]', updates.description)
+    await page.getByTestId('article-desc-input').fill('')
+    await page.getByTestId('article-desc-input').fill(updates.description)
   }
   if (updates.body) {
-    await page.fill('textarea[name="body"]', '')
-    await page.fill('textarea[name="body"]', updates.body)
+    await page.getByTestId('article-body-textarea').fill('')
+    await page.getByTestId('article-body-textarea').fill(updates.body)
   }
 
   await Promise.all([
@@ -78,15 +78,17 @@ export async function deleteArticle(page: Page) {
 }
 
 export async function favoriteArticle(page: Page) {
-  await page.click('button.btn-outline-primary:has-text("Favorite")')
+  await page.getByTestId('fav-button').first().click()
   // Wait for the button to update to "Unfavorite"
-  await page.waitForSelector('button.btn-primary:has-text("Unfavorite")')
+  await expect(page.getByTestId('fav-button').first()).toContainText(
+    'Unfavorite',
+  )
 }
 
 export async function unfavoriteArticle(page: Page) {
-  await page.click('button.btn-primary:has-text("Unfavorite")')
+  await page.getByTestId('fav-button').first().click()
   // Wait for the button to update back to "Favorite"
-  await page.waitForSelector('button.btn-outline-primary:has-text("Favorite")')
+  await expect(page.getByTestId('fav-button').first()).toContainText('Favorite')
 }
 
 export function generateUniqueArticle(): ArticleData {

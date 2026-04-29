@@ -1,4 +1,4 @@
-import { Page, Response } from '@playwright/test'
+import { Page } from '@playwright/test'
 
 /**
  * Performs a UI action and waits for all network activity to settle.

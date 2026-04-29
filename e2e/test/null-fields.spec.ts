@@ -26,8 +26,8 @@ test.describe('Null/Empty Image and Bio Handling', () => {
     const user = generateUniqueUser()
     await register(page, user.username, user.email, user.password)
     await page.goto(`/profile/${user.username}`, { waitUntil: 'load' })
-    await page.waitForSelector('.user-img')
-    const profileImg = page.locator('.user-img')
+    await page.getByTestId('profile-avatar').waitFor({ state: 'visible' })
+    const profileImg = page.getByTestId('profile-avatar')
     await expect(profileImg).toBeVisible()
     const src = await profileImg.getAttribute('src')
     expect(src).toContain('default-avatar.svg')
@@ -38,7 +38,7 @@ test.describe('Null/Empty Image and Bio Handling', () => {
   }) => {
     const user = generateUniqueUser()
     await register(page, user.username, user.email, user.password)
-    const navImg = page.locator('nav .user-pic')
+    const navImg = page.getByTestId('navbar').getByTestId('navbar-user-avatar')
     await expect(navImg).toBeVisible()
     const src = await navImg.getAttribute('src')
     expect(src).toContain('default-avatar.svg')
@@ -51,7 +51,10 @@ test.describe('Null/Empty Image and Bio Handling', () => {
     await register(page, user.username, user.email, user.password)
     const article = generateUniqueArticle()
     await createArticle(page, article)
-    const articleMetaImg = page.locator('.article-meta img').first()
+    const articleMetaImg = page
+      .getByTestId('article-metadata')
+      .first()
+      .getByTestId('article-author-img')
     await expect(articleMetaImg).toBeVisible()
     const src = await articleMetaImg.getAttribute('src')
     expect(src).toContain('default-avatar.svg')
@@ -66,13 +69,14 @@ test.describe('Null/Empty Image and Bio Handling', () => {
     await createArticle(page, article)
     await addComment(page, 'Test comment for avatar check')
     // Comment form author image
-    const commentFormImg = page.locator('.comment-form .comment-author-img')
+    const commentFormImg = page.getByTestId('comment-author-img').first()
     await expect(commentFormImg).toBeVisible()
     const formSrc = await commentFormImg.getAttribute('src')
     expect(formSrc).toContain('default-avatar.svg')
     // Posted comment author image
     const commentImg = page
-      .locator('.card:not(.comment-form) .comment-author-img')
+      .getByTestId('comment-card')
+      .getByTestId('comment-author-img')
       .first()
     await expect(commentImg).toBeVisible()
     const commentSrc = await commentImg.getAttribute('src')
@@ -94,8 +98,8 @@ test.describe('Null/Empty Image and Bio Handling', () => {
       await updateProfile(page, { image: testImage })
     }
     await page.goto(`/profile/${user.username}`, { waitUntil: 'load' })
-    await page.waitForSelector('.user-img')
-    const profileImg = page.locator('.user-img')
+    await page.getByTestId('profile-avatar').waitFor({ state: 'visible' })
+    const profileImg = page.getByTestId('profile-avatar')
     await expect(profileImg).toHaveAttribute('src', testImage)
   })
 
@@ -119,8 +123,8 @@ test.describe('Null/Empty Image and Bio Handling', () => {
       await updateProfile(page, { image: '' })
     }
     await page.goto(`/profile/${user.username}`, { waitUntil: 'load' })
-    await page.waitForSelector('.user-img')
-    const profileImg = page.locator('.user-img')
+    await page.getByTestId('profile-avatar').waitFor({ state: 'visible' })
+    const profileImg = page.getByTestId('profile-avatar')
     const src = await profileImg.getAttribute('src')
     expect(src).toContain('default-avatar.svg')
   })
@@ -131,8 +135,8 @@ test.describe('Null/Empty Image and Bio Handling', () => {
     const user = generateUniqueUser()
     await register(page, user.username, user.email, user.password)
     await page.goto(`/profile/${user.username}`, { waitUntil: 'load' })
-    await page.waitForSelector('.user-info')
-    const bioText = await page.locator('.user-info p').textContent()
+    await page.getByTestId('user-info-section').waitFor({ state: 'visible' })
+    const bioText = await page.getByTestId('user-bio').textContent()
     expect(bioText?.trim()).not.toBe('null')
     expect(bioText?.trim()).toBe('')
   })
@@ -156,8 +160,8 @@ test.describe('Null/Empty Image and Bio Handling', () => {
       await updateProfile(page, { bio: '' })
     }
     await page.goto(`/profile/${user.username}`, { waitUntil: 'load' })
-    await page.waitForSelector('.user-info')
-    const bioText = await page.locator('.user-info p').textContent()
+    await page.getByTestId('user-info-section').waitFor({ state: 'visible' })
+    const bioText = await page.getByTestId('user-bio').textContent()
     expect(bioText?.trim()).not.toBe(testBio)
     expect(bioText?.trim()).not.toBe('null')
   })
@@ -168,7 +172,7 @@ test.describe('Null/Empty Image and Bio Handling', () => {
     const user = generateUniqueUser()
     await register(page, user.username, user.email, user.password)
     await page.goto('/settings', { waitUntil: 'load' })
-    await expect(page.locator('input[name="image"]')).toHaveValue('')
+    await expect(page.getByTestId('user-image-input')).toHaveValue('')
   })
 
   test('settings form should show empty string for null bio', async ({
@@ -177,7 +181,7 @@ test.describe('Null/Empty Image and Bio Handling', () => {
     const user = generateUniqueUser()
     await register(page, user.username, user.email, user.password)
     await page.goto('/settings', { waitUntil: 'load' })
-    await expect(page.locator('textarea[name="bio"]')).toHaveValue('')
+    await expect(page.getByTestId('user-bio-textarea')).toHaveValue('')
   })
 
   test('author avatars should render on other user articles in feed', async ({
@@ -187,17 +191,22 @@ test.describe('Null/Empty Image and Bio Handling', () => {
     await new Promise((resolve) => setTimeout(resolve, 1000))
     // The global feed contains articles from the backend's seed users
     await page.goto('/', { waitUntil: 'load' })
-    await page.locator('a.nav-link', { hasText: 'Global Feed' }).click()
+    await page
+      .getByTestId('home-tab')
+      .filter({ hasText: 'Global Feed' })
+      .click()
     // Wait for at least 2 article previews to load (seed data from multiple authors)
-    const previews = page.locator('.article-preview')
+    const previews = page.getByTestId('article-preview')
     await expect(previews.nth(1)).toBeVisible({ timeout: 10000 })
     const count = await previews.count()
     const authors = new Set<string>()
     for (let i = 0; i < count; i++) {
       const preview = previews.nth(i)
-      const authorName = await preview.locator('.author').textContent()
+      const authorName = await preview
+        .getByTestId('article-author')
+        .textContent()
       if (authorName) authors.add(authorName.trim())
-      const img = preview.locator('.article-meta img')
+      const img = preview.getByTestId('article-author-img')
       await expect(img).toBeVisible()
       await expect(img).toHaveAttribute(
         'src',

@@ -24,9 +24,7 @@ test.describe('Settings - Profile Updates', () => {
 
     // Go to settings
     await page.goto('/settings')
-    await expect(page.locator('input[name="username"]')).toHaveValue(
-      user.username,
-    )
+    await expect(page.getByTestId('username-input')).toHaveValue(user.username)
 
     // Update bio
     const newBio = `Bio updated at ${Date.now()}`
@@ -68,7 +66,7 @@ test.describe('Settings - Profile Updates', () => {
       ])
 
       await expect(page).toHaveURL(new RegExp(`/profile/${user.username}`))
-      await expect(page.locator('.user-info')).toContainText(newBio)
+      await expect(page.getByTestId('user-info-section')).toContainText(newBio)
     }
   })
 
@@ -77,9 +75,7 @@ test.describe('Settings - Profile Updates', () => {
     await register(page, user.username, user.email, user.password)
 
     await page.goto('/settings')
-    await expect(page.locator('input[name="username"]')).toHaveValue(
-      user.username,
-    )
+    await expect(page.getByTestId('username-input')).toHaveValue(user.username)
 
     // Update image
     const newImage = 'https://api.realworld.io/images/smiley-cyrus.jpeg'
@@ -113,7 +109,7 @@ test.describe('Settings - Profile Updates', () => {
       ])
 
       await expect(page).toHaveURL(new RegExp(`/profile/${user.username}`))
-      await expect(page.locator(`.user-img[src="${newImage}"]`)).toBeVisible()
+      await expect(page.getByTestId('profile-avatar')).toBeVisible()
     }
   })
 
@@ -159,8 +155,8 @@ test.describe('Settings - Profile Updates', () => {
       ])
 
       await expect(page).toHaveURL(new RegExp(`/profile/${user.username}`))
-      await expect(page.locator('.user-info')).toContainText(newBio)
-      await expect(page.locator(`.user-img[src="${newImage}"]`)).toBeVisible()
+      await expect(page.getByTestId('user-info-section')).toContainText(newBio)
+      await expect(page.getByTestId('profile-avatar')).toBeVisible()
     }
   })
 
@@ -192,7 +188,7 @@ test.describe('Settings - Profile Updates', () => {
     await expect(page).toHaveURL(new RegExp(`/profile/${user.username}`))
 
     // Verify bio is displayed on profile
-    await expect(page.locator('.user-info')).toContainText(newBio)
+    await expect(page.getByTestId('user-info-section')).toContainText(newBio)
   })
 
   test('should display updated image on profile page', async ({ page }) => {
@@ -223,7 +219,7 @@ test.describe('Settings - Profile Updates', () => {
     await expect(page).toHaveURL(new RegExp(`/profile/${user.username}`))
 
     // Verify image is displayed on profile (use .user-img to avoid matching navbar)
-    await expect(page.locator(`.user-img[src="${newImage}"]`)).toBeVisible()
+    await expect(page.getByTestId('profile-avatar')).toBeVisible()
   })
 
   test('should preserve username in navbar after update', async ({ page }) => {
@@ -232,7 +228,9 @@ test.describe('Settings - Profile Updates', () => {
 
     // Verify navbar shows username before update
     await expect(
-      page.locator(`nav a[href="/profile/${user.username}"]`),
+      page
+        .getByTestId('nav-link')
+        .filter({ has: page.getByTestId('navbar-user-avatar') }),
     ).toBeVisible()
 
     await page.goto('/settings')
@@ -257,7 +255,9 @@ test.describe('Settings - Profile Updates', () => {
 
     // Verify navbar STILL shows username after update (not corrupted)
     await expect(
-      page.locator(`nav a[href="/profile/${user.username}"]`),
+      page
+        .getByTestId('nav-link')
+        .filter({ has: page.getByTestId('navbar-user-avatar') }),
     ).toBeVisible()
   })
 
@@ -291,12 +291,10 @@ test.describe('Settings - Profile Updates', () => {
 
     // Go back to settings
     await page.goto('/settings')
-    await expect(page.locator('input[name="username"]')).toHaveValue(
-      user.username,
-    )
+    await expect(page.getByTestId('username-input')).toHaveValue(user.username)
 
     // Verify previous update persisted
-    await expect(page.locator('textarea[name="bio"]')).toHaveValue(bio1)
+    await expect(page.getByTestId('user-bio-textarea')).toHaveValue(bio1)
 
     // Make another update
     const bio2 = `Second update ${Date.now()}`
@@ -320,7 +318,7 @@ test.describe('Settings - Profile Updates', () => {
       ])
 
       await expect(page).toHaveURL(new RegExp(`/profile/${user.username}`))
-      await expect(page.locator('.user-info')).toContainText(bio2)
+      await expect(page.getByTestId('user-info-section')).toContainText(bio2)
     }
   })
 })

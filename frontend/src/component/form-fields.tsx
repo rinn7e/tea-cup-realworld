@@ -13,6 +13,7 @@ import React from 'react'
 export type ExtraTextInputProps = {
   isSmall?: boolean
   isTag?: boolean
+  testId?: string
 }
 
 export const standardInputUi =
@@ -24,6 +25,7 @@ export const standardInputUi =
     const validationClass = isError
       ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
       : 'border-gray-300 focus:border-green-500 focus:ring-green-500'
+    const testId = extra.testId ?? props.key + '-input'
     const inputClass = cn(
       'w-full rounded border px-[12px] bg-white outline-none focus:ring-1 transition-colors',
       validationClass,
@@ -49,6 +51,7 @@ export const standardInputUi =
     const content = props.isTextarea ? (
       <textarea
         name={props.key}
+        data-test={testId}
         autoComplete={autocompleteToString(props.autocomplete)}
         className={cn(inputClass, 'resize-none')}
         rows={8}
@@ -81,6 +84,7 @@ export const standardInputUi =
       <div className='relative flex items-center'>
         <input
           name={props.key}
+          data-test={testId}
           autoComplete={autocompleteToString(props.autocomplete)}
           className={cn(inputClass, variant._tag === 'Password' && 'pr-[40px]')}
           type={textInputVariantToString(variant)}
@@ -136,7 +140,10 @@ export const standardInputUi =
             props.validationResult,
             E.fold(
               (err) => (
-                <div className='fe-error-messages px-[4px] text-xs text-red-600'>
+                <div
+                  data-test='fe-input-error'
+                  className='px-[4px] text-xs text-red-600'
+                >
                   {err}
                 </div>
               ),
@@ -189,11 +196,12 @@ export const textPillInputUi =
 
     return (
       <div className='flex flex-col gap-[4px] pb-[16px]'>
-        <div className={cn(containerClass, 'tag-list')}>
+        <div className={containerClass}>
           {props.allValues.map((tag: string, index: number) => (
             <span
               key={`${tag}-${index}`}
-              className='tag-default tag-pill flex items-center gap-[4px] rounded-full bg-gray-200 px-[8px] py-[2px] text-sm text-gray-700'
+              className='flex items-center gap-[4px] rounded-full bg-gray-200 px-[8px] py-[2px] text-sm text-gray-700'
+              data-test='tag-pill'
             >
               {tag}
               <button
@@ -215,6 +223,7 @@ export const textPillInputUi =
           ))}
           <input
             name={props.key}
+            data-test={extra.testId ?? props.key + '-input'}
             autoComplete={autocompleteToString(props.autocomplete)}
             className={cn('flex-1 bg-transparent outline-none', sizeClass)}
             placeholder={props.placeholder}
@@ -251,7 +260,10 @@ export const textPillInputUi =
             props.validationResult,
             E.fold(
               (err) => (
-                <div className='fe-error-messages px-[4px] text-xs text-red-600'>
+                <div
+                  data-test='fe-input-error'
+                  className='px-[4px] text-xs text-red-600'
+                >
                   {err}
                 </div>
               ),

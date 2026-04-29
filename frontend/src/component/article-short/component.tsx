@@ -15,9 +15,15 @@ export interface Props {
 
 export const ArticleShortComponent: React.FC<Props> = ({ model, dispatch }) => {
   return (
-    <div className='article-preview flex flex-col gap-[12px] border-b border-gray-200 py-[24px]'>
+    <div
+      className='flex flex-col gap-[12px] border-b border-gray-200 py-[24px]'
+      data-test='article-preview'
+    >
       <div className='flex items-center justify-between'>
-        <div className='article-meta flex items-center gap-[12px]'>
+        <div
+          className='flex items-center gap-[12px]'
+          data-test='article-metadata'
+        >
           <Link
             route={{
               page: {
@@ -31,6 +37,7 @@ export const ArticleShortComponent: React.FC<Props> = ({ model, dispatch }) => {
               src={assetPath(model.author.image || '/default-avatar.svg')}
               className='h-[32px] w-[32px] rounded-full object-cover'
               alt=''
+              data-test='article-author-img'
             />
           </Link>
           <div className='info flex flex-col'>
@@ -42,11 +49,15 @@ export const ArticleShortComponent: React.FC<Props> = ({ model, dispatch }) => {
                   favorites: false,
                 },
               }}
-              className='author block text-sm font-medium text-green-600 hover:underline'
+              className='block text-sm font-medium text-green-600 hover:underline'
+              data-test='article-author'
             >
               {model.author.username}
             </Link>
-            <span className='date text-xs text-gray-400'>
+            <span
+              className='date text-xs text-gray-400'
+              data-test='article-date'
+            >
               {new Date(model.createdAt).toDateString()}
             </span>
           </div>
@@ -67,13 +78,17 @@ export const ArticleShortComponent: React.FC<Props> = ({ model, dispatch }) => {
             slug: model.slug,
           },
         }}
-        className='preview-link flex flex-col gap-[12px]'
+        className='flex flex-col gap-[12px]'
+        data-test='article-link'
       >
         <div className='flex flex-col gap-[4px]'>
           <h1 className='line-clamp-2 text-xl font-bold text-gray-900'>
             {model.title}
           </h1>
-          <p className='line-clamp-3 text-sm text-gray-500'>
+          <p
+            className='line-clamp-3 text-sm text-gray-500'
+            data-test='article-description'
+          >
             {model.description}
           </p>
         </div>
@@ -82,11 +97,12 @@ export const ArticleShortComponent: React.FC<Props> = ({ model, dispatch }) => {
             Read more
             <DotLoading className='gap-[0px]' />
           </span>
-          <ul className='tag-list flex flex-wrap gap-[4px]'>
+          <ul className='flex flex-wrap gap-[4px]' data-test='tag-list'>
             {model.tagList.map((tag) => (
               <li
                 key={tag}
-                className='tag-default tag-pill rounded-full border border-gray-300 px-[8px] py-[2px] text-xs text-gray-400'
+                className='rounded-full border border-gray-300 px-[8px] py-[2px] text-xs text-gray-400'
+                data-test='article-tag'
               >
                 {tag}
               </li>

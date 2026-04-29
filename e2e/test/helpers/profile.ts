@@ -5,19 +5,31 @@ import { API_MODE } from './config'
 export async function followUser(page: Page, username: string) {
   await page.goto(`/profile/${username}`, { waitUntil: 'load' })
   // Wait for profile page to load and Follow button to appear
-  await page.waitForSelector('button:has-text("Follow")', { timeout: 30000 })
+  await page
+    .getByRole('button', { name: 'Follow' })
+    .waitFor({ state: 'visible', timeout: 30000 })
+  await page
+    .getByTestId('profile-tab')
+    .filter({ hasText: 'Favorited' })
+    .waitFor({ state: 'visible', timeout: 3000 })
   await page.click('button:has-text("Follow")')
   // Wait for button to update
-  await page.waitForSelector('button:has-text("Unfollow")', { timeout: 5000 })
+  await page
+    .getByRole('button', { name: 'Unfollow' })
+    .waitFor({ state: 'visible', timeout: 5000 })
 }
 
 export async function unfollowUser(page: Page, username: string) {
   await page.goto(`/profile/${username}`, { waitUntil: 'load' })
   // Wait for profile page to load and Unfollow button to appear
-  await page.waitForSelector('button:has-text("Unfollow")', { timeout: 30000 })
+  await page
+    .getByRole('button', { name: 'Unfollow' })
+    .waitFor({ state: 'visible', timeout: 30000 })
   await page.click('button:has-text("Unfollow")')
   // Wait for button to update
-  await page.waitForSelector('button:has-text("Follow")', { timeout: 5000 })
+  await page
+    .getByRole('button', { name: 'Follow' })
+    .waitFor({ state: 'visible', timeout: 5000 })
 }
 
 export async function updateProfile(
@@ -33,19 +45,19 @@ export async function updateProfile(
   await page.goto('/settings', { waitUntil: 'load' })
 
   if (updates.image !== undefined) {
-    await page.fill('input[name="image"]', updates.image)
+    await page.getByTestId('user-image-input').fill(updates.image)
   }
   if (updates.username) {
-    await page.fill('input[name="username"]', updates.username)
+    await page.getByTestId('username-input').fill(updates.username)
   }
   if (updates.bio !== undefined) {
-    await page.fill('textarea[name="bio"]', updates.bio)
+    await page.getByTestId('bio-input').fill(updates.bio)
   }
   if (updates.email) {
-    await page.fill('input[name="email"]', updates.email)
+    await page.getByTestId('email-input').fill(updates.email)
   }
   if (updates.password) {
-    await page.fill('input[name="password"]', updates.password)
+    await page.getByTestId('password-input').fill(updates.password)
   }
 
   if (API_MODE) {

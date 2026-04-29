@@ -24,7 +24,7 @@ import { Props, PropsEq } from './type'
 
 const ArticlePageComponent = ({ model, user, dispatch }: Props) => {
   return (
-    <div className='article-page flex min-h-full flex-col'>
+    <div className='flex min-h-full flex-col' data-test='article-page'>
       {pipe(
         model.article,
         RD.fold(
@@ -43,7 +43,10 @@ const ArticlePageComponent = ({ model, user, dispatch }: Props) => {
             const author = data.article.author
 
             const articleMeta = (isLight: boolean) => (
-              <div className='article-meta flex flex-wrap items-center gap-[12px]'>
+              <div
+                className='flex flex-wrap items-center gap-[12px]'
+                data-test='article-metadata'
+              >
                 <Link
                   route={{
                     page: {
@@ -57,6 +60,7 @@ const ArticlePageComponent = ({ model, user, dispatch }: Props) => {
                     src={assetPath(author.image || '/default-avatar.svg')}
                     className='h-[36px] w-[36px] rounded-full object-cover'
                     alt=''
+                    data-test='article-author-img'
                   />
                 </Link>
                 <div className='flex flex-col'>
@@ -69,9 +73,10 @@ const ArticlePageComponent = ({ model, user, dispatch }: Props) => {
                       },
                     }}
                     className={cn(
-                      'author block text-sm font-medium hover:underline',
+                      'block text-sm font-medium hover:underline',
                       isLight ? 'text-green-400' : 'text-green-600',
                     )}
+                    data-test='article-author'
                   >
                     {author.username}
                   </Link>
@@ -146,6 +151,7 @@ const ArticlePageComponent = ({ model, user, dispatch }: Props) => {
                             ? 'border-gray-400 text-gray-300 hover:border-white hover:text-white'
                             : 'border-gray-300 text-gray-600 hover:border-gray-500',
                         )}
+                        data-test='article-edit-btn'
                       >
                         <Pencil size={13} /> Edit Article
                       </Link>
@@ -158,6 +164,7 @@ const ArticlePageComponent = ({ model, user, dispatch }: Props) => {
                             ? 'border-red-500 text-red-400 hover:bg-red-900'
                             : 'border-red-500 text-red-600 hover:bg-red-50',
                         )}
+                        data-test='article-delete-btn'
                       >
                         <Trash2 size={13} /> Delete Article
                       </button>
@@ -182,14 +189,21 @@ const ArticlePageComponent = ({ model, user, dispatch }: Props) => {
                 {/* Article Body */}
                 <div className='mx-auto flex w-full max-w-[1152px] flex-col gap-[32px] px-[16px] py-[32px]'>
                   <div className='flex flex-col gap-[16px]'>
-                    <div className='article-content prose prose-gray prose-img:rounded-lg max-w-none'>
+                    <div
+                      className='prose prose-gray prose-img:rounded-lg max-w-none'
+                      data-test='article-body'
+                    >
                       <ReactMarkdown>{data.article.body ?? ''}</ReactMarkdown>
                     </div>
-                    <ul className='tag-list flex flex-wrap gap-[4px]'>
+                    <ul
+                      className='flex flex-wrap gap-[4px]'
+                      data-test='tag-list'
+                    >
                       {data.article.tagList.map((tag) => (
                         <li
                           key={tag}
-                          className='tag-default tag-pill rounded-full border border-gray-300 px-[8px] py-[2px] text-xs text-gray-400'
+                          className='rounded-full border border-gray-300 px-[8px] py-[2px] text-xs text-gray-400'
+                          data-test='article-tag'
                         >
                           {tag}
                         </li>
@@ -205,7 +219,8 @@ const ArticlePageComponent = ({ model, user, dispatch }: Props) => {
                     <div className='flex w-full max-w-[700px] flex-col gap-[24px]'>
                       {isLoggedIn && (
                         <form
-                          className='comment-form flex flex-col overflow-hidden rounded border border-gray-200'
+                          className='flex flex-col overflow-hidden rounded border border-gray-200'
+                          data-test='comment-form'
                           onSubmit={(e) => {
                             e.preventDefault()
                             dispatch({ _tag: 'SubmitComment' })
@@ -213,6 +228,7 @@ const ArticlePageComponent = ({ model, user, dispatch }: Props) => {
                         >
                           <textarea
                             className='min-h-[100px] w-full resize-none p-[12px] text-sm text-gray-800 outline-none'
+                            data-test='comment-textarea'
                             rows={3}
                             placeholder='Write a comment...'
                             value={model.newCommentInput}
@@ -238,8 +254,9 @@ const ArticlePageComponent = ({ model, user, dispatch }: Props) => {
                                     src={assetPath(
                                       u.image || '/default-avatar.svg',
                                     )}
-                                    className='comment-author-img h-[20px] w-[20px] rounded-full object-cover'
+                                    className='h-[20px] w-[20px] rounded-full object-cover'
                                     alt=''
+                                    data-test='comment-author-img'
                                   />
                                 ),
                               ),
@@ -277,9 +294,10 @@ const ArticlePageComponent = ({ model, user, dispatch }: Props) => {
                               {commentsData.comments.map((comment) => (
                                 <div
                                   key={comment.id}
-                                  className='card overflow-hidden rounded border border-gray-200'
+                                  className='overflow-hidden rounded border border-gray-200'
+                                  data-test='comment-card'
                                 >
-                                  <div className='card-block p-[16px]'>
+                                  <div className='p-[16px]'>
                                     <p className='text-sm whitespace-pre-wrap text-gray-800'>
                                       {comment.body}
                                     </p>
@@ -299,8 +317,9 @@ const ArticlePageComponent = ({ model, user, dispatch }: Props) => {
                                           comment.author.image ||
                                             '/default-avatar.svg',
                                         )}
-                                        className='comment-author-img h-[20px] w-[20px] rounded-full object-cover'
+                                        className='h-[20px] w-[20px] rounded-full object-cover'
                                         alt=''
+                                        data-test='comment-author-img'
                                       />
                                     </Link>
                                     <Link
@@ -323,7 +342,7 @@ const ArticlePageComponent = ({ model, user, dispatch }: Props) => {
                                     {isLoggedIn &&
                                       user.value.username ===
                                         comment.author.username && (
-                                        <span className='mod-options ml-auto'>
+                                        <span className='ml-auto'>
                                           <button
                                             type='button'
                                             onClick={() =>
@@ -333,10 +352,9 @@ const ArticlePageComponent = ({ model, user, dispatch }: Props) => {
                                               })
                                             }
                                             className='text-gray-400 transition-colors hover:text-red-500'
+                                            data-test='delete-comment-btn'
                                           >
-                                            <i className='ion-trash-a'>
-                                              <Trash2 size={12} />
-                                            </i>
+                                            <Trash2 size={12} />
                                           </button>
                                         </span>
                                       )}

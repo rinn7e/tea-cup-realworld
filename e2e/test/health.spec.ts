@@ -7,10 +7,10 @@ test.describe('Health Checks', () => {
     await page.goto('/')
 
     // Should see the app brand/logo
-    await expect(page.locator('a.navbar-brand')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByTestId('site-logo')).toBeVisible({ timeout: 10000 })
 
     // Should see navigation
-    await expect(page.locator('nav.navbar')).toBeVisible()
+    await expect(page.getByTestId('navbar')).toBeVisible()
   })
 
   test('API should be accessible', async ({ request }) => {
@@ -23,19 +23,25 @@ test.describe('Health Checks', () => {
     await page.goto('/login')
 
     // Should see login form
-    await expect(page.locator('h1')).toContainText('Sign in', {
-      timeout: 10000,
-    })
-    await expect(page.locator('input[name="email"]')).toBeVisible()
+    await expect(page.getByRole('heading', { level: 1 })).toContainText(
+      'Sign in',
+      {
+        timeout: 10000,
+      },
+    )
+    await expect(page.getByTestId('email-input')).toBeVisible()
   })
 
   test('can navigate to register page', async ({ page }) => {
     await page.goto('/register')
 
     // Should see register form
-    await expect(page.locator('h1')).toContainText('Sign up', {
-      timeout: 10000,
-    })
-    await expect(page.locator('input[name="username"]')).toBeVisible()
+    await expect(page.getByRole('heading', { level: 1 })).toContainText(
+      'Sign up',
+      {
+        timeout: 10000,
+      },
+    )
+    await expect(page.getByTestId('username-input')).toBeVisible()
   })
 })

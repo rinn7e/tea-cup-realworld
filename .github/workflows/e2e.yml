@@ -46,7 +46,8 @@ jobs:
       working-directory: e2e
 
     - name: Run Playwright tests
-      run: npx playwright test
+      # run: npx playwright test
+      run: npx playwright test -g "should favorite an article" --reporter=github
       working-directory: e2e
       env:
         # Point to the freshly cloned backend

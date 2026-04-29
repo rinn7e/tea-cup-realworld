@@ -29,7 +29,7 @@ const ProfilePageComponent = ({
   route,
 }: Props) => {
   return (
-    <div className='profile-page flex min-h-full flex-col'>
+    <div className='flex min-h-full flex-col' data-test='profile-page'>
       {pipe(
         model.profile,
         RD.fold(
@@ -40,22 +40,26 @@ const ProfilePageComponent = ({
           (data: ProfileResponse) => (
             <>
               {/* Header Banner */}
-              <div className='user-info border-b border-gray-200 bg-gray-50 py-[40px] text-center shadow-inner'>
+              <div
+                className='border-b border-gray-200 bg-gray-50 py-[40px] text-center shadow-inner'
+                data-test='user-info-section'
+              >
                 <div className='mx-auto flex max-w-[1152px] flex-col items-center gap-[12px] px-[16px]'>
                   {/* Avatar */}
                   <img
                     src={assetPath(data.profile.image || '/default-avatar.svg')}
-                    // user-img and user-pic classes are required by RealWorld spec and E2E tests
-                    className={cn(
-                      'user-img user-pic h-[96px] w-[96px] rounded-full border-[4px] border-white object-cover shadow-sm',
-                    )}
+                    className='h-[96px] w-[96px] rounded-full border-[4px] border-white object-cover shadow-sm'
+                    data-test='profile-avatar'
                     alt=''
                   />
                   <div className='flex flex-col gap-[4px]'>
                     <h4 className='text-2xl font-bold text-gray-900'>
                       {data.profile.username}
                     </h4>
-                    <p className='max-w-[600px] text-sm text-gray-500'>
+                    <p
+                      className='max-w-[600px] text-sm text-gray-500'
+                      data-test='user-bio'
+                    >
                       {data.profile.bio || ''}
                     </p>
                   </div>
@@ -92,14 +96,16 @@ const ProfilePageComponent = ({
                     {isCurrentUser ? (
                       <Link
                         route={{ page: { _tag: 'SettingsPage' } }}
-                        className='action-btn btn btn-sm btn-outline-secondary inline-flex items-center gap-[6px] rounded border border-gray-400 px-[12px] py-[6px] text-sm text-gray-600 transition-colors hover:border-gray-600'
+                        className='inline-flex items-center gap-[6px] rounded border border-gray-400 px-[12px] py-[6px] text-sm text-gray-600 transition-colors hover:border-gray-600'
+                        data-test='edit-profile-settings'
                       >
                         <Settings size={13} /> Edit Profile Settings
                       </Link>
                     ) : (
                       <button
                         type='button'
-                        className='action-btn btn btn-sm btn-outline-secondary inline-flex items-center gap-[6px] rounded border border-gray-400 px-[12px] py-[6px] text-sm text-gray-600 transition-colors hover:border-gray-600'
+                        className='inline-flex items-center gap-[6px] rounded border border-gray-400 px-[12px] py-[6px] text-sm text-gray-600 transition-colors hover:border-gray-600'
+                        data-test='follow-btn'
                         onClick={() =>
                           dispatch({
                             _tag: data.profile.following
@@ -124,11 +130,13 @@ const ProfilePageComponent = ({
                   <a
                     href='#'
                     className={cn(
-                      'nav-link border-b-2 px-[16px] py-[8px] text-sm font-medium transition-colors',
+                      'border-b-2 px-[16px] py-[8px] text-sm font-medium transition-colors',
                       !model.showFavorites
                         ? 'border-green-600 text-green-600'
                         : 'border-transparent text-gray-500 hover:text-gray-700',
                     )}
+                    data-test='profile-tab'
+                    aria-current={!model.showFavorites ? 'page' : undefined}
                     onClick={(e) => {
                       e.preventDefault()
                       dispatch({ _tag: 'ToggleFavorites', show: false })
@@ -139,11 +147,13 @@ const ProfilePageComponent = ({
                   <a
                     href='#'
                     className={cn(
-                      'nav-link border-b-2 px-[16px] py-[8px] text-sm font-medium transition-colors',
+                      'border-b-2 px-[16px] py-[8px] text-sm font-medium transition-colors',
                       model.showFavorites
                         ? 'border-green-600 text-green-600'
                         : 'border-transparent text-gray-500 hover:text-gray-700',
                     )}
+                    data-test='profile-tab'
+                    aria-current={model.showFavorites ? 'page' : undefined}
                     onClick={(e) => {
                       e.preventDefault()
                       dispatch({ _tag: 'ToggleFavorites', show: true })

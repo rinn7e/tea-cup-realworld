@@ -22,7 +22,10 @@ const SettingsPageComponent = ({ model, dispatch }: Props) => {
   const form = model.form
 
   return (
-    <div className='settings-page flex min-h-full items-start justify-center px-[16px] pt-[64px] pb-[32px]'>
+    <div
+      className='flex min-h-full items-start justify-center px-[16px] pt-[64px] pb-[32px]'
+      data-test='settings-page'
+    >
       <div className='flex w-full max-w-[448px] flex-col gap-[24px]'>
         <h1 className='text-center text-3xl font-bold text-gray-900'>
           Your Settings
@@ -109,7 +112,8 @@ const SettingsPageComponent = ({ model, dispatch }: Props) => {
         <div className='flex flex-col'>
           <button
             type='button'
-            className='btn btn-outline-danger cursor-pointer self-start rounded border border-red-400 px-[16px] py-[8px] text-sm text-red-500 transition-colors hover:bg-red-50'
+            className='cursor-pointer self-start rounded border border-red-400 px-[16px] py-[8px] text-sm text-red-500 transition-colors hover:bg-red-50'
+            data-test='logout-btn'
             onClick={() => dispatch({ _tag: 'Logout' })}
           >
             Or click here to logout.

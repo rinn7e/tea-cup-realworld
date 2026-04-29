@@ -1,31 +1,3 @@
-/*
-  RESERVED E2E SELECTORS
-  ----------------------
-  The following classes and attributes are part of the RealWorld E2E test contract.
-  Do NOT use these classes for styling in your CSS. They are required as markers
-  for the E2E test suite.
-
-  If you need to style these elements, add your own custom classes alongside them
-  (e.g., <div class="banner my-custom-hero">).
-
-  Classes:
-  .navbar, .navbar-brand, .nav-link, .banner, .container, .feed-toggle,
-  .article-preview, .article-meta, .article-content, .article-page,
-  .preview-link, .author, .empty-feed-message, .sidebar, .tag-list,
-  .tag-default, .tag-pill, .card, .card-block, .comment-form,
-  .comment-author-img, .mod-options, .ion-trash-a, .profile-page,
-  .user-info, .user-img, .user-pic, .pagination, .page-item, .active,
-  .btn-outline-primary, .btn-primary, .btn-outline-danger, .error-messages
-
-  Attributes & Placeholders:
-  [name="username"], [name="email"], [name="password"], [name="title"],
-  [name="description"], [name="body"], [name="image"], [name="bio"],
-  [placeholder="Enter tags"], [placeholder="Write a comment..."]
-
-  Global Interface:
-  window.__conduit_debug__
-*/
-
 @import 'tailwindcss';
 
 @theme {

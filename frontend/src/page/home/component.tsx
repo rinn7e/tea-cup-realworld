@@ -29,7 +29,10 @@ const HomePageComponent = ({ model, dispatch }: Props) => {
   return (
     <div className='flex min-h-full flex-col'>
       {/* Hero Section */}
-      <div className='banner bg-green-600 py-[48px] text-center text-white shadow-inner'>
+      <div
+        className='banner bg-green-600 py-[48px] text-center text-white shadow-inner'
+        data-test='hero-banner'
+      >
         <div className='mx-auto flex max-w-[1152px] flex-col gap-[8px] px-[16px]'>
           <h1 className='text-4xl font-bold tracking-tight lg:text-5xl'>
             conduit
@@ -52,7 +55,10 @@ const HomePageComponent = ({ model, dispatch }: Props) => {
         >
           {/* Article List */}
           <div className='flex min-w-0 flex-1 flex-col'>
-            <div className='feed-toggle flex border-b border-gray-200'>
+            <div
+              className='flex border-b border-gray-200'
+              data-test='feed-toggle'
+            >
               {renderTabView(model.tab._tag === 'UserFeedTab', 'Your Feed', {
                 page: homePage(userFeedTab()),
               })}
@@ -74,8 +80,14 @@ const HomePageComponent = ({ model, dispatch }: Props) => {
           </div>
 
           {/* Popular Tags */}
-          <div className='sidebar w-full shrink-0 lg:w-[224px]'>
-            <div className='flex flex-col gap-[12px] rounded-lg bg-gray-50 p-[16px]'>
+          <div
+            className='w-full shrink-0 lg:w-[224px]'
+            data-test='home-sidebar'
+          >
+            <div
+              className='flex flex-col gap-[12px] rounded-lg bg-gray-50 p-[16px]'
+              data-test='popular-tags'
+            >
               <p className='text-sm font-semibold text-gray-700'>
                 Popular Tags
               </p>
@@ -90,12 +102,16 @@ const HomePageComponent = ({ model, dispatch }: Props) => {
                     </span>
                   ),
                   (data: TagsResponse) => (
-                    <div className='tag-list flex flex-wrap gap-[4px]'>
+                    <div
+                      className='flex flex-wrap gap-[4px]'
+                      data-test='tag-list'
+                    >
                       {data.tags.map((tag) => (
                         <a
                           key={tag}
                           href='#'
-                          className='tag-default tag-pill inline-block rounded-full bg-gray-200 px-[8px] py-[2px] text-xs text-gray-700 hover:bg-gray-300'
+                          className='inline-block rounded-full bg-gray-200 px-[8px] py-[2px] text-xs text-gray-700 hover:bg-gray-300'
+                          data-test='tag-pill'
                           onClick={(e) => {
                             e.preventDefault()
                             dispatch({
@@ -124,11 +140,13 @@ const renderTabView = (active: boolean, label: string, route: AppRoute) => {
     <Link
       route={route}
       className={cn(
-        'nav-link border-b-2 px-4 py-2 font-medium transition-colors',
+        'border-b-2 px-4 py-2 font-medium transition-colors',
         active
-          ? 'active border-green-500 text-green-500'
+          ? 'border-green-500 text-green-500'
           : 'border-transparent text-gray-500 hover:text-gray-700',
       )}
+      data-test='home-tab'
+      aria-current={active ? 'page' : undefined}
     >
       {label}
     </Link>
@@ -159,7 +177,10 @@ const renderArticlesView = (
       ),
       (data: ArticlesResponse) =>
         data.articles.length === 0 ? (
-          <div className='empty-feed-message py-[24px] text-sm text-gray-500'>
+          <div
+            className='py-[24px] text-sm text-gray-500'
+            data-test='empty-feed-msg'
+          >
             Your feed is empty... yet. Why not check out the{' '}
             <Link
               route={{ page: homePage() }}
@@ -225,14 +246,14 @@ const renderPagination = (
   })
 
   return (
-    <nav className='my-[24px]'>
-      <ul className='pagination flex w-fit flex-wrap rounded-md border border-gray-200'>
+    <nav className='my-[24px]' data-test='pagination-nav'>
+      <ul className='flex w-fit flex-wrap rounded-md border border-gray-200'>
         {pages.map((p, index) => {
           if (p === '...') {
             return (
               <li
                 key={`ellipsis-${index}`}
-                className='page-item border-r border-gray-200 last:border-r-0'
+                className='border-r border-gray-200 last:border-r-0'
               >
                 <span className='flex h-[38px] min-w-[38px] items-center justify-center px-[12px] text-sm text-gray-500'>
                   ...
@@ -244,10 +265,8 @@ const renderPagination = (
           return (
             <li
               key={p}
-              className={cn(
-                'page-item border-r border-gray-200 last:border-r-0',
-                p === currentPage && 'active',
-              )}
+              className='border-r border-gray-200 last:border-r-0'
+              data-test='pagination-item'
             >
               <button
                 type='button'
@@ -257,6 +276,7 @@ const renderPagination = (
                     ? 'bg-gray-200 font-medium text-gray-700'
                     : 'text-green-600',
                 )}
+                aria-current={p === currentPage ? 'page' : undefined}
                 onClick={() =>
                   dispatch({ _tag: 'ChangePage', page: p as number })
                 }

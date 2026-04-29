@@ -38,7 +38,7 @@ const settingsImageFormItem = (
     variant: { _tag: 'Text' },
     autocomplete: false,
     isFocus: false,
-    ui: standardInputUi({ isSmall: true }),
+    ui: standardInputUi({ isSmall: true, testId: 'user-image-input' }),
   },
 ]
 
@@ -76,7 +76,7 @@ const settingsBioFormItem = (bio: string | null): [string, Form.FormType] => [
     variant: { _tag: 'Text' },
     autocomplete: false,
     isFocus: false,
-    ui: standardInputUi(),
+    ui: standardInputUi({ testId: 'user-bio-textarea' }),
   },
 ]
 

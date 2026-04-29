@@ -34,9 +34,7 @@ test.describe('Comments', () => {
     await addComment(page, commentText)
     // Comment should be visible
     await expect(
-      page.locator(
-        `.card:not(.comment-form) .card-block:has-text("${commentText}")`,
-      ),
+      page.getByTestId('comment-card').filter({ hasText: commentText }),
     ).toBeVisible()
   })
 
@@ -45,17 +43,13 @@ test.describe('Comments', () => {
     await addComment(page, commentText)
     // Comment should be visible
     await expect(
-      page.locator(
-        `.card:not(.comment-form) .card-block:has-text("${commentText}")`,
-      ),
+      page.getByTestId('comment-card').filter({ hasText: commentText }),
     ).toBeVisible()
     // Delete the comment
     await deleteComment(page, commentText)
     // Comment should no longer be visible
     await expect(
-      page.locator(
-        `.card:not(.comment-form) .card-block:has-text("${commentText}")`,
-      ),
+      page.getByTestId('comment-card').filter({ hasText: commentText }),
     ).not.toBeVisible()
   })
 
@@ -81,9 +75,7 @@ test.describe('Comments', () => {
     await addComment(page, commentText)
     // Comment should be visible
     await expect(
-      page.locator(
-        `.card:not(.comment-form) .card-block:has-text("${commentText}")`,
-      ),
+      page.getByTestId('comment-card').filter({ hasText: commentText }),
     ).toBeVisible()
 
     // Intercept DELETE requests to comments and respond with 200 instead of 204
@@ -103,9 +95,7 @@ test.describe('Comments', () => {
     await deleteComment(page, commentText)
     // Comment should no longer be visible (frontend should handle 200 the same as 204)
     await expect(
-      page.locator(
-        `.card:not(.comment-form) .card-block:has-text("${commentText}")`,
-      ),
+      page.getByTestId('comment-card').filter({ hasText: commentText }),
     ).not.toBeVisible()
   })
 
@@ -118,19 +108,13 @@ test.describe('Comments', () => {
     await addComment(page, comment3)
     // All comments should be visible (exclude comment form)
     await expect(
-      page.locator(
-        `.card:not(.comment-form) .card-block:has-text("${comment1}")`,
-      ),
+      page.getByTestId('comment-card').filter({ hasText: comment1 }),
     ).toBeVisible()
     await expect(
-      page.locator(
-        `.card:not(.comment-form) .card-block:has-text("${comment2}")`,
-      ),
+      page.getByTestId('comment-card').filter({ hasText: comment2 }),
     ).toBeVisible()
     await expect(
-      page.locator(
-        `.card:not(.comment-form) .card-block:has-text("${comment3}")`,
-      ),
+      page.getByTestId('comment-card').filter({ hasText: comment3 }),
     ).toBeVisible()
     // Should have exactly 3 comments
     const count = await getCommentCount(page)
@@ -149,10 +133,10 @@ test.describe('Comments', () => {
       { timeout: 10000 },
     )
     // Should see sign in/sign up links instead of comment form
-    await expect(page2.locator('a[href="/login"]')).toBeVisible()
     await expect(
-      page2.locator('textarea[placeholder="Write a comment..."]'),
-    ).not.toBeVisible()
+      page2.getByTestId('nav-link').filter({ hasText: 'Sign in' }),
+    ).toBeVisible()
+    await expect(page2.getByTestId('comment-textarea')).not.toBeVisible()
     await context2.close()
   })
 
@@ -162,35 +146,35 @@ test.describe('Comments', () => {
     // Go to global feed to see all articles
     await page.goto('/', { waitUntil: 'load' })
     // Wait for article to be fully loaded and clickable
-    await expect(page.locator('.article-preview h1').first()).toBeVisible({
+    await expect(
+      page.getByTestId('article-preview').getByRole('heading').first(),
+    ).toBeVisible({
       timeout: 15000,
     })
     // Click on first article from demo backend (likely has existing comments)
-    await page.click('.article-preview h1')
+    await page
+      .getByTestId('article-preview')
+      .getByRole('heading')
+      .first()
+      .click()
     await page.waitForURL(/\/article\/.+/, { timeout: 10000 })
     // Check if there are any existing comments (from other users like johndoe)
-    const existingCommentsCount = await page
-      .locator('.card:not(.comment-form)')
-      .count()
+    const existingCommentsCount = await page.getByTestId('comment-card').count()
     // If there are existing comments, they should NOT have delete buttons (not our comments)
     if (existingCommentsCount > 0) {
-      const firstExistingComment = page
-        .locator('.card:not(.comment-form)')
-        .first()
+      const firstExistingComment = page.getByTestId('comment-card').first()
       await expect(
-        firstExistingComment.locator('span.mod-options i.ion-trash-a'),
+        firstExistingComment.getByTestId('delete-comment-btn'),
       ).not.toBeVisible()
     }
     // Now add our own comment
     const commentText = `Comment by logged in user ${Date.now()}`
     await addComment(page, commentText)
     // Verify the delete button IS visible for OUR comment
-    const ownComment = page.locator('.card', {
-      has: page.locator(`text="${commentText}"`),
+    const ownComment = page.getByTestId('comment-card').filter({
+      hasText: commentText,
     })
-    await expect(
-      ownComment.locator('span.mod-options i.ion-trash-a'),
-    ).toBeVisible()
+    await expect(ownComment.getByTestId('delete-comment-btn')).toBeVisible()
   })
 
   test('should handle long comments', async ({ page }) => {
@@ -198,7 +182,7 @@ test.describe('Comments', () => {
     await addComment(page, longComment)
     // Comment should be visible and properly formatted (comment text is in a paragraph)
     await expect(
-      page.locator('p').filter({ hasText: longComment }),
+      page.getByRole('paragraph').filter({ hasText: longComment }),
     ).toBeVisible()
   })
 
@@ -209,9 +193,7 @@ test.describe('Comments', () => {
     await page.reload()
     // Comment should still be visible
     await expect(
-      page.locator(
-        `.card:not(.comment-form) .card-block:has-text("${commentText}")`,
-      ),
+      page.getByTestId('comment-card').filter({ hasText: commentText }),
     ).toBeVisible()
   })
 
@@ -219,8 +201,6 @@ test.describe('Comments', () => {
     const commentText = 'Test comment'
     await addComment(page, commentText)
     // Comment textarea should be empty
-    await expect(
-      page.locator('textarea[placeholder="Write a comment..."]'),
-    ).toHaveValue('')
+    await expect(page.getByTestId('comment-textarea')).toHaveValue('')
   })
 })

@@ -38,11 +38,13 @@ export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
         <Link
           className={cn(
             // shared
-            'nav-link block rounded px-[12px] py-[6px] text-sm',
+            'block rounded px-[12px] py-[6px] text-sm',
             // state
             isHome ? activeCls : inactiveCls,
           )}
           route={{ page: homePage() }}
+          data-test='nav-link'
+          aria-current={isHome ? 'page' : undefined}
         >
           Home
         </Link>
@@ -54,11 +56,13 @@ export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
               <Link
                 className={cn(
                   // shared
-                  'nav-link flex items-center gap-[4px] rounded px-[12px] py-[6px] text-sm',
+                  'flex items-center gap-[4px] rounded px-[12px] py-[6px] text-sm',
                   // state
                   isEditor ? activeCls : inactiveCls,
                 )}
                 route={{ page: { _tag: 'EditorPage', slug: O.none } }}
+                data-test='nav-link'
+                aria-current={isEditor ? 'page' : undefined}
               >
                 <Pencil size={14} />
                 New Article
@@ -68,11 +72,13 @@ export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
               <Link
                 className={cn(
                   // shared
-                  'nav-link flex items-center gap-[4px] rounded px-[12px] py-[6px] text-sm',
+                  'flex items-center gap-[4px] rounded px-[12px] py-[6px] text-sm',
                   // state
                   isSettings ? activeCls : inactiveCls,
                 )}
                 route={{ page: { _tag: 'SettingsPage' } }}
+                data-test='nav-link'
+                aria-current={isSettings ? 'page' : undefined}
               >
                 <Settings size={14} />
                 Settings
@@ -82,7 +88,7 @@ export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
               <Link
                 className={cn(
                   // shared
-                  'nav-link flex items-center gap-[8px] rounded px-[12px] py-[6px] text-sm',
+                  'flex items-center gap-[8px] rounded px-[12px] py-[6px] text-sm',
                   // state
                   isProfile ? activeCls : inactiveCls,
                 )}
@@ -93,12 +99,14 @@ export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
                     favorites: false,
                   },
                 }}
+                data-test='nav-link'
+                aria-current={isProfile ? 'page' : undefined}
               >
                 <img
                   src={assetPath(optUser.value.image || '/default-avatar.svg')}
-                  // user-pic class is required by RealWorld spec and E2E tests
-                  className='user-pic h-[28px] w-[28px] rounded-full object-cover'
+                  className='h-[28px] w-[28px] rounded-full object-cover'
                   alt=''
+                  data-test='navbar-user-avatar'
                 />
                 {optUser.value.username}
               </Link>
@@ -109,10 +117,12 @@ export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
             <li>
               <Link
                 className={cn(
-                  'nav-link rounded px-[12px] py-[6px] text-sm',
+                  'rounded px-[12px] py-[6px] text-sm',
                   isLogin ? activeCls : inactiveCls,
                 )}
                 route={{ page: { _tag: 'LoginPage' } }}
+                data-test='nav-link'
+                aria-current={isLogin ? 'page' : undefined}
               >
                 Sign in
               </Link>
@@ -120,10 +130,12 @@ export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
             <li>
               <Link
                 className={cn(
-                  'nav-link rounded px-[12px] py-[6px] text-sm',
+                  'rounded px-[12px] py-[6px] text-sm',
                   isSignup ? activeCls : inactiveCls,
                 )}
                 route={{ page: { _tag: 'SignupPage' } }}
+                data-test='nav-link'
+                aria-current={isSignup ? 'page' : undefined}
               >
                 Sign up
               </Link>
@@ -151,18 +163,25 @@ export const Navbar: React.FC<Props> = ({ model, dispatch }) => {
   )
 
   return (
-    <nav className='navbar sticky top-0 z-20 border-b border-gray-100 bg-white shadow-sm'>
+    <nav
+      className='sticky top-0 z-20 border-b border-gray-100 bg-white shadow-sm'
+      data-test='navbar'
+    >
       <div className='mx-auto max-w-[1152px] px-[16px]'>
         <div className='flex h-[56px] items-center justify-between'>
           <Link
-            className='navbar-brand text-xl font-bold tracking-tight text-green-600'
+            className='text-xl font-bold tracking-tight text-green-600'
             route={{ page: homePage() }}
+            data-test='site-logo'
           >
             conduit
           </Link>
 
           {model.unavailableMode && (
-            <span className='ml-[16px] flex items-center gap-[6px] text-sm text-gray-400'>
+            <span
+              className='ml-[16px] flex items-center gap-[6px] text-sm text-gray-400'
+              data-test='app-connecting-state'
+            >
               <div className='h-[8px] w-[8px] animate-pulse rounded-full bg-amber-400' />
               Connecting
             </span>
