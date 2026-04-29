@@ -49,7 +49,9 @@ test.describe('Error Handling - 400 Bad Request', () => {
     await page.fill('input[name="password"]', 'password')
     await page.click('button[type="submit"]')
     // Should show error messages, not crash
-    await expect(page.locator('.error-messages, .fe-error-messages').first()).toBeVisible()
+    await expect(
+      page.locator('.error-messages, .fe-error-messages').first(),
+    ).toBeVisible()
     await expect(page).toHaveURL('/login')
     await expect(page.locator('input[name="email"]')).toBeVisible()
   })
@@ -69,7 +71,9 @@ test.describe('Error Handling - 400 Bad Request', () => {
     await page.fill('input[name="password"]', 'password123')
     await page.click('button[type="submit"]')
     // Should show error messages
-    await expect(page.locator('.error-messages, .fe-error-messages').first()).toBeVisible()
+    await expect(
+      page.locator('.error-messages, .fe-error-messages').first(),
+    ).toBeVisible()
     await expect(page).toHaveURL('/register')
     await expect(page.locator('input[name="email"]')).toBeVisible()
   })
@@ -153,7 +157,9 @@ test.describe('Error Handling - 401 Unauthorized', () => {
     // Submit the form
     await page.click('button[type="submit"]')
     // Should show error message, form should still be usable
-    await expect(page.locator('.error-messages, .fe-error-messages').first()).toBeVisible()
+    await expect(
+      page.locator('.error-messages, .fe-error-messages').first(),
+    ).toBeVisible()
     await expect(page.locator('input[name="email"]')).toBeVisible()
   })
 
@@ -294,7 +300,9 @@ test.describe('Error Handling - 403 Forbidden', () => {
     // Try to update
     await page.click('button:has-text("Publish")')
     // Should show error message
-    await expect(page.locator('.error-messages, .fe-error-messages').first()).toBeVisible()
+    await expect(
+      page.locator('.error-messages, .fe-error-messages').first(),
+    ).toBeVisible()
     await expect(page.locator('input[name="title"]')).toBeVisible()
   })
 
@@ -387,7 +395,9 @@ test.describe('Error Handling - 403 Forbidden', () => {
       page.locator('.card-block:has-text("This is a comment")'),
     ).toBeVisible()
     // Error message should be displayed
-    await expect(page.locator('.error-messages, .fe-error-messages').last()).toBeVisible()
+    await expect(
+      page.locator('.error-messages, .fe-error-messages').last(),
+    ).toBeVisible()
     // Article content should still be visible
     await expect(page.locator('.article-content')).toBeVisible()
   })
@@ -679,7 +689,9 @@ test.describe('Error Handling - Network Errors', () => {
     // Submit the form
     await page.click('button:has-text("Update Settings")')
     // Should show network error message
-    await expect(page.locator('.error-messages, .fe-error-messages').first()).toBeVisible()
+    await expect(
+      page.locator('.error-messages, .fe-error-messages').first(),
+    ).toBeVisible()
     await expect(page.locator('.error-messages')).toContainText(
       'Unable to connect',
     )
@@ -699,7 +711,9 @@ test.describe('Error Handling - Network Errors', () => {
     await page.fill('input[name="email"]', 'test@example.com')
     await page.fill('input[name="password"]', 'password123')
     await page.click('button[type="submit"]')
-    await expect(page.locator('.error-messages, .fe-error-messages').first()).toBeVisible()
+    await expect(
+      page.locator('.error-messages, .fe-error-messages').first(),
+    ).toBeVisible()
     await expect(page.locator('.error-messages')).toContainText(
       'Unable to connect',
     )
@@ -718,7 +732,9 @@ test.describe('Error Handling - Network Errors', () => {
     await page.fill('input[name="email"]', 'test@example.com')
     await page.fill('input[name="password"]', 'password123')
     await page.click('button[type="submit"]')
-    await expect(page.locator('.error-messages, .fe-error-messages').first()).toBeVisible()
+    await expect(
+      page.locator('.error-messages, .fe-error-messages').first(),
+    ).toBeVisible()
     await expect(page.locator('.error-messages')).toContainText(
       'Unable to connect',
     )
@@ -756,7 +772,9 @@ test.describe('Error Handling - Network Errors', () => {
     await page.fill('input[name="description"]', 'Test description')
     await page.fill('textarea[name="body"]', 'Test body content')
     await page.click('button:has-text("Publish Article")')
-    await expect(page.locator('.error-messages, .fe-error-messages').first()).toBeVisible()
+    await expect(
+      page.locator('.error-messages, .fe-error-messages').first(),
+    ).toBeVisible()
     await expect(page.locator('.error-messages')).toContainText(
       'Unable to connect',
     )

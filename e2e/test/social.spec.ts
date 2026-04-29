@@ -2,7 +2,6 @@ import { expect, test } from '@playwright/test'
 
 import { createArticle, generateUniqueArticle } from './helpers/articles'
 import { generateUniqueUser, register } from './helpers/auth'
-import { API_MODE } from './helpers/config'
 import { followUser, unfollowUser } from './helpers/profile'
 import { createUserInIsolation } from './helpers/setup'
 
@@ -26,14 +25,13 @@ test.describe('Social Features', () => {
 
     // API mode: use johndoe (demo backend, user isolation prevents creating visible users)
     // Fullstack mode: create a second user via UI in an isolated browser context
-    let targetUsername: string
-    if (API_MODE) {
-      targetUsername = 'johndoe'
-    } else {
-      const otherUser = generateUniqueUser()
-      await createUserInIsolation(browser, otherUser)
-      targetUsername = otherUser.username
-    }
+    // if (API_MODE) {
+    //   targetUsername = 'johndoe'
+    // } else {
+    const otherUser = generateUniqueUser()
+    await createUserInIsolation(browser, otherUser)
+    const targetUsername = otherUser.username
+    // }
 
     await followUser(page, targetUsername)
     await expect(page.locator('button:has-text("Unfollow")')).toBeVisible()
@@ -70,27 +68,26 @@ test.describe('Social Features', () => {
 
     // API mode: johndoe exists with articles on the demo backend
     // Fullstack mode: create a second user with an article via UI
-    let targetUsername: string
-    if (API_MODE) {
-      targetUsername = 'johndoe'
-    } else {
-      const otherUser = generateUniqueUser()
-      const ctx = await browser.newContext()
-      const otherPage = await ctx.newPage()
-      await register(
-        otherPage,
-        otherUser.username,
-        otherUser.email,
-        otherUser.password,
-      )
-      await createArticle(otherPage, {
-        title: `Article by ${otherUser.username}`,
-        description: 'A test article',
-        body: 'Body content',
-      })
-      await ctx.close()
-      targetUsername = otherUser.username
-    }
+    // if (API_MODE) {
+    //   targetUsername = 'johndoe'
+    // } else {
+    const otherUser = generateUniqueUser()
+    const ctx = await browser.newContext()
+    const otherPage = await ctx.newPage()
+    await register(
+      otherPage,
+      otherUser.username,
+      otherUser.email,
+      otherUser.password,
+    )
+    await createArticle(otherPage, {
+      title: `Article by ${otherUser.username}`,
+      description: 'A test article',
+      body: 'Body content',
+    })
+    await ctx.close()
+    const targetUsername = otherUser.username
+    // }
 
     await page.goto(`/profile/${targetUsername}`, { waitUntil: 'load' })
     await page.waitForSelector('h4', { timeout: 10000 })
@@ -183,27 +180,26 @@ test.describe('Social Features', () => {
 
     // API mode: johndoe exists with articles on the demo backend
     // Fullstack mode: create a second user with an article via UI
-    let targetUsername: string
-    if (API_MODE) {
-      targetUsername = 'johndoe'
-    } else {
-      const otherUser = generateUniqueUser()
-      const ctx = await browser.newContext()
-      const otherPage = await ctx.newPage()
-      await register(
-        otherPage,
-        otherUser.username,
-        otherUser.email,
-        otherUser.password,
-      )
-      await createArticle(otherPage, {
-        title: `Feed article by ${otherUser.username}`,
-        description: 'Should appear in feed',
-        body: 'Body content',
-      })
-      await ctx.close()
-      targetUsername = otherUser.username
-    }
+    // if (API_MODE) {
+    //   targetUsername = 'johndoe'
+    // } else {
+    const otherUser = generateUniqueUser()
+    const ctx = await browser.newContext()
+    const otherPage = await ctx.newPage()
+    await register(
+      otherPage,
+      otherUser.username,
+      otherUser.email,
+      otherUser.password,
+    )
+    await createArticle(otherPage, {
+      title: `Feed article by ${otherUser.username}`,
+      description: 'Should appear in feed',
+      body: 'Body content',
+    })
+    await ctx.close()
+    const targetUsername = otherUser.username
+    // }
     await followUser(page, targetUsername)
 
     // Go to home and click "Your Feed"

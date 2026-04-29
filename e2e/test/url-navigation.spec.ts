@@ -63,12 +63,10 @@ test.describe('URL-based Navigation (Realworld Issue #691)', () => {
     // Navigate directly to the tag URL
     await page.goto(`/?tab=tag-feed&tag=${tag}`)
     // Should see the tag filter active
-    await expect(
-      page.locator(`.nav-link:has-text("${tag}")`),
-    ).toBeVisible()
-    await expect(
-      page.locator(`.nav-link:has-text("${tag}")`),
-    ).toHaveClass(/active/)
+    await expect(page.locator(`.nav-link:has-text("${tag}")`)).toBeVisible()
+    await expect(page.locator(`.nav-link:has-text("${tag}")`)).toHaveClass(
+      /active/,
+    )
   })
 
   test('tabs should have correct href attributes', async ({ page }) => {
@@ -167,7 +165,9 @@ test.describe('Pagination', () => {
     // Click page 2
     await page.click('.pagination button:has-text("2")')
     // URL should have ?page=2
-    await expect(page).toHaveURL(new RegExp(`\\?tab=tag-feed&tag=${uniqueTag}&page=2`))
+    await expect(page).toHaveURL(
+      new RegExp(`\\?tab=tag-feed&tag=${uniqueTag}&page=2`),
+    )
     // Page 2 should be active
     await expect(
       page.locator('.pagination .page-item:has(button:has-text("2"))'),
@@ -203,9 +203,7 @@ test.describe('Pagination', () => {
     expect(url.searchParams.get('page')).toBe('2')
   })
 
-  test('pagination URL preserves feed parameter', async ({
-    page,
-  }) => {
+  test('pagination URL preserves feed parameter', async ({ page }) => {
     const user = generateUniqueUser()
     await register(page, user.username, user.email, user.password)
     // Your Feed shows articles from users you FOLLOW (not your own articles)
@@ -285,7 +283,9 @@ test.describe('Pagination', () => {
     })
     // Go to page 2
     await page.click('.pagination button:has-text("2")')
-    await expect(page).toHaveURL(new RegExp(`\\?tab=tag-feed&tag=${uniqueTag}&page=2`))
+    await expect(page).toHaveURL(
+      new RegExp(`\\?tab=tag-feed&tag=${uniqueTag}&page=2`),
+    )
     // Click Global Feed and wait for URL to change to root path
     await page.click('.nav-link:has-text("Global Feed")')
     await expect(page).toHaveURL('/')
@@ -330,7 +330,9 @@ test.describe('Pagination', () => {
     })
     await page.waitForSelector('.article-preview', { timeout: 2000 })
     // URL should show ?page=2
-    await expect(page).toHaveURL(new RegExp(`\\?tab=tag-feed&tag=${uniqueTag}&page=2`))
+    await expect(page).toHaveURL(
+      new RegExp(`\\?tab=tag-feed&tag=${uniqueTag}&page=2`),
+    )
     // Small wait for Angular to finish rendering the new page
     await page.waitForTimeout(500)
     // Second page should have 5 articles (15 - 10 = 5)

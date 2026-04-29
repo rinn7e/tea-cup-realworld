@@ -41,7 +41,9 @@ test.describe('Authentication', () => {
     await page.fill('input[name="password"]', 'wrongpassword')
     await page.click('button[type="submit"]')
     // Should show error message
-    await expect(page.locator('.error-messages, .fe-error-messages').first()).toBeVisible()
+    await expect(
+      page.locator('.error-messages, .fe-error-messages').first(),
+    ).toBeVisible()
   })
 
   test('should fail login with wrong password', async ({ page }) => {
@@ -56,7 +58,9 @@ test.describe('Authentication', () => {
     await page.fill('input[name="password"]', 'wrongpassword123')
     await page.click('button[type="submit"]')
     // Should show error message
-    await expect(page.locator('.error-messages, .fe-error-messages').first()).toBeVisible()
+    await expect(
+      page.locator('.error-messages, .fe-error-messages').first(),
+    ).toBeVisible()
     // Should still be on login page (not redirected)
     await expect(page).toHaveURL('/login')
   })
