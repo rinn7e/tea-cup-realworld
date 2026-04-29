@@ -1,0 +1,51 @@
+name: Manual E2E Tests
+on:
+  workflow_dispatch:
+    inputs:
+      api_base:
+        description: 'Target API Endpoint'
+        required: true
+        default: 'https://api.realworld.show/api'
+      branch:
+        description: 'Branch to run tests from'
+        required: true
+        default: 'master'
+
+jobs:
+  playwright-tests:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        ref: ${{ github.event.inputs.branch }}
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 24
+        cache: 'npm'
+        cache-dependency-path: 'e2e/package-lock.json'
+
+    - name: Install Frontend Deps
+      run: cd frontend && npm install
+
+    - name: Install E2E Deps
+      run: cd e2e && npm install
+
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps chromium
+      working-directory: e2e
+
+    - name: Run Playwright tests
+      run: npx playwright test
+      working-directory: e2e
+      env:
+        # Use the input from the manual trigger
+        VITE_API_BASE: ${{ github.event.inputs.api_base }}
+
+    - uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: playwright-report
+        path: e2e/playwright-report/
+        retention-days: 30

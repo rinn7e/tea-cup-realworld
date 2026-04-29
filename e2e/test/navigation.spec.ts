@@ -7,6 +7,7 @@ import {
 import { createArticle, generateUniqueArticle } from './helpers/articles'
 import { generateUniqueUser, login, register } from './helpers/auth'
 import { API_MODE } from './helpers/config'
+import { performActionAndWaitForResponse } from './helpers/network'
 import { createManyArticles, createUserInIsolation } from './helpers/setup'
 
 test.describe('Navigation and Filtering', () => {
@@ -238,8 +239,15 @@ test.describe('Navigation and Filtering', () => {
 
     // Favorite article1 - go to global feed to see the article
     await page.goto('/')
-    await page.click(
-      `.article-preview:has-text("${article1.title}") button.btn-outline-primary`,
+
+    // Favorite article1 and wait for the API to confirm before navigating
+    await performActionAndWaitForResponse(
+      page,
+      () =>
+        page.click(
+          `.article-preview:has-text("${article1.title}") button.btn-outline-primary`,
+        ),
+      '/favorite',
     )
 
     // Go to profile

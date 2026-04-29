@@ -30,6 +30,20 @@ To run tests in interactive mode:
 BASE_URL=http://localhost:5173 npm run test:e2e:ui
 ```
 
+## Running tests against a remote API
+
+You can run the tests against any RealWorld-compliant API (e.g., the official endpoint) by setting the `VITE_API_BASE` environment variable. This will automatically point both the frontend and the tests to the remote API, and skip starting the local backend.
+
+```bash
+VITE_API_BASE=https://api.realworld.show/api npx playwright test
+```
+
+To run in UI mode:
+
+```bash
+VITE_API_BASE=https://api.realworld.show/api npx playwright test --ui
+```
+
 ## Cheatsheet
 
 - run 1 test and output error in terminal

@@ -2,6 +2,8 @@ import { defineConfig } from '@playwright/test'
 
 import { baseConfig } from './test/playwright.base'
 
+const isRemoteApi = process.env.VITE_API_BASE?.includes('api.realworld.show')
+
 export default defineConfig({
   ...baseConfig,
   testDir: './test',
@@ -10,13 +12,17 @@ export default defineConfig({
     baseURL: process.env.BASE_URL,
   },
   webServer: [
-    {
-      command: `JWT_SECRET=${process.env.JWT_SECRET} bun run dev`,
-      url: 'http://localhost:3000/api/tags',
-      cwd: '/home/rinne/projects/my-package/my-realworld/nitro-prisma-zod-realworld-example-app',
-      reuseExistingServer: !process.env.CI,
-      timeout: 120_000,
-    },
+    ...(!isRemoteApi
+      ? [
+          {
+            command: `JWT_SECRET=${process.env.JWT_SECRET} bun run dev`,
+            url: 'http://localhost:3000/api/tags',
+            cwd: '/home/rinne/projects/my-package/my-realworld/nitro-prisma-zod-realworld-example-app',
+            reuseExistingServer: !process.env.CI,
+            timeout: 120_000,
+          },
+        ]
+      : []),
     {
       command: 'npm run dev',
       url: 'http://localhost:5173',
