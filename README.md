@@ -60,9 +60,7 @@ This will use the base URL: `https://api.realworld.show/api`.
 | `npm run typecheck` | Run TypeScript type checking         |
 | `npm run check:watch` | Run Type checking in watch mode |
 
-## End-to-End Testing
-
-Check the [e2e/README.md](e2e/README.md) for instructions on how to run the E2E tests locally.
+Check the [e2e/README.md](e2e/README.md) for instructions on how to run the E2E tests locally and [testing-philosophy.md](testing-philosophy.md) for the core principles behind our testing strategy.
 
 ## CI/CD/CT/CM
 

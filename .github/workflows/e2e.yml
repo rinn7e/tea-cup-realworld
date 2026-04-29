@@ -32,8 +32,8 @@ jobs:
     - name: Clone Backend
       run: git clone https://github.com/realworld-apps/nitro-prisma-zod-realworld-example-app ../backend
 
-    - name: Install Backend Deps
-      run: cd ../backend && bun install
+    - name: Setup Backend
+      run: cd ../backend && make setup
 
     - name: Install Frontend Deps
       run: cd frontend && npm install
