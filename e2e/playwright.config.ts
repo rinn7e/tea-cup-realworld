@@ -15,11 +15,11 @@ export default defineConfig({
     ...(!isRemoteApi
       ? [
           {
-            command: `JWT_SECRET=${process.env.JWT_SECRET || 'test-secret'} bun run dev`,
+            command: `JWT_SECRET=${process.env.JWT_SECRET || 'test-secret'} make run`,
             url: 'http://localhost:3000/api/tags',
             cwd:
               process.env.BACKEND_PATH ||
-              '../nitro-prisma-zod-realworld-example-app',
+              '../../nitro-prisma-zod-realworld-example-app',
             reuseExistingServer: !process.env.CI,
             timeout: 120_000,
           },
