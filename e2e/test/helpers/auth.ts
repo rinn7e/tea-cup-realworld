@@ -1,5 +1,7 @@
 import { Page } from '@playwright/test'
 
+import { performActionAndWaitForResponse } from './network'
+
 export async function register(
   page: Page,
   username: string,
@@ -11,12 +13,13 @@ export async function register(
   await page.fill('input[name="email"]', email)
   await page.fill('input[name="password"]', password)
 
-  // Wait for navigation to complete or error to appear
+  // Wait for API response
   try {
-    await Promise.all([
-      page.waitForURL('/'),
+    await performActionAndWaitForResponse(page, () =>
       page.click('button[type="submit"]'),
-    ])
+    )
+    // Then wait for navigation
+    await page.waitForURL('/')
   } catch (error) {
     // If navigation fails, check for errors
     const errorMsg = await page
@@ -36,12 +39,13 @@ export async function login(page: Page, email: string, password: string) {
   await page.fill('input[name="email"]', email)
   await page.fill('input[name="password"]', password)
 
-  // Wait for navigation to complete or error to appear
+  // Wait for API response
   try {
-    await Promise.all([
-      page.waitForURL('/'),
+    await performActionAndWaitForResponse(page, () =>
       page.click('button[type="submit"]'),
-    ])
+    )
+    // Then wait for navigation
+    await page.waitForURL('/')
   } catch (error) {
     // If navigation fails, check for errors
     const errorMsg = await page

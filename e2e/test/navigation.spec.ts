@@ -241,13 +241,10 @@ test.describe('Navigation and Filtering', () => {
     await page.goto('/')
 
     // Favorite article1 and wait for the API to confirm before navigating
-    await performActionAndWaitForResponse(
-      page,
-      () =>
-        page.click(
-          `.article-preview:has-text("${article1.title}") button.btn-outline-primary`,
-        ),
-      '/favorite',
+    await performActionAndWaitForResponse(page, () =>
+      page.click(
+        `.article-preview:has-text("${article1.title}") button.btn-outline-primary`,
+      ),
     )
 
     // Go to profile

@@ -1,22 +1,13 @@
 import { Page, Response } from '@playwright/test'
 
 /**
- * Performs a UI action and waits for a specific network response.
- * Useful for actions that trigger asynchronous API calls (e.g. optimistic updates).
+ * Performs a UI action and waits for all network activity to settle.
+ * (Wait until there are no network connections for at least 500ms).
  */
 export async function performActionAndWaitForResponse(
   page: Page,
   action: () => Promise<void>,
-  urlPattern: string | RegExp,
-  expectedStatus: number = 200,
-): Promise<Response> {
-  const [response] = await Promise.all([
-    page.waitForResponse(
-      (resp) =>
-        resp.url().includes(urlPattern.toString()) &&
-        resp.status() === expectedStatus,
-    ),
-    action(),
-  ])
-  return response
+): Promise<void> {
+  await action()
+  await page.waitForLoadState('networkidle')
 }

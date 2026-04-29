@@ -15,9 +15,11 @@ export default defineConfig({
     ...(!isRemoteApi
       ? [
           {
-            command: `JWT_SECRET=${process.env.JWT_SECRET} bun run dev`,
+            command: `JWT_SECRET=${process.env.JWT_SECRET || 'test-secret'} bun run dev`,
             url: 'http://localhost:3000/api/tags',
-            cwd: '/home/rinne/projects/my-package/my-realworld/nitro-prisma-zod-realworld-example-app',
+            cwd:
+              process.env.BACKEND_PATH ||
+              '../nitro-prisma-zod-realworld-example-app',
             reuseExistingServer: !process.env.CI,
             timeout: 120_000,
           },

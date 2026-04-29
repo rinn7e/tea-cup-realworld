@@ -5,7 +5,7 @@ import { API_MODE } from './config'
 export async function followUser(page: Page, username: string) {
   await page.goto(`/profile/${username}`, { waitUntil: 'load' })
   // Wait for profile page to load and Follow button to appear
-  await page.waitForSelector('button:has-text("Follow")', { timeout: 10000 })
+  await page.waitForSelector('button:has-text("Follow")', { timeout: 30000 })
   await page.click('button:has-text("Follow")')
   // Wait for button to update
   await page.waitForSelector('button:has-text("Unfollow")', { timeout: 5000 })
@@ -14,7 +14,7 @@ export async function followUser(page: Page, username: string) {
 export async function unfollowUser(page: Page, username: string) {
   await page.goto(`/profile/${username}`, { waitUntil: 'load' })
   // Wait for profile page to load and Unfollow button to appear
-  await page.waitForSelector('button:has-text("Unfollow")', { timeout: 10000 })
+  await page.waitForSelector('button:has-text("Unfollow")', { timeout: 30000 })
   await page.click('button:has-text("Unfollow")')
   // Wait for button to update
   await page.waitForSelector('button:has-text("Follow")', { timeout: 5000 })

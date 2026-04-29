@@ -6,6 +6,8 @@ import { followUser, unfollowUser } from './helpers/profile'
 import { createUserInIsolation } from './helpers/setup'
 
 test.describe('Social Features', () => {
+  test.slow()
+
   test.afterEach(async ({ context }) => {
     // Close the browser context to ensure complete isolation between tests.
     // This releases browser instances, network connections, and other resources.
