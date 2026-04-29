@@ -1,4 +1,4 @@
-# 🍵 RealWorld example app in `react-tea-cup`
+# RealWorld example app in `react-tea-cup`
 
 [![Deploy to GitHub Pages](https://github.com/rinn7e/tea-cup-realworld/actions/workflows/deploy.yml/badge.svg)](https://github.com/rinn7e/tea-cup-realworld/actions/workflows/deploy.yml)
 
@@ -62,7 +62,15 @@ This will use the base URL: `https://api.realworld.show/api`.
 
 ## End-to-End Testing
 
-Check the [e2e/README.md](e2e/README.md) for instructions on how to run the E2E tests.
+Check the [e2e/README.md](e2e/README.md) for instructions on how to run the E2E tests locally.
+
+## CI/CD/CT/CM
+
+Check [ci-cd-ct-cm.md](ci-cd-ct-cm.md) for a detailed breakdown of automated pipeline terminology and an example roadmap for professional delivery.
+
+## Product Analytics
+
+Check [product-analytic.md](product-analytic.md) for an example roadmap on analyzing user behavior and business metrics in a professional web app.
 
 ## API Spec
 
