@@ -10,12 +10,9 @@ import type * as ProfilePage from '@/page/profile/type'
 import type * as SettingsPage from '@/page/settings/type'
 import type * as SignupPage from '@/page/signup/type'
 
+import { type Animate, type AnimateState } from './common/type/animate'
 import { type AppRoute } from './common/type/route'
-
-export type Shared = {
-  user: Option<User>
-  token: Option<string>
-}
+import { type Shared } from './common/type/shared'
 
 export type PageModel =
   | { _tag: 'HomePageModel'; model: HomePage.Model }
@@ -26,17 +23,6 @@ export type PageModel =
   | { _tag: 'ProfilePageModel'; model: ProfilePage.Model }
   | { _tag: 'EditorPageModel'; model: EditorPage.Model }
   | { _tag: 'NotFoundPageModel' }
-
-export type AnimateState =
-  | { _tag: 'AnimateIn' }
-  | { _tag: 'Visible' }
-  | { _tag: 'AnimateOut' }
-  | { _tag: 'Invisible' }
-
-export type Animate<A> = {
-  internal: A
-  state: AnimateState
-}
 
 export type Model = {
   route: AppRoute

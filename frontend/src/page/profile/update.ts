@@ -6,8 +6,8 @@ import { pipe } from 'fp-ts/lib/function'
 import { Cmd } from 'tea-cup-fp'
 
 import { followUser, getArticles, getProfile, unfollowUser } from '@/common/api'
+import type { Shared } from '@/common/type/shared'
 import * as ArticleShort from '@/component/article-short'
-import type { Shared } from '@/type'
 
 import type { Model, Msg } from './type'
 

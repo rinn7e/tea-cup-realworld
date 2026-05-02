@@ -7,7 +7,7 @@ import {
   unfavoriteArticle,
   unfavoriteArticleUtil,
 } from '@/common/api'
-import type { Shared } from '@/type'
+import type { Shared } from '@/common/type/shared'
 
 import type { Model, Msg } from './type'
 

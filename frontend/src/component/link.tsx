@@ -1,8 +1,7 @@
 import React, { useContext } from 'react'
 
+import { SetGlobalMsgContext } from '@/common/global-context'
 import { type AppRoute, toUrlString } from '@/common/type/route'
-
-import { SetGlobalMsgContext } from './global-context'
 
 interface Props extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   route: AppRoute

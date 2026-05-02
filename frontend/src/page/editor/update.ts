@@ -12,8 +12,8 @@ import type * as O from 'fp-ts/lib/Option'
 import { Cmd } from 'tea-cup-fp'
 
 import { createArticle, getArticle, updateArticle } from '@/common/api'
+import { type Shared } from '@/common/type/shared'
 import { standardInputUi, textPillInputUi } from '@/component/form-fields'
-import { type Shared } from '@/type'
 
 import {
   type Model,

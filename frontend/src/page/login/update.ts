@@ -5,8 +5,8 @@ import { pipe } from 'fp-ts/lib/function'
 import { Cmd } from 'tea-cup-fp'
 
 import { login } from '@/common/api'
+import type { Shared } from '@/common/type/shared'
 import { standardInputUi } from '@/component/form-fields'
-import type { Shared } from '@/type'
 
 import {
   type Model,
