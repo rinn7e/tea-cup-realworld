@@ -18,7 +18,7 @@ import {
   getHttpErrorEq,
 } from '@/common/api'
 
-import * as CommentSection from './component/comment-section'
+import * as CommentSection from './sub-component/comment-section'
 
 export type Model = {
   slug: string

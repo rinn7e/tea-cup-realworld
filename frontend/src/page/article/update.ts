@@ -14,7 +14,7 @@ import {
 } from '@/common/api'
 import type { Shared } from '@/common/type/shared'
 
-import * as CommentSection from './component/comment-section'
+import * as CommentSection from './sub-component/comment-section'
 import { type Model, type Msg } from './type'
 
 export const init = (slug: string, shared: Shared): [Model, Cmd<Msg>] => {

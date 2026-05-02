@@ -221,58 +221,70 @@ Each component should follow a clear, modular structure to promote maintainabili
   - Asset files and folders do not have to follow this convention since they are not code.
 - File and folder names must be in kebab-case.
 - Use the prefix **`list`** or **`array`** to indicate a collection of items.
-  - Example: `component/bundle-list.tsx`
+  - Example: `component/article-list.tsx`
 
 - Component names should be `<SomeComponent>` or `<SomeComponent>View` for the component and `<SomeComponent>Memo` for its memoized version.
-  - Example:
-
-```ts
-export const AccountSettingMemo = memo(AccountSetting, mkPropEq().equals) as <
-  pmsg,
->(
-  props: Props<pmsg>,
-) => JSX.Element
-```
+  - Example: `CommentSectionMemo`
 
 #### Recommended File Breakdown
 
-**1. `index.tsx`**
+For any component (or page), split it into the following files:
 
-- Serves as the **main entry point** of the component.
-- Defines the primary **View** component.
-- Smaller helper views can be defined in `view.tsx`.
-- If a helper view is a reusable React component, place it under `component/<component-name>.tsx`.
-- Must only export 1 component, e.g., `AccountSettingMemo`.
+**1. `type.ts`**
 
-**2. `update/`**
+- Defines the component's `Model` and `Msg`.
+- Defines `ModelEq` for memoization.
+- Defines `Props` and `PropsEq` for the view.
+
+**2. `update.ts`**
 
 - Contains the `init` and `update` functions.
-- If the file grows too large, separate logic into submodules such as:
-  - `handler.ts`
-  - `cmd.ts`
-  - `helper.ts`
+- Imports `Model` and `Msg` from `./type`.
 
-- Re-export all helper files here, since we can't export them
-  in `index.tsx` due to React Refresh.
+**3. `component.tsx`**
 
-**3. `type/`**
+- Defines the view components.
+- Only export the memo version (e.g., `export const MyComponentMemo = ...`).
+- Imports `Props` and `PropsEq` from `./type`.
 
-- Defines all types and related helpers.
-- May be further divided into smaller files, for example:
-  - `type/bundle.ts`
-  - `type/message.ts`
+**4. `index.ts`**
+
+- Re-exports everything from `./type` and `./update`.
+- **Do NOT** export the view component here; callers should import it directly from `./component.tsx`.
+
+For complex components (like pages):
+
+**5. `sub-component/`**
+
+- Directory for child components.
+- Each child component follows the same `type.ts`, `update.ts`, `component.tsx`, `index.ts` structure.
+- Child components can also contain their own `sub-component/` directory if necessary, though this should be rare.
+
+**6. `common/`**
+
+- Directory for types, views, or utilities shared **only** among the child components of this specific page/component.
 
 ---
 
 ### Dependency Order and Hierarchy
 
-To minimize circular dependencies, follow this recommended import hierarchy:
+To minimize circular dependencies and ensure a clean modular structure, follow this hierarchy:
 
-1. `type.ts`
-2. `handler.ts`, `cmd.ts`, `helper.ts` (if they exist)
-3. `update.ts`, `view.tsx`
-4. Child components
-5. `index.tsx`
+1.  **`src/common/`**: Central shared logic. Nothing in `common/` should import from outside `common/` (except external libraries).
+2.  **Global Components (`src/component/`)**: Generic UI components (e.g., `navbar.tsx`, `link.tsx`).
+3.  **Pages (`src/page/`)**: Application pages.
+4.  **Sub Components (`src/page/*/sub-component/`)**: Specific components used only by a single page or parent component.
+
+**App Structure:**
+- The root `App` is the entry point that composes **Components** and **Pages**.
+- Each **Component** or **Page** can contain its own **sub-component** directory.
+- Deep nesting of sub-components is possible but should be kept rare to avoid complexity.
+
+**Import Rules:**
+
+- Always prefer importing from `@/common/...`.
+- Sub-components should import shared page-level logic from their parent's `./common/` directory.
+- Avoid importing from the top-level `@/type.ts` unless you are a global component needing the root `Model` or `Msg`.
 
 ### React Components
 
@@ -319,28 +331,22 @@ export type ParticipantSelectionProps = {
 
 ### API Data and Endpoints
 
-- API data and endpoints are located in the `api` directory.
+- API logic is centralized in `src/common/api`.
 
-- API data and types are stored in the `api/type` directory.
-  - Each data entity has its own file, e.g., `api/type/message.ts`, `api/type/bundle.ts`.
-  - Commonly shared types are in `api/type/common.ts`.
-  - Re-export everything in `api/type/index.ts`.
+- **API types** are in `src/common/api/type/`.
+  - Each entity has its own file (e.g., `article.ts`, `user.ts`).
+  - Shared types are in `common.ts`.
+  - Re-export everything in `index.ts`.
 
-- API handlers are stored in the `api/handler` directory.
-- All handlers are grouped based on the endpoint they are calling.
-  - e.g., `api/handler/message.ts`: All endpoint handlers related to the `message` resource.
-  - e.g., `api/handler/bundle.ts`: All endpoint handlers related to the `bundle` resource.
-  - Re-export everything in `api/index.ts`.
+- **API handlers** are in `src/common/api/handler/`.
+  - Grouped by resource (e.g., `article.ts`, `profile.ts`).
+  - Shared handler logic is in `common.ts`.
+  - Re-export everything in `src/common/api/index.ts`.
 
-- `api/type` file hierarchy (to avoid circular imports):
+- **File hierarchy** (to avoid circular imports):
   1. `common.ts`
-  2. `<each-type-name>.ts`
-  3. `helper.tsx`
-
-- `api/handler` file hierarchy (to avoid circular imports):
-  1. `common.ts`
-  2. `<each-endpoint-name>.ts`
-  3. `helper.tsx` (if exists)
+  2. `<resource-name>.ts`
+  3. `index.ts` (re-export)
 
 ---
 

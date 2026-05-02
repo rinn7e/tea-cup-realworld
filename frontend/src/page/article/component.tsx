@@ -13,7 +13,7 @@ import { favButtonView } from '@/component/fav-button'
 import { IndeterminateProgressBar } from '@/component/indeterminate-progress-bar'
 import { Link } from '@/component/link'
 
-import { CommentSectionMemo } from './component/comment-section/component'
+import { CommentSectionMemo } from './sub-component/comment-section/component'
 import { type Props, PropsEq } from './type'
 
 const ArticlePageComponent = ({ model, user, dispatch }: Props) => {
