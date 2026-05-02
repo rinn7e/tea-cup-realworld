@@ -219,6 +219,8 @@ Each component should follow a clear, modular structure to promote maintainabili
 - **File names** must be **singular**.
 - **Folder names** must also be **singular** (folders act as logical _tags_).
   - Asset files and folders do not have to follow this convention since they are not code.
+  - Global styles should be located in `src/asset/` (e.g., `src/asset/index.css`).
+
 - File and folder names must be in kebab-case.
 - Use the prefix **`list`** or **`array`** to indicate a collection of items.
   - Example: `component/article-list.tsx`

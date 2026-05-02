@@ -6,7 +6,7 @@ import { type Dispatcher, Sub } from 'tea-cup-fp'
 
 import { App } from '@/app'
 import { IS_RUNNING_E2E } from '@/common/env'
-import '@/index.css'
+import '@/asset/index.css'
 import type { Model, Msg } from '@/type'
 import { preInit, preUpdate } from '@/update'
 import { assignConduitDebug } from '@/util'
