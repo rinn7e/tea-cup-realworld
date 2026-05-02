@@ -4,9 +4,9 @@ import { cn } from '@rinn7e/tea-cup-prelude'
 import { Loader2 } from 'lucide-react'
 import React from 'react'
 
+import type { AppRoute } from '@/common/type/route'
 import { ErrorMessages } from '@/component/error-messages'
 import { Link } from '@/component/link'
-import type { Route } from '@/type'
 import { memoStrategy } from '@/util'
 
 import {
@@ -18,7 +18,7 @@ import {
 } from './type'
 
 const SignupPageComponent = ({ model, dispatch }: Props) => {
-  const loginRoute: Route = { page: { _tag: 'LoginPage' } }
+  const loginRoute: AppRoute = { page: { _tag: 'LoginPage' } }
 
   return (
     <div

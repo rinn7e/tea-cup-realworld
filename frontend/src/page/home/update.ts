@@ -6,8 +6,8 @@ import { pipe } from 'fp-ts/lib/function'
 import { Cmd } from 'tea-cup-fp'
 
 import { getArticles, getArticlesFeed, getTags } from '@/api'
+import { HomeTab, HomeTabEq } from '@/common/type/route'
 import * as ArticleShort from '@/component/article-short'
-import { HomeTab, HomeTabEq } from '@/data/route/type'
 import type { Shared } from '@/type'
 
 import type { Model, Msg } from './type'

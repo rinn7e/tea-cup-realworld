@@ -1,7 +1,7 @@
 import React from 'react'
 
+import { homePage } from '@/common/type/route'
 import { Link } from '@/component/link'
-import { homePage } from '@/data/route'
 
 export const NotFoundView: React.FC = () => {
   return (

@@ -10,17 +10,17 @@ import type {
   HttpError,
   TagsResponse,
 } from '@/api/type'
-import { ArticleShortComponent } from '@/component/article-short/component'
-import { DotLoading } from '@/component/dot-loading'
-import { ErrorMessages } from '@/component/error-messages'
-import { Link } from '@/component/link'
 import {
   AppRoute,
   globalFeedTab,
   homePage,
   tagFeedTab,
   userFeedTab,
-} from '@/data/route/type'
+} from '@/common/type/route'
+import { ArticleShortComponent } from '@/component/article-short/component'
+import { DotLoading } from '@/component/dot-loading'
+import { ErrorMessages } from '@/component/error-messages'
+import { Link } from '@/component/link'
 import { memoStrategy } from '@/util'
 
 import { Msg, Props, PropsEq } from './type'

@@ -9,25 +9,26 @@ import { pipe } from 'fp-ts/lib/function'
 import { newUrl } from 'react-tea-cup'
 import { Cmd, Task } from 'tea-cup-fp'
 
-import { getCurrentUser } from './api'
-import type { User, UserWithToken } from './api/type'
-import { getToken, removeToken, saveToken } from './cache'
-import * as DebugPanel from './component/debug-panel'
+import { getCurrentUser } from '@/api'
+import type { User, UserWithToken } from '@/api/type'
+import { getToken, removeToken, saveToken } from '@/cache'
 import {
+  AppRoute,
   AppRouteEq,
   HomeTab,
   homePage,
   parseAppRoute,
   toUrlString,
-} from './data/route'
-import * as ArticlePage from './page/article/update'
-import * as EditorPage from './page/editor/update'
-import * as HomePage from './page/home/update'
-import * as LoginPage from './page/login/update'
-import * as ProfilePage from './page/profile/update'
-import * as SettingsPage from './page/settings/update'
-import * as SignupPage from './page/signup/update'
-import type { Model, Msg, Route } from './type'
+} from '@/common/type/route'
+import * as DebugPanel from '@/component/debug-panel'
+import * as ArticlePage from '@/page/article/update'
+import * as EditorPage from '@/page/editor/update'
+import * as HomePage from '@/page/home/update'
+import * as LoginPage from '@/page/login/update'
+import * as ProfilePage from '@/page/profile/update'
+import * as SettingsPage from '@/page/settings/update'
+import * as SignupPage from '@/page/signup/update'
+import type { Model, Msg } from '@/type'
 
 // Initialization
 // ---------------------------------------------
@@ -130,7 +131,7 @@ const _getUserCmd = (storedToken: string): Cmd<Msg> =>
   })
 
 const navigate =
-  (newRoute: Route, isInternal: boolean) =>
+  (newRoute: AppRoute, isInternal: boolean) =>
   (model: Model): [Model, Cmd<Msg>] => {
     const urlCmd = isInternal
       ? Task.perform(
@@ -139,7 +140,7 @@ const navigate =
         )
       : Cmd.none<Msg>()
 
-    // Route Guard against unauth
+    // AppRoute Guard against unauth
     // TODO: consider where to put the auth guard
     // maybe in changeRouterHandler instead
     const isLoggedIn = O.isSome(model.shared.user)
@@ -313,7 +314,7 @@ const navigate =
   }
 
 const execChangeRoute =
-  (newRoute: Route, isInternal: boolean) =>
+  (newRoute: AppRoute, isInternal: boolean) =>
   (model: Model): [Model, Cmd<Msg>] => {
     if (!AppRouteEq.equals(model.route, newRoute)) {
       return navigate(newRoute, isInternal)(model)
@@ -327,7 +328,7 @@ const execChangeRoute =
   }
 
 const changeRouteHandler =
-  (newRoute: Route, isInternal: boolean) =>
+  (newRoute: AppRoute, isInternal: boolean) =>
   (model: Model): [Model, Cmd<Msg>] => {
     return execChangeRoute(newRoute, isInternal)(model)
   }
@@ -339,7 +340,7 @@ const changeRouteHandler =
 // Sets `isInternal` to true to prevent re-navigation when the URL change is detected.
 // useful when we want to update the url to match app state
 export const changeRouteUrlNoReload =
-  (route: Route) =>
+  (route: AppRoute) =>
   (model: Model): [Model, Cmd<Msg>] => {
     const url = toUrlString(route)
     return [
@@ -355,7 +356,7 @@ export const changeRouteUrlNoReload =
 // Sets `isInternal` to true to prevent re-navigation when the URL change is detected.
 // useful when we want to update the route,and url to match app state
 export const changeRouteNoReload =
-  (route: Route) =>
+  (route: AppRoute) =>
   (model: Model): [Model, Cmd<Msg>] => {
     const url = toUrlString(route)
     return [
@@ -630,7 +631,7 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
           updateAndCmd((m) => {
             // Intercept `ToggleFavorites` to update the url accordingly
             if (msg.subMsg._tag === 'ToggleFavorites') {
-              const route: Route = {
+              const route: AppRoute = {
                 page: {
                   _tag: 'ProfilePage',
                   username,

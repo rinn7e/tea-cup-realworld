@@ -7,11 +7,11 @@ import React from 'react'
 import { createPortal } from 'react-dom'
 import type { Dispatcher } from 'tea-cup-fp'
 
-import type { User } from '../api/type'
-import { homePage } from '../data/route'
-import type { Model, Msg } from '../type'
-import { assetPath } from '../util'
-import { Link } from './link'
+import type { User } from '@/api/type'
+import { homePage } from '@/common/type/route'
+import { Link } from '@/component/link'
+import type { Model, Msg } from '@/type'
+import { assetPath } from '@/util'
 
 interface Props {
   model: Model

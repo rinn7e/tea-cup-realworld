@@ -10,13 +10,13 @@ import type {
   HttpError,
   ProfileResponse,
 } from '@/api/type'
+import type { AppRoute } from '@/common/type/route'
 import { ArticleShortComponent } from '@/component/article-short/component'
 import { DotLoading } from '@/component/dot-loading'
 import { ErrorMessages } from '@/component/error-messages'
 import { IndeterminateProgressBar } from '@/component/indeterminate-progress-bar'
 import { Link } from '@/component/link'
 import { API_BASE } from '@/env'
-import type { Route } from '@/type'
 import { assetPath, memoStrategy } from '@/util'
 
 import { Props, PropsEq } from './type'
@@ -215,7 +215,7 @@ const ProfilePageComponent = ({
   )
 }
 
-const profileErrorView = (route: Route) => {
+const profileErrorView = (route: AppRoute) => {
   const username = route.page._tag === 'ProfilePage' ? route.page.username : ''
 
   return (

@@ -16,8 +16,8 @@ import type {
   HttpError,
   ProfileResponse,
 } from '@/api/type'
+import type { AppRoute } from '@/common/type/route'
 import * as ArticleShort from '@/component/article-short'
-import type { Route } from '@/type'
 
 export type Model = {
   profile: RD.RemoteData<HttpError<ApiError>, ProfileResponse>
@@ -65,7 +65,7 @@ export type Props = {
   model: Model
   dispatch: Dispatcher<Msg>
   isCurrentUser: boolean
-  route: Route
+  route: AppRoute
 }
 
 export const PropsEq: EqClass.Eq<Props> = EqClass.struct({

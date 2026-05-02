@@ -16,8 +16,8 @@ import type {
   HttpError,
   TagsResponse,
 } from '@/api/type'
+import { HomeTab, HomeTabEq } from '@/common/type/route'
 import * as ArticleShort from '@/component/article-short'
-import { HomeTab, HomeTabEq } from '@/data/route/type'
 
 export const GET_ARTICLES_LIMIT = 10
 

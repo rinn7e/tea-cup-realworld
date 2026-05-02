@@ -1,17 +1,16 @@
 import type { Option } from 'fp-ts/lib/Option'
 
-import type { User, UserWithToken } from './api/type'
-import type * as DebugPanel from './component/debug-panel'
-import type { AppRoute } from './data/route'
-import type * as ArticlePage from './page/article/type'
-import type * as EditorPage from './page/editor/type'
-import type * as HomePage from './page/home/type'
-import type * as LoginPage from './page/login/type'
-import type * as ProfilePage from './page/profile/type'
-import type * as SettingsPage from './page/settings/type'
-import type * as SignupPage from './page/signup/type'
+import type { User, UserWithToken } from '@/api/type'
+import type * as DebugPanel from '@/component/debug-panel'
+import type * as ArticlePage from '@/page/article/type'
+import type * as EditorPage from '@/page/editor/type'
+import type * as HomePage from '@/page/home/type'
+import type * as LoginPage from '@/page/login/type'
+import type * as ProfilePage from '@/page/profile/type'
+import type * as SettingsPage from '@/page/settings/type'
+import type * as SignupPage from '@/page/signup/type'
 
-export type Route = AppRoute
+import { AppRoute } from './common/type/route'
 
 export type Shared = {
   user: Option<User>
@@ -40,7 +39,7 @@ export type Animate<A> = {
 }
 
 export type Model = {
-  route: Route
+  route: AppRoute
   unavailableMode: boolean
   shared: Shared
   pageModel: PageModel
@@ -59,7 +58,7 @@ export type Msg =
       token: Option<string>
     }
   | { _tag: 'UrlChange'; location: Location }
-  | { _tag: 'ChangeRoute'; route: Route }
+  | { _tag: 'ChangeRoute'; route: AppRoute }
   | { _tag: 'SetUser'; user: Option<UserWithToken> }
   | { _tag: 'HomePageMsg'; subMsg: HomePage.Msg }
   | { _tag: 'ArticlePageMsg'; subMsg: ArticlePage.Msg }

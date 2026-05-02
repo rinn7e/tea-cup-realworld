@@ -1,8 +1,8 @@
 import { cn } from '@rinn7e/tea-cup-prelude'
 import React from 'react'
 
-import { homePage } from '../data/route'
-import { Link } from './link'
+import { homePage } from '@/common/type/route'
+import { Link } from '@/component/link'
 
 export const Footer: React.FC = () => {
   return (
