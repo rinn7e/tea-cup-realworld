@@ -17,8 +17,7 @@ import { IndeterminateProgressBar } from '@/component/indeterminate-progress-bar
 import { Link } from '@/component/link'
 import { API_BASE } from '@/env'
 import type { Route } from '@/type'
-import { assetPath } from '@/util'
-import { memoStrategy } from '@/util/memo-strategy'
+import { assetPath, memoStrategy } from '@/util'
 
 import { Props, PropsEq } from './type'
 

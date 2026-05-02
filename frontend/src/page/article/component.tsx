@@ -17,8 +17,7 @@ import { ErrorMessages } from '@/component/error-messages'
 import { favButtonView } from '@/component/fav-button'
 import { IndeterminateProgressBar } from '@/component/indeterminate-progress-bar'
 import { Link } from '@/component/link'
-import { assetPath } from '@/util'
-import { memoStrategy } from '@/util/memo-strategy'
+import { assetPath, memoStrategy } from '@/util'
 
 import { Props, PropsEq } from './type'
 

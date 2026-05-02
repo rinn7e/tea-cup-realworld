@@ -9,7 +9,7 @@ import { IS_RUNNING_E2E } from './env'
 import './index.css'
 import type { Model, Msg } from './type'
 import { preInit, preUpdate } from './update'
-import { assignConduitDebug } from './util/e2e'
+import { assignConduitDebug } from './util'
 
 // Helper
 // ---------------------------------------------

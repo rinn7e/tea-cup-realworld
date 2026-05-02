@@ -7,7 +7,7 @@ import React from 'react'
 import { ErrorMessages } from '@/component/error-messages'
 import { Link } from '@/component/link'
 import type { Route } from '@/type'
-import { memoStrategy } from '@/util/memo-strategy'
+import { memoStrategy } from '@/util'
 
 import { Props, PropsEq, loginEmailField, loginPasswordField } from './type'
 

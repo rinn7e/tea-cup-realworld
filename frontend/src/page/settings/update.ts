@@ -10,7 +10,7 @@ import { updateUser } from '@/api'
 import type { User } from '@/api/type'
 import { standardInputUi } from '@/component/form-fields'
 import { type Shared } from '@/type'
-import { minLengthIfExistValidator } from '@/util/form'
+import { minLengthIfExistValidator } from '@/util'
 
 import type { Model, Msg } from './type'
 import {

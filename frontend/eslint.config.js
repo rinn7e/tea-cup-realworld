@@ -42,6 +42,7 @@ export default tseslint.config([
       'no-lonely-if': 'off',
       'no-control-regex': 'off',
       'import/no-cycle': [2, { ignoreExternal: true }],
+      'import/no-duplicates': 'error',
 
       '@typescript-eslint/await-thenable': 'error',
       '@typescript-eslint/no-explicit-any': 'off',

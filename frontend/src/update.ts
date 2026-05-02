@@ -11,6 +11,7 @@ import { Cmd, Task } from 'tea-cup-fp'
 
 import { getCurrentUser } from './api'
 import type { User, UserWithToken } from './api/type'
+import { getToken, removeToken, saveToken } from './cache'
 import * as DebugPanel from './component/debug-panel'
 import {
   AppRouteEq,
@@ -27,7 +28,6 @@ import * as ProfilePage from './page/profile/update'
 import * as SettingsPage from './page/settings/update'
 import * as SignupPage from './page/signup/update'
 import type { Model, Msg, Route } from './type'
-import { getToken, removeToken, saveToken } from './util/storage'
 
 // Initialization
 // ---------------------------------------------

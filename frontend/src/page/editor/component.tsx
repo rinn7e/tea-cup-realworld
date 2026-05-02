@@ -5,7 +5,7 @@ import { Loader2 } from 'lucide-react'
 import React from 'react'
 
 import { ErrorMessages } from '@/component/error-messages'
-import { memoStrategy } from '@/util/memo-strategy'
+import { memoStrategy } from '@/util'
 
 import {
   Props,

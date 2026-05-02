@@ -21,7 +21,7 @@ import {
   tagFeedTab,
   userFeedTab,
 } from '@/data/route/type'
-import { memoStrategy } from '@/util/memo-strategy'
+import { memoStrategy } from '@/util'
 
 import { Msg, Props, PropsEq } from './type'
 
