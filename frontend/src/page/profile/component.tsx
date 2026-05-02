@@ -11,13 +11,13 @@ import type {
   ProfileResponse,
 } from '@/common/api'
 import type { AppRoute } from '@/common/type/route'
+import { assetPath, memoStrategy } from '@/common/util'
 import { ArticleShortComponent } from '@/component/article-short/component'
 import { DotLoading } from '@/component/dot-loading'
 import { ErrorMessages } from '@/component/error-messages'
 import { IndeterminateProgressBar } from '@/component/indeterminate-progress-bar'
 import { Link } from '@/component/link'
 import { API_BASE } from '@/env'
-import { assetPath, memoStrategy } from '@/util'
 
 import { type Props, PropsEq } from './type'
 

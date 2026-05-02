@@ -5,9 +5,9 @@ import { Loader2 } from 'lucide-react'
 import React from 'react'
 
 import type { AppRoute } from '@/common/type/route'
+import { memoStrategy } from '@/common/util'
 import { ErrorMessages } from '@/component/error-messages'
 import { Link } from '@/component/link'
-import { memoStrategy } from '@/util'
 
 import {
   type Props,

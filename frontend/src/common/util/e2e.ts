@@ -1,6 +1,5 @@
+import { getToken } from '@/cache'
 import type { Model } from '@/type'
-
-import { getToken } from '../cache'
 
 export interface ConduitDebug {
   getToken(): string | null

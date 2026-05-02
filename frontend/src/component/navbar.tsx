@@ -9,9 +9,9 @@ import type { Dispatcher } from 'tea-cup-fp'
 
 import type { User } from '@/common/api'
 import { homePage } from '@/common/type/route'
+import { assetPath } from '@/common/util'
 import { Link } from '@/component/link'
 import type { Model, Msg } from '@/type'
-import { assetPath } from '@/util'
 
 interface Props {
   model: Model

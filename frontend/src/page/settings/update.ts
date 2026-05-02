@@ -7,9 +7,9 @@ import { pipe } from 'fp-ts/lib/function'
 import { Cmd } from 'tea-cup-fp'
 
 import { type User, updateUser } from '@/common/api'
+import { minLengthIfExistValidator } from '@/common/util'
 import { standardInputUi } from '@/component/form-fields'
 import { type Shared } from '@/type'
-import { minLengthIfExistValidator } from '@/util'
 
 import {
   type Model,

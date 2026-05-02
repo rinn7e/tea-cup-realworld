@@ -17,11 +17,11 @@ import {
   tagFeedTab,
   userFeedTab,
 } from '@/common/type/route'
+import { memoStrategy } from '@/common/util'
 import { ArticleShortComponent } from '@/component/article-short/component'
 import { DotLoading } from '@/component/dot-loading'
 import { ErrorMessages } from '@/component/error-messages'
 import { Link } from '@/component/link'
-import { memoStrategy } from '@/util'
 
 import { type Msg, type Props, PropsEq } from './type'
 

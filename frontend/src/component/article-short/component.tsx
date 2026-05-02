@@ -1,10 +1,10 @@
 import React from 'react'
 import type { Dispatcher } from 'tea-cup-fp'
 
+import { assetPath } from '@/common/util'
 import { DotLoading } from '@/component/dot-loading'
 import { favButtonView } from '@/component/fav-button'
 import { Link } from '@/component/link'
-import { assetPath } from '@/util'
 
 import type { Model, Msg } from './type'
 
