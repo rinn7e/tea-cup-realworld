@@ -1,5 +1,5 @@
 import * as RD from '@devexperts/remote-data-ts'
-import { EqAlways, NullableEq } from '@rinn7e/tea-cup-prelude'
+import { EqAlways } from '@rinn7e/tea-cup-prelude'
 import * as EqClass from 'fp-ts/lib/Eq'
 import * as O from 'fp-ts/lib/Option'
 import type { Option } from 'fp-ts/lib/Option'
@@ -11,9 +11,6 @@ import {
   ApiErrorEq,
   type ArticleResponse,
   ArticleResponseEq,
-  type CommentResponse,
-  type CommentsResponse,
-  CommentsResponseEq,
   type HttpError,
   type ProfileResponse,
   type User,
@@ -21,30 +18,24 @@ import {
   getHttpErrorEq,
 } from '@/common/api'
 
+import * as CommentSection from './component/comment-section'
+
 export type Model = {
   slug: string
   article: RD.RemoteData<HttpError<ApiError>, ArticleResponse>
-  comments: RD.RemoteData<HttpError<ApiError>, CommentsResponse>
-  newCommentInput: string
-  newCommentError: HttpError<ApiError> | null
+  commentSection: CommentSection.Model
 }
 
 export const ModelEq = EqClass.struct<Model>({
   slug: S.Eq,
   article: RD.getEq(getHttpErrorEq(ApiErrorEq), ArticleResponseEq),
-  comments: RD.getEq(getHttpErrorEq(ApiErrorEq), CommentsResponseEq),
-  newCommentInput: S.Eq,
-  newCommentError: NullableEq(getHttpErrorEq(ApiErrorEq)),
+  commentSection: CommentSection.ModelEq,
 })
 
 export type Msg =
   | {
       _tag: 'GetArticleResponse'
       result: Result<HttpError<ApiError>, ArticleResponse>
-    }
-  | {
-      _tag: 'GetCommentsResponse'
-      result: Result<HttpError<ApiError>, CommentsResponse>
     }
   | { _tag: 'FavoriteArticle' }
   | { _tag: 'UnfavoriteArticle' }
@@ -68,18 +59,7 @@ export type Msg =
     }
   | { _tag: 'DeleteArticle' }
   | { _tag: 'DeleteArticleResponse'; result: Result<HttpError<ApiError>, true> }
-  | { _tag: 'SetCommentInput'; value: string }
-  | { _tag: 'SubmitComment' }
-  | {
-      _tag: 'SubmitCommentResponse'
-      result: Result<HttpError<ApiError>, CommentResponse>
-    }
-  | { _tag: 'DeleteComment'; id: number }
-  | {
-      _tag: 'DeleteCommentResponse'
-      id: number
-      result: Result<HttpError<ApiError>, true>
-    }
+  | { _tag: 'CommentSectionMsg'; subMsg: CommentSection.Msg }
 
 export type Props = {
   model: Model

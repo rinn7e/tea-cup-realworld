@@ -6,19 +6,14 @@ import { Pencil, Trash2, UserMinus, UserPlus } from 'lucide-react'
 import React from 'react'
 import ReactMarkdown from 'react-markdown'
 
-import type {
-  ApiError,
-  ArticleResponse,
-  CommentsResponse,
-  HttpError,
-} from '@/common/api'
+import type { ApiError, ArticleResponse, HttpError } from '@/common/api'
 import { assetPath, memoStrategy } from '@/common/util'
-import { DotLoading } from '@/component/dot-loading'
 import { ErrorMessages } from '@/component/error-messages'
 import { favButtonView } from '@/component/fav-button'
 import { IndeterminateProgressBar } from '@/component/indeterminate-progress-bar'
 import { Link } from '@/component/link'
 
+import { CommentSectionMemo } from './component/comment-section/component'
 import { type Props, PropsEq } from './type'
 
 const ArticlePageComponent = ({ model, user, dispatch }: Props) => {
@@ -215,156 +210,13 @@ const ArticlePageComponent = ({ model, user, dispatch }: Props) => {
                   <div className='flex flex-col items-center gap-[32px]'>
                     {articleMeta(false)}
 
-                    <div className='flex w-full max-w-[700px] flex-col gap-[24px]'>
-                      {isLoggedIn && (
-                        <form
-                          className='flex flex-col overflow-hidden rounded border border-gray-200'
-                          data-test='comment-form'
-                          onSubmit={(e) => {
-                            e.preventDefault()
-                            dispatch({ _tag: 'SubmitComment' })
-                          }}
-                        >
-                          <textarea
-                            className='min-h-[100px] w-full resize-none p-[12px] text-sm text-gray-800 outline-none'
-                            data-test='comment-textarea'
-                            rows={3}
-                            placeholder='Write a comment...'
-                            value={model.newCommentInput}
-                            onChange={(e) =>
-                              dispatch({
-                                _tag: 'SetCommentInput',
-                                value: e.target.value,
-                              })
-                            }
-                          />
-
-                          {model.newCommentError && (
-                            <ErrorMessages error={model.newCommentError} />
-                          )}
-
-                          <div className='flex items-center justify-between border-t border-gray-100 bg-gray-50 px-[12px] py-[8px]'>
-                            {pipe(
-                              user,
-                              O.fold(
-                                () => null,
-                                (u) => (
-                                  <img
-                                    src={assetPath(
-                                      u.image || '/default-avatar.svg',
-                                    )}
-                                    className='h-[20px] w-[20px] rounded-full object-cover'
-                                    alt=''
-                                    data-test='comment-author-img'
-                                  />
-                                ),
-                              ),
-                            )}
-                            <button
-                              type='submit'
-                              className='rounded bg-green-600 px-[12px] py-[4px] text-xs text-white transition-colors hover:bg-green-700'
-                            >
-                              Post Comment
-                            </button>
-                          </div>
-                        </form>
-                      )}
-
-                      {pipe(
-                        model.comments,
-                        RD.fold(
-                          () => (
-                            <div className='py-[12px]'>
-                              <DotLoading className='text-2xl text-green-600' />
-                            </div>
-                          ),
-                          () => (
-                            <div className='py-[12px]'>
-                              <DotLoading className='text-2xl text-green-600' />
-                            </div>
-                          ),
-                          (err: HttpError<ApiError>) => (
-                            <div className='py-[12px]'>
-                              <ErrorMessages error={err} />
-                            </div>
-                          ),
-                          (commentsData: CommentsResponse) => (
-                            <div className='flex flex-col gap-[16px]'>
-                              {commentsData.comments.map((comment) => (
-                                <div
-                                  key={comment.id}
-                                  className='overflow-hidden rounded border border-gray-200'
-                                  data-test='comment-card'
-                                >
-                                  <div className='p-[16px]'>
-                                    <p className='text-sm whitespace-pre-wrap text-gray-800'>
-                                      {comment.body}
-                                    </p>
-                                  </div>
-                                  <div className='card-footer flex items-center gap-[8px] border-t border-gray-100 bg-gray-50 px-[16px] py-[8px] text-xs'>
-                                    <Link
-                                      route={{
-                                        page: {
-                                          _tag: 'ProfilePage',
-                                          username: comment.author.username,
-                                          favorites: false,
-                                        },
-                                      }}
-                                    >
-                                      <img
-                                        src={assetPath(
-                                          comment.author.image ||
-                                            '/default-avatar.svg',
-                                        )}
-                                        className='h-[20px] w-[20px] rounded-full object-cover'
-                                        alt=''
-                                        data-test='comment-author-img'
-                                      />
-                                    </Link>
-                                    <Link
-                                      route={{
-                                        page: {
-                                          _tag: 'ProfilePage',
-                                          username: comment.author.username,
-                                          favorites: false,
-                                        },
-                                      }}
-                                      className='font-medium text-green-600 hover:underline'
-                                    >
-                                      {comment.author.username}
-                                    </Link>
-                                    <span className='text-gray-400'>
-                                      {new Date(
-                                        comment.createdAt,
-                                      ).toDateString()}
-                                    </span>
-                                    {isLoggedIn &&
-                                      user.value.username ===
-                                        comment.author.username && (
-                                        <span className='ml-auto'>
-                                          <button
-                                            type='button'
-                                            onClick={() =>
-                                              dispatch({
-                                                _tag: 'DeleteComment',
-                                                id: comment.id,
-                                              })
-                                            }
-                                            className='text-gray-400 transition-colors hover:text-red-500'
-                                            data-test='delete-comment-btn'
-                                          >
-                                            <Trash2 size={12} />
-                                          </button>
-                                        </span>
-                                      )}
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          ),
-                        ),
-                      )}
-                    </div>
+                    <CommentSectionMemo
+                      model={model.commentSection}
+                      user={user}
+                      dispatch={(subMsg) =>
+                        dispatch({ _tag: 'CommentSectionMsg', subMsg })
+                      }
+                    />
                   </div>
                 </div>
               </div>
