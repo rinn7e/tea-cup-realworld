@@ -2,7 +2,7 @@ import { devTools } from '@rinn7e/tea-cup-prelude'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ProgramWithNav } from 'react-tea-cup'
-import { Dispatcher, Sub } from 'tea-cup-fp'
+import { type Dispatcher, Sub } from 'tea-cup-fp'
 
 import { App } from './component'
 import { IS_RUNNING_E2E } from './env'

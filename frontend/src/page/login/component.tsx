@@ -9,7 +9,12 @@ import { ErrorMessages } from '@/component/error-messages'
 import { Link } from '@/component/link'
 import { memoStrategy } from '@/util'
 
-import { Props, PropsEq, loginEmailField, loginPasswordField } from './type'
+import {
+  type Props,
+  PropsEq,
+  loginEmailField,
+  loginPasswordField,
+} from './type'
 
 const LoginPageComponent = ({ model, dispatch }: Props) => {
   const signupRoute: AppRoute = { page: { _tag: 'SignupPage' } }

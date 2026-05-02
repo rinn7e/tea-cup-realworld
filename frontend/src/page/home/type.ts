@@ -5,19 +5,17 @@ import * as N from 'fp-ts/lib/number'
 import type { Dispatcher, Result } from 'tea-cup-fp'
 
 import {
+  type ApiError,
   ApiErrorEq,
+  type ArticlesResponse,
   ArticlesResponseEq,
+  type HttpError,
+  type TagsResponse,
   TagsResponseEq,
   getHttpErrorEq,
-} from '@/api/type'
-import type {
-  ApiError,
-  ArticlesResponse,
-  HttpError,
-  TagsResponse,
-} from '@/api/type'
-import { HomeTab, HomeTabEq } from '@/common/type/route'
-import * as ArticleShort from '@/component/article-short'
+} from '@/common/api'
+import { type HomeTab, HomeTabEq } from '@/common/type/route'
+import type * as ArticleShort from '@/component/article-short'
 
 export const GET_ARTICLES_LIMIT = 10
 

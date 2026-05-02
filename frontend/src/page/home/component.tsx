@@ -2,16 +2,16 @@ import * as RD from '@devexperts/remote-data-ts'
 import { cn } from '@rinn7e/tea-cup-prelude'
 import { pipe } from 'fp-ts/lib/function'
 import React from 'react'
-import { Dispatcher } from 'tea-cup-fp'
+import { type Dispatcher } from 'tea-cup-fp'
 
 import type {
   ApiError,
   ArticlesResponse,
   HttpError,
   TagsResponse,
-} from '@/api/type'
+} from '@/common/api'
 import {
-  AppRoute,
+  type AppRoute,
   globalFeedTab,
   homePage,
   tagFeedTab,
@@ -23,7 +23,7 @@ import { ErrorMessages } from '@/component/error-messages'
 import { Link } from '@/component/link'
 import { memoStrategy } from '@/util'
 
-import { Msg, Props, PropsEq } from './type'
+import { type Msg, type Props, PropsEq } from './type'
 
 const HomePageComponent = ({ model, dispatch }: Props) => {
   return (

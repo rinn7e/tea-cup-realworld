@@ -1,7 +1,6 @@
 import React, { useContext } from 'react'
 
-import { toUrlString } from '@/common/type/route'
-import type { AppRoute } from '@/common/type/route'
+import { type AppRoute, toUrlString } from '@/common/type/route'
 
 import { SetGlobalMsgContext } from './global-context'
 

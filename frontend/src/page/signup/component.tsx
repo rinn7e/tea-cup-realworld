@@ -10,7 +10,7 @@ import { Link } from '@/component/link'
 import { memoStrategy } from '@/util'
 
 import {
-  Props,
+  type Props,
   PropsEq,
   signupEmailField,
   signupPasswordField,

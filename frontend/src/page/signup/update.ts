@@ -4,12 +4,13 @@ import { attemptTE } from '@rinn7e/tea-cup-prelude'
 import { pipe } from 'fp-ts/lib/function'
 import { Cmd } from 'tea-cup-fp'
 
-import { signup } from '@/api'
+import { signup } from '@/common/api'
 import { standardInputUi } from '@/component/form-fields'
 import type { Shared } from '@/type'
 
-import type { Model, Msg } from './type'
 import {
+  type Model,
+  type Msg,
   signupEmailField,
   signupPasswordField,
   signupUsernameField,

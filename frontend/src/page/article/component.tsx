@@ -11,7 +11,7 @@ import type {
   ArticleResponse,
   CommentsResponse,
   HttpError,
-} from '@/api/type'
+} from '@/common/api'
 import { DotLoading } from '@/component/dot-loading'
 import { ErrorMessages } from '@/component/error-messages'
 import { favButtonView } from '@/component/fav-button'
@@ -19,7 +19,7 @@ import { IndeterminateProgressBar } from '@/component/indeterminate-progress-bar
 import { Link } from '@/component/link'
 import { assetPath, memoStrategy } from '@/util'
 
-import { Props, PropsEq } from './type'
+import { type Props, PropsEq } from './type'
 
 const ArticlePageComponent = ({ model, user, dispatch }: Props) => {
   return (

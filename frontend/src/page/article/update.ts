@@ -7,13 +7,14 @@ import {
   deleteArticle,
   deleteComment,
   favoriteArticle,
+  favoriteArticleUtil,
   followUser,
   getArticle,
   getComments,
   unfavoriteArticle,
+  unfavoriteArticleUtil,
   unfollowUser,
-} from '@/api'
-import { favoriteArticleUtil, unfavoriteArticleUtil } from '@/api/type/article'
+} from '@/common/api'
 import type { Shared } from '@/type'
 
 import type { Model, Msg } from './type'

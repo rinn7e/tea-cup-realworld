@@ -17,8 +17,10 @@ import * as t from 'io-ts'
 
 import { BASE_URL } from '@/env'
 
-import type { AppPage, AppRoute, HomeTab } from './type'
 import {
+  type AppPage,
+  type AppRoute,
+  type HomeTab,
   articlePage,
   editorPage,
   globalFeedTab,

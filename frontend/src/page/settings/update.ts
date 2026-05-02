@@ -6,14 +6,14 @@ import * as E from 'fp-ts/lib/Either'
 import { pipe } from 'fp-ts/lib/function'
 import { Cmd } from 'tea-cup-fp'
 
-import { updateUser } from '@/api'
-import type { User } from '@/api/type'
+import { type User, updateUser } from '@/common/api'
 import { standardInputUi } from '@/component/form-fields'
 import { type Shared } from '@/type'
 import { minLengthIfExistValidator } from '@/util'
 
-import type { Model, Msg } from './type'
 import {
+  type Model,
+  type Msg,
   settingsBioField,
   settingsEmailField,
   settingsImageField,

@@ -6,8 +6,13 @@ import * as B from 'fp-ts/lib/boolean'
 import * as S from 'fp-ts/lib/string'
 import type { Dispatcher, Result } from 'tea-cup-fp'
 
-import { ApiErrorEq, getHttpErrorEq } from '@/api/type'
-import type { ApiError, ArticleResponse, HttpError } from '@/api/type'
+import {
+  type ApiError,
+  ApiErrorEq,
+  type ArticleResponse,
+  type HttpError,
+  getHttpErrorEq,
+} from '@/common/api'
 
 export const editorTitleField = 'title'
 export const editorDescriptionField = 'description'

@@ -5,13 +5,12 @@ import * as O from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/function'
 import { Cmd } from 'tea-cup-fp'
 
-import { getArticles, getArticlesFeed, getTags } from '@/api'
-import { HomeTab, HomeTabEq } from '@/common/type/route'
+import { getArticles, getArticlesFeed, getTags } from '@/common/api'
+import { type HomeTab, HomeTabEq } from '@/common/type/route'
 import * as ArticleShort from '@/component/article-short'
 import type { Shared } from '@/type'
 
-import type { Model, Msg } from './type'
-import { GET_ARTICLES_LIMIT } from './type'
+import { GET_ARTICLES_LIMIT, type Model, type Msg } from './type'
 
 export const init = (
   tab: HomeTab,

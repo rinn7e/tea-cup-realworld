@@ -5,19 +5,17 @@ import * as B from 'fp-ts/lib/boolean'
 import type { Dispatcher, Result } from 'tea-cup-fp'
 
 import {
+  type ApiError,
   ApiErrorEq,
+  type ArticlesResponse,
   ArticlesResponseEq,
+  type HttpError,
+  type ProfileResponse,
   ProfileResponseEq,
   getHttpErrorEq,
-} from '@/api/type'
-import type {
-  ApiError,
-  ArticlesResponse,
-  HttpError,
-  ProfileResponse,
-} from '@/api/type'
+} from '@/common/api'
 import type { AppRoute } from '@/common/type/route'
-import * as ArticleShort from '@/component/article-short'
+import type * as ArticleShort from '@/component/article-short'
 
 export type Model = {
   profile: RD.RemoteData<HttpError<ApiError>, ProfileResponse>

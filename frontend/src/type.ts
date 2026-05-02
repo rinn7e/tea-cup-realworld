@@ -1,6 +1,6 @@
 import type { Option } from 'fp-ts/lib/Option'
 
-import type { User, UserWithToken } from '@/api/type'
+import type { User, UserWithToken } from '@/common/api/type'
 import type * as DebugPanel from '@/component/debug-panel'
 import type * as ArticlePage from '@/page/article/type'
 import type * as EditorPage from '@/page/editor/type'
@@ -10,7 +10,7 @@ import type * as ProfilePage from '@/page/profile/type'
 import type * as SettingsPage from '@/page/settings/type'
 import type * as SignupPage from '@/page/signup/type'
 
-import { AppRoute } from './common/type/route'
+import { type AppRoute } from './common/type/route'
 
 export type Shared = {
   user: Option<User>

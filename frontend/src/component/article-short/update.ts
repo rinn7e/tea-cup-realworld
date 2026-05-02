@@ -1,8 +1,12 @@
 import { attemptTE } from '@rinn7e/tea-cup-prelude'
 import { Cmd } from 'tea-cup-fp'
 
-import { favoriteArticle, unfavoriteArticle } from '@/api'
-import { favoriteArticleUtil, unfavoriteArticleUtil } from '@/api/type/article'
+import {
+  favoriteArticle,
+  favoriteArticleUtil,
+  unfavoriteArticle,
+  unfavoriteArticleUtil,
+} from '@/common/api'
 import type { Shared } from '@/type'
 
 import type { Model, Msg } from './type'

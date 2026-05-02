@@ -7,7 +7,7 @@ import React from 'react'
 import { createPortal } from 'react-dom'
 import type { Dispatcher } from 'tea-cup-fp'
 
-import type { User } from '@/api/type'
+import type { User } from '@/common/api'
 import { homePage } from '@/common/type/route'
 import { Link } from '@/component/link'
 import type { Model, Msg } from '@/type'

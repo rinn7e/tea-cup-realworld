@@ -3,7 +3,7 @@ import * as A from 'fp-ts/lib/Array'
 import { pipe } from 'fp-ts/lib/function'
 import React from 'react'
 
-import { type ApiError, type HttpError } from '@/api/type/common'
+import { type ApiError, type HttpError } from '@/common/api'
 
 interface Props {
   error: HttpError<ApiError>

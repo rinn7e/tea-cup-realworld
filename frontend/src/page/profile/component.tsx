@@ -9,7 +9,7 @@ import type {
   ArticlesResponse,
   HttpError,
   ProfileResponse,
-} from '@/api/type'
+} from '@/common/api'
 import type { AppRoute } from '@/common/type/route'
 import { ArticleShortComponent } from '@/component/article-short/component'
 import { DotLoading } from '@/component/dot-loading'
@@ -19,7 +19,7 @@ import { Link } from '@/component/link'
 import { API_BASE } from '@/env'
 import { assetPath, memoStrategy } from '@/util'
 
-import { Props, PropsEq } from './type'
+import { type Props, PropsEq } from './type'
 
 const ProfilePageComponent = ({
   model,

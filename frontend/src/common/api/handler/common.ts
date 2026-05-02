@@ -1,6 +1,6 @@
 import * as E from 'fp-ts/lib/Either'
 import * as TE from 'fp-ts/lib/TaskEither'
-import * as t from 'io-ts'
+import type * as t from 'io-ts'
 
 import { type ApiError, ApiErrorJson, type HttpError } from '../type/common'
 

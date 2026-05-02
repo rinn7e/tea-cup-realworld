@@ -4,8 +4,7 @@ import * as N from 'fp-ts/lib/number'
 import * as S from 'fp-ts/lib/string'
 import * as t from 'io-ts'
 
-import { ProfileEq, ProfileJson } from './profile'
-import type { Profile } from './profile'
+import { type Profile, ProfileEq, ProfileJson } from './profile'
 
 export type Comment = {
   id: number

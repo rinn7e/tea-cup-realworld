@@ -1,6 +1,11 @@
 import type { Result } from 'tea-cup-fp'
 
-import type { ApiError, Article, ArticleResponse, HttpError } from '@/api/type'
+import type {
+  ApiError,
+  Article,
+  ArticleResponse,
+  HttpError,
+} from '@/common/api'
 
 export type Model = Article
 

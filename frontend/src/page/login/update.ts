@@ -4,12 +4,16 @@ import { attemptTE } from '@rinn7e/tea-cup-prelude'
 import { pipe } from 'fp-ts/lib/function'
 import { Cmd } from 'tea-cup-fp'
 
-import { login } from '@/api'
+import { login } from '@/common/api'
 import { standardInputUi } from '@/component/form-fields'
 import type { Shared } from '@/type'
 
-import type { Model, Msg } from './type'
-import { loginEmailField, loginPasswordField } from './type'
+import {
+  type Model,
+  type Msg,
+  loginEmailField,
+  loginPasswordField,
+} from './type'
 
 const loginEmailFormItem = (): [string, Form.FormType] => [
   loginEmailField,

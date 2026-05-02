@@ -8,15 +8,16 @@ import {
 } from '@rinn7e/tea-cup-form'
 import { attemptTE } from '@rinn7e/tea-cup-prelude'
 import * as E from 'fp-ts/lib/Either'
-import * as O from 'fp-ts/lib/Option'
+import type * as O from 'fp-ts/lib/Option'
 import { Cmd } from 'tea-cup-fp'
 
-import { createArticle, getArticle, updateArticle } from '@/api'
+import { createArticle, getArticle, updateArticle } from '@/common/api'
 import { standardInputUi, textPillInputUi } from '@/component/form-fields'
 import { type Shared } from '@/type'
 
-import type { Model, Msg } from './type'
 import {
+  type Model,
+  type Msg,
   editorBodyField,
   editorDescriptionField,
   editorTagInputField,

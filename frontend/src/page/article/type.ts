@@ -7,21 +7,19 @@ import * as S from 'fp-ts/lib/string'
 import type { Dispatcher, Result } from 'tea-cup-fp'
 
 import {
+  type ApiError,
   ApiErrorEq,
+  type ArticleResponse,
   ArticleResponseEq,
+  type CommentResponse,
+  type CommentsResponse,
   CommentsResponseEq,
+  type HttpError,
+  type ProfileResponse,
+  type User,
   UserEq,
   getHttpErrorEq,
-} from '@/api/type'
-import type {
-  ApiError,
-  ArticleResponse,
-  CommentResponse,
-  CommentsResponse,
-  HttpError,
-  ProfileResponse,
-  User,
-} from '@/api/type'
+} from '@/common/api'
 
 export type Model = {
   slug: string

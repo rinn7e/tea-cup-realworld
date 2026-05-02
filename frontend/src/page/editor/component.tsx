@@ -8,7 +8,7 @@ import { ErrorMessages } from '@/component/error-messages'
 import { memoStrategy } from '@/util'
 
 import {
-  Props,
+  type Props,
   PropsEq,
   editorBodyField,
   editorDescriptionField,

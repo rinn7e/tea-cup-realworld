@@ -5,8 +5,13 @@ import * as EqClass from 'fp-ts/lib/Eq'
 import * as B from 'fp-ts/lib/boolean'
 import type { Dispatcher, Result } from 'tea-cup-fp'
 
-import { ApiErrorEq, getHttpErrorEq } from '@/api/type'
-import type { ApiError, HttpError, UserResponse } from '@/api/type'
+import {
+  type ApiError,
+  ApiErrorEq,
+  type HttpError,
+  type UserResponse,
+  getHttpErrorEq,
+} from '@/common/api'
 
 export const signupUsernameField = 'username'
 export const signupEmailField = 'email'

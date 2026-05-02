@@ -9,13 +9,12 @@ import { pipe } from 'fp-ts/lib/function'
 import { newUrl } from 'react-tea-cup'
 import { Cmd, Task } from 'tea-cup-fp'
 
-import { getCurrentUser } from '@/api'
-import type { User, UserWithToken } from '@/api/type'
 import { getToken, removeToken, saveToken } from '@/cache'
+import { type User, type UserWithToken, getCurrentUser } from '@/common/api'
 import {
-  AppRoute,
+  type AppRoute,
   AppRouteEq,
-  HomeTab,
+  type HomeTab,
   homePage,
   parseAppRoute,
   toUrlString,

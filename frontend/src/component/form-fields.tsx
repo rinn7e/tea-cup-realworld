@@ -1,6 +1,6 @@
 import {
-  TextPillTypeUiArg,
-  TextTypeUiArg,
+  type TextPillTypeUiArg,
+  type TextTypeUiArg,
   autocompleteToString,
   textInputVariantToString,
 } from '@rinn7e/tea-cup-form'
