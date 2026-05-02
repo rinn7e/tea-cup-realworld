@@ -1,4 +1,4 @@
-import { getToken } from '@/cache'
+import { getToken } from '@/common/cache'
 import type { Model } from '@/type'
 
 export interface ConduitDebug {

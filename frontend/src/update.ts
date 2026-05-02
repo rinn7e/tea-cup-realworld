@@ -9,8 +9,8 @@ import { pipe } from 'fp-ts/lib/function'
 import { newUrl } from 'react-tea-cup'
 import { Cmd, Task } from 'tea-cup-fp'
 
-import { getToken, removeToken, saveToken } from '@/cache'
 import { type User, type UserWithToken, getCurrentUser } from '@/common/api'
+import { getToken, removeToken, saveToken } from '@/common/cache'
 import {
   type AppRoute,
   AppRouteEq,

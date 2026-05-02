@@ -4,12 +4,12 @@ import { createRoot } from 'react-dom/client'
 import { ProgramWithNav } from 'react-tea-cup'
 import { type Dispatcher, Sub } from 'tea-cup-fp'
 
-import { assignConduitDebug } from '@/common/util'
+import { IS_RUNNING_E2E } from '@/common/env'
 import { App } from '@/component'
-import { IS_RUNNING_E2E } from '@/env'
 import '@/index.css'
 import type { Model, Msg } from '@/type'
 import { preInit, preUpdate } from '@/update'
+import { assignConduitDebug } from '@/util'
 
 // Helper
 // ---------------------------------------------

@@ -15,7 +15,7 @@ import { booleanFromUndefinedWithDefault } from '@rinn7e/tea-cup-prelude'
 import * as O from 'fp-ts/lib/Option'
 import * as t from 'io-ts'
 
-import { BASE_URL } from '@/env'
+import { BASE_URL } from '@/common/env'
 
 import {
   type AppPage,

@@ -1,7 +1,7 @@
 import * as TE from 'fp-ts/lib/TaskEither'
 import { pipe } from 'fp-ts/lib/function'
 
-import { API_BASE } from '@/env'
+import { API_BASE } from '@/common/env'
 
 import {
   type ApiError,
