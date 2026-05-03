@@ -35,7 +35,7 @@ export const update =
             ...model,
             page: msg.page,
             // No need to display loading when changing pagination page
-            items: RD.pending,
+            // items: RD.pending,
           },
           Cmd.batch([fetchCmd(config, msg.page), scrollToTopCmd()]),
         ]
@@ -73,19 +73,22 @@ const fetchCmd = <Item, ItemMsg>(
 ): Cmd<Msg<Item, ItemMsg>> => {
   const offset = (page - 1) * config.limit
   const limit = config.limit
-  return attemptTE(config.handler(offset, limit), (result): Msg<Item, ItemMsg> => {
-    if (result.tag === 'Ok') {
-      return {
-        _tag: 'FetchResponse',
-        page,
-        result: RD.success(result.value),
+  return attemptTE(
+    config.handler(offset, limit),
+    (result): Msg<Item, ItemMsg> => {
+      if (result.tag === 'Ok') {
+        return {
+          _tag: 'FetchResponse',
+          page,
+          result: RD.success(result.value),
+        }
+      } else {
+        return {
+          _tag: 'FetchResponse',
+          page,
+          result: RD.failure(result.err),
+        }
       }
-    } else {
-      return {
-        _tag: 'FetchResponse',
-        page,
-        result: RD.failure(result.err),
-      }
-    }
-  })
+    },
+  )
 }

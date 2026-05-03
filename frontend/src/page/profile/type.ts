@@ -7,19 +7,20 @@ import type { Dispatcher, Result } from 'tea-cup-fp'
 import {
   type ApiError,
   ApiErrorEq,
-  type ArticlesResponse,
-  ArticlesResponseEq,
   type HttpError,
   type ProfileResponse,
   ProfileResponseEq,
   getHttpErrorEq,
 } from '@/common/api'
-import type { AppRoute } from '@/common/type/route'
+import { type Article, ArticleEq } from '@/common/api/type/article'
+import { type AppRoute, AppRouteEq } from '@/common/type/route'
+import { type Shared, SharedEq } from '@/common/type/shared'
 import type * as ArticleShort from '@/component/article-short'
+import * as Pagination from '@/component/pagination'
 
 export type Model = {
   profile: RD.RemoteData<HttpError<ApiError>, ProfileResponse>
-  articles: RD.RemoteData<HttpError<ApiError>, ArticlesResponse>
+  pagination: Pagination.Model<Article>
   showFavorites: boolean
   followRd: RD.RemoteData<HttpError<ApiError>, ProfileResponse>
   unfollowRd: RD.RemoteData<HttpError<ApiError>, ProfileResponse>
@@ -27,7 +28,7 @@ export type Model = {
 
 export const ModelEq = EqClass.struct<Model>({
   profile: RD.getEq(getHttpErrorEq(ApiErrorEq), ProfileResponseEq),
-  articles: RD.getEq(getHttpErrorEq(ApiErrorEq), ArticlesResponseEq),
+  pagination: Pagination.mkModelEq(ArticleEq),
   showFavorites: B.Eq,
   followRd: RD.getEq(getHttpErrorEq(ApiErrorEq), ProfileResponseEq),
   unfollowRd: RD.getEq(getHttpErrorEq(ApiErrorEq), ProfileResponseEq),
@@ -39,8 +40,8 @@ export type Msg =
       result: Result<HttpError<ApiError>, ProfileResponse>
     }
   | {
-      _tag: 'GetArticlesResponse'
-      result: Result<HttpError<ApiError>, ArticlesResponse>
+      _tag: 'PaginationMsg'
+      subMsg: Pagination.Msg<Article, ArticleShort.Msg>
     }
   | { _tag: 'ToggleFavorites'; show: boolean }
   | { _tag: 'Follow' }
@@ -53,14 +54,10 @@ export type Msg =
       _tag: 'UnfollowResponse'
       result: Result<HttpError<ApiError>, ProfileResponse>
     }
-  | {
-      _tag: 'ArticleShortMsg'
-      slug: string
-      subMsg: ArticleShort.Msg
-    }
 
 export type Props = {
   model: Model
+  shared: Shared
   dispatch: Dispatcher<Msg>
   isCurrentUser: boolean
   route: AppRoute
@@ -68,6 +65,8 @@ export type Props = {
 
 export const PropsEq: EqClass.Eq<Props> = EqClass.struct({
   model: ModelEq,
+  shared: SharedEq,
   dispatch: EqAlways,
   isCurrentUser: B.Eq,
+  route: AppRouteEq,
 })

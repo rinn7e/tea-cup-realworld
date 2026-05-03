@@ -1,14 +1,21 @@
 import * as RD from '@devexperts/remote-data-ts'
-import { ArrayExtra, attemptTE } from '@rinn7e/tea-cup-prelude'
+import {
+  ArrayExtra,
+  attemptTE,
+  updateAndCmd,
+} from '@rinn7e/tea-cup-prelude'
 import * as A from 'fp-ts/lib/Array'
 import * as O from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/function'
 import { Cmd } from 'tea-cup-fp'
 
-import { followUser, getArticles, getProfile, unfollowUser } from '@/common/api'
+import { followUser, getProfile, unfollowUser } from '@/common/api'
+import type { Article } from '@/common/api/type/article'
 import type { Shared } from '@/common/type/shared'
 import * as ArticleShort from '@/component/article-short'
+import * as Pagination from '@/component/pagination'
 
+import { mkPaginationConfig } from './helper'
 import type { Model, Msg } from './type'
 
 export const init = (
@@ -16,9 +23,14 @@ export const init = (
   favorites: boolean,
   shared: Shared,
 ): [Model, Cmd<Msg>] => {
+  const [pagination, paginationCmd] = Pagination.init(
+    mkPaginationConfig(shared, username, favorites),
+    1,
+  )
+
   const model: Model = {
     profile: RD.pending,
-    articles: RD.pending,
+    pagination,
     showFavorites: favorites,
     followRd: RD.initial,
     unfollowRd: RD.initial,
@@ -33,13 +45,7 @@ export const init = (
         getProfile(token, username),
         (result): Msg => ({ _tag: 'GetProfileResponse', result }),
       ),
-      attemptTE(
-        getArticles(
-          token,
-          favorites ? { favorited: username } : { author: username },
-        ),
-        (result): Msg => ({ _tag: 'GetArticlesResponse', result }),
-      ),
+      paginationCmd.map((m): Msg => ({ _tag: 'PaginationMsg', subMsg: m })),
     ]),
   ]
 }
@@ -58,33 +64,47 @@ export const update =
         } else {
           return [{ ...model, profile: RD.failure(msg.result.err) }, Cmd.none()]
         }
-      case 'GetArticlesResponse':
-        if (msg.result.tag === 'Ok') {
-          return [
-            { ...model, articles: RD.success(msg.result.value) },
-            Cmd.none(),
-          ]
-        } else {
-          return [
-            { ...model, articles: RD.failure(msg.result.err) },
-            Cmd.none(),
-          ]
-        }
+      case 'PaginationMsg': {
+        const [pagination, paginationCmd] = Pagination.update(
+          mkPaginationConfig(shared, username, model.showFavorites),
+        )(msg.subMsg, model.pagination)
+
+        return pipe(
+          [
+            { ...model, pagination },
+            paginationCmd.map(
+              (m): Msg => ({ _tag: 'PaginationMsg', subMsg: m }),
+            ),
+          ] as [Model, Cmd<Msg>],
+          updateAndCmd((m) => {
+            if (msg.subMsg._tag === 'ItemMsg') {
+              return paginationItemMsgHandler(
+                shared,
+                msg.subMsg.item,
+                msg.subMsg.msg,
+              )(m)
+            } else {
+              return [m, Cmd.none()]
+            }
+          }),
+        )
+      }
       case 'ToggleFavorites': {
+        if (msg.show === model.showFavorites) {
+          return [model, Cmd.none()]
+        }
+        const [pagination, paginationCmd] = Pagination.init(
+          mkPaginationConfig(shared, username, msg.show),
+          1,
+        )
         const newModel = {
           ...model,
           showFavorites: msg.show,
-          articles: RD.pending,
+          pagination,
         }
         return [
           newModel,
-          attemptTE(
-            getArticles(
-              token,
-              msg.show ? { favorited: username } : { author: username },
-            ),
-            (result): Msg => ({ _tag: 'GetArticlesResponse', result }),
-          ),
+          paginationCmd.map((m): Msg => ({ _tag: 'PaginationMsg', subMsg: m })),
         ]
       }
       case 'Follow':
@@ -141,42 +161,52 @@ export const update =
             Cmd.none(),
           ]
         }
-      case 'ArticleShortMsg':
-        if (model.articles._tag === 'RemoteSuccess') {
-          const articlesData = model.articles.value
-          return pipe(
-            articlesData.articles,
-            A.findIndex((a) => a.slug === msg.slug),
-            O.fold(
-              () => [model, Cmd.none()],
-              (index) => {
-                const [updated, subCmd] = ArticleShort.update(shared)(
-                  msg.subMsg,
-                  articlesData.articles[index],
-                )
-                return [
-                  {
-                    ...model,
-                    articles: RD.success({
-                      ...articlesData,
-                      articles: pipe(
-                        articlesData.articles,
-                        ArrayExtra.modifyAtIfExist(index, () => updated),
-                      ),
-                    }),
-                  },
-                  subCmd.map(
-                    (m): Msg => ({
-                      _tag: 'ArticleShortMsg',
-                      slug: msg.slug,
-                      subMsg: m,
-                    }),
+    }
+  }
+
+const paginationItemMsgHandler =
+  (shared: Shared, item: Article, msg: ArticleShort.Msg) =>
+  (m: Model): [Model, Cmd<Msg>] => {
+    if (m.pagination.items._tag === 'RemoteSuccess') {
+      const articles = m.pagination.items.value
+      return pipe(
+        articles,
+        A.findIndex((a) => a.slug === item.slug),
+        O.fold(
+          () => [m, Cmd.none()],
+          (index) => {
+            const [updated, subCmd] = ArticleShort.update(shared)(
+              msg,
+              articles[index],
+            )
+            return [
+              {
+                ...m,
+                pagination: {
+                  ...m.pagination,
+                  items: RD.success(
+                    pipe(
+                      articles,
+                      ArrayExtra.modifyAtIfExist(index, () => updated),
+                    ),
                   ),
-                ]
+                },
               },
-            ),
-          )
-        }
-        return [model, Cmd.none()]
+              subCmd.map(
+                (sm): Msg => ({
+                  _tag: 'PaginationMsg',
+                  subMsg: {
+                    _tag: 'ItemMsg',
+                    item: updated,
+                    msg: sm,
+                  },
+                }),
+              ),
+            ]
+          },
+        ),
+      )
+    } else {
+      return [m, Cmd.none()]
     }
   }

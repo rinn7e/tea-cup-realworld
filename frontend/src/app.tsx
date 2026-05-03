@@ -94,6 +94,7 @@ const renderPage = (model: Model, dispatch: Dispatcher<Msg>) => {
       return (
         <ProfilePageMemo
           model={model.pageModel.model}
+          shared={model.shared}
           dispatch={(msg) => dispatch({ _tag: 'ProfilePageMsg', subMsg: msg })}
           isCurrentUser={isCurrentUser}
           route={model.route}

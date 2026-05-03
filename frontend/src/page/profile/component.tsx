@@ -4,29 +4,34 @@ import { pipe } from 'fp-ts/lib/function'
 import { RotateCw, Settings, UserPlus } from 'lucide-react'
 import React from 'react'
 
-import type {
-  ApiError,
-  ArticlesResponse,
-  HttpError,
-  ProfileResponse,
-} from '@/common/api'
+import { type ProfileResponse } from '@/common/api'
+import { ArticleEq } from '@/common/api/type/article'
 import { API_BASE } from '@/common/env'
-import type { AppRoute } from '@/common/type/route'
+import { type AppRoute } from '@/common/type/route'
 import { assetPath, memoStrategy } from '@/common/util'
-import { ArticleShortComponent } from '@/component/article-short/component'
 import { DotLoading } from '@/component/dot-loading'
 import { ErrorMessages } from '@/component/error-messages'
 import { IndeterminateProgressBar } from '@/component/indeterminate-progress-bar'
 import { Link } from '@/component/link'
+import { PaginationMemo } from '@/component/pagination/component'
 
+import { mkPaginationConfig } from './helper'
 import { type Props, PropsEq } from './type'
 
 const ProfilePageComponent = ({
   model,
+  shared,
   dispatch,
   isCurrentUser,
   route,
 }: Props) => {
+  const username = route.page._tag === 'ProfilePage' ? route.page.username : ''
+  const paginationConfig = mkPaginationConfig(
+    shared,
+    username,
+    model.showFavorites,
+  )
+
   return (
     <div className='flex min-h-full flex-col' data-test='profile-page'>
       {pipe(
@@ -162,50 +167,14 @@ const ProfilePageComponent = ({
                   </a>
                 </div>
 
-                <div className='flex flex-col'>
-                  {pipe(
-                    model.articles,
-                    RD.fold(
-                      () => (
-                        <div className='py-[24px]'>
-                          <DotLoading className='text-2xl text-green-600' />
-                        </div>
-                      ),
-                      () => (
-                        <div className='py-[24px]'>
-                          <DotLoading className='text-2xl text-green-600' />
-                        </div>
-                      ),
-                      (err: HttpError<ApiError>) => (
-                        <div className='py-[24px]'>
-                          <ErrorMessages error={err} />
-                        </div>
-                      ),
-                      (articlesData: ArticlesResponse) =>
-                        articlesData.articles.length === 0 ? (
-                          <div className='py-[24px] text-sm text-gray-500'>
-                            No articles are here... yet.
-                          </div>
-                        ) : (
-                          <div className='flex flex-col'>
-                            {articlesData.articles.map((article) => (
-                              <ArticleShortComponent
-                                key={article.slug}
-                                model={article}
-                                dispatch={(subMsg) =>
-                                  dispatch({
-                                    _tag: 'ArticleShortMsg',
-                                    slug: article.slug,
-                                    subMsg,
-                                  })
-                                }
-                              />
-                            ))}
-                          </div>
-                        ),
-                    ),
-                  )}
-                </div>
+                <PaginationMemo
+                  itemEq={ArticleEq}
+                  config={paginationConfig}
+                  model={model.pagination}
+                  dispatch={(subMsg) =>
+                    dispatch({ _tag: 'PaginationMsg', subMsg })
+                  }
+                />
               </div>
             </>
           ),
