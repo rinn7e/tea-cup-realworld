@@ -278,6 +278,7 @@ To minimize circular dependencies and ensure a clean modular structure, follow t
 4.  **Sub Components (`src/page/*/sub-component/`)**: Specific components used only by a single page or parent component.
 
 **App Structure:**
+
 - The root `App` is the entry point that composes **Components** and **Pages**.
 - Each **Component** or **Page** can contain its own **sub-component** directory.
 - Deep nesting of sub-components is possible but should be kept rare to avoid complexity.

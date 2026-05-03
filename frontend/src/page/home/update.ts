@@ -1,39 +1,38 @@
 import * as RD from '@devexperts/remote-data-ts'
-import { ArrayExtra, attemptTE, cmdSucceed } from '@rinn7e/tea-cup-prelude'
+import { ArrayExtra, attemptTE, updateAndCmd } from '@rinn7e/tea-cup-prelude'
 import * as A from 'fp-ts/lib/Array'
 import * as O from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/function'
 import { Cmd } from 'tea-cup-fp'
 
-import { getArticles, getArticlesFeed, getTags } from '@/common/api'
+import { getTags } from '@/common/api'
+import type { Article } from '@/common/api/type/article'
 import { type HomeTab, HomeTabEq } from '@/common/type/route'
 import type { Shared } from '@/common/type/shared'
 import * as ArticleShort from '@/component/article-short'
+import * as Pagination from '@/component/pagination'
 
-import { GET_ARTICLES_LIMIT, type Model, type Msg } from './type'
+import { mkPaginationConfig } from './helper'
+import { type Model, type Msg } from './type'
 
 export const init = (
   tab: HomeTab,
   page: number,
   shared: Shared,
 ): [Model, Cmd<Msg>] => {
+  const paginationConfig = mkPaginationConfig(shared, tab)
+  const [pagination, paginationCmd] = Pagination.init(paginationConfig, page)
+
   const model: Model = {
-    articles: RD.pending,
+    pagination,
     tags: RD.pending,
     tab,
-    page,
-    pageAmount: 0,
   }
 
   return [
     model,
     Cmd.batch([
-      getArticlesBaseOnTabCmd(
-        tab,
-        shared,
-        getOffsetBaseOnPage(page),
-        GET_ARTICLES_LIMIT,
-      ),
+      paginationCmd.map((m): Msg => ({ _tag: 'PaginationMsg', subMsg: m })),
 
       attemptTE(
         getTags(shared.token),
@@ -47,167 +46,108 @@ export const update =
   (shared: Shared) =>
   (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
     switch (msg._tag) {
-      case 'GetArticlesResponse':
-        if (msg.result.tag === 'Ok') {
-          return [
-            {
-              ...model,
-              articles: RD.success(msg.result.value),
-              pageAmount: getPageAmountFromArticlesCount(
-                msg.result.value.articlesCount,
-              ),
-            },
-            msg.shouldScrollToTop ? scrollToTopCmd() : Cmd.none(),
-          ]
-        } else {
-          return [
-            { ...model, articles: RD.failure(msg.result.err) },
-            Cmd.none(),
-          ]
-        }
       case 'GetTagsResponse':
         if (msg.result.tag === 'Ok') {
           return [{ ...model, tags: RD.success(msg.result.value) }, Cmd.none()]
         } else {
           return [{ ...model, tags: RD.failure(msg.result.err) }, Cmd.none()]
         }
-      case 'ArticleShortMsg':
-        if (model.articles._tag === 'RemoteSuccess') {
-          const articlesData = model.articles.value
-          return pipe(
-            articlesData.articles,
-            A.findIndex((a) => a.slug === msg.slug),
-            O.fold(
-              () => [model, Cmd.none()],
-              (index) => {
-                const [updated, subCmd] = ArticleShort.update(shared)(
-                  msg.subMsg,
-                  articlesData.articles[index],
-                )
-                return [
-                  {
-                    ...model,
-                    articles: RD.success({
-                      ...articlesData,
-                      articles: pipe(
-                        articlesData.articles,
-                        ArrayExtra.modifyAtIfExist(index, () => updated),
-                      ),
-                    }),
-                  },
-                  subCmd.map(
-                    (m): Msg => ({
-                      _tag: 'ArticleShortMsg',
-                      slug: msg.slug,
-                      subMsg: m,
-                    }),
-                  ),
-                ]
-              },
+      case 'PaginationMsg': {
+        const paginationConfig = mkPaginationConfig(shared, model.tab)
+        const [pagination, paginationCmd] = Pagination.update(paginationConfig)(
+          msg.subMsg,
+          model.pagination,
+        )
+
+        return pipe(
+          [
+            { ...model, pagination },
+            paginationCmd.map(
+              (m): Msg => ({ _tag: 'PaginationMsg', subMsg: m }),
             ),
-          )
-        }
-        return [model, Cmd.none()]
+          ] as [Model, Cmd<Msg>],
+          updateAndCmd((m) => {
+            if (msg.subMsg._tag === 'ItemMsg')
+              return paginationItemMsgHandler(
+                shared,
+                msg.subMsg.item,
+                msg.subMsg.msg,
+              )(m)
+            else return [m, Cmd.none()]
+          }),
+        )
+      }
       case 'ChangeTab': {
         if (HomeTabEq.equals(msg.tab, model.tab)) {
           return [model, Cmd.none()]
-        }
-        const newModel: Model = {
-          ...model,
-          tab: msg.tab,
-          articles: RD.pending,
-          page: 1,
-          pageAmount: 0,
-        }
+        } else {
+          const paginationConfig = mkPaginationConfig(shared, msg.tab)
+          const [pagination, paginationCmd] = Pagination.init(
+            paginationConfig,
+            1,
+          )
+          const newModel: Model = {
+            ...model,
+            tab: msg.tab,
+            pagination,
+          }
 
-        return [
-          newModel,
-          getArticlesBaseOnTabCmd(
-            msg.tab,
-            shared,
-            getOffsetBaseOnPage(1),
-            GET_ARTICLES_LIMIT,
-            true,
-          ),
-        ]
-      }
-
-      case 'ChangePage': {
-        const newModel: Model = {
-          ...model,
-          page: msg.page,
+          return [
+            newModel,
+            paginationCmd.map(
+              (m): Msg => ({ _tag: 'PaginationMsg', subMsg: m }),
+            ),
+          ]
         }
-        return [
-          newModel,
-          getArticlesBaseOnTabCmd(
-            model.tab,
-            shared,
-            getOffsetBaseOnPage(msg.page),
-            GET_ARTICLES_LIMIT,
-            true,
-          ),
-        ]
       }
       case 'NoOp':
         return [model, Cmd.none()]
     }
   }
 
-const getArticlesBaseOnTabCmd = (
-  tab: HomeTab,
-  shared: Shared,
-  offset: number,
-  limit: number,
-  shouldScrollToTop?: true,
-): Cmd<Msg> => {
-  switch (tab._tag) {
-    case 'GlobalFeedTab':
-      return attemptTE(
-        getArticles(shared.token, { offset, limit }),
-        (result): Msg => ({
-          _tag: 'GetArticlesResponse',
-          result,
-          shouldScrollToTop,
-        }),
-      )
-    case 'UserFeedTab':
+const paginationItemMsgHandler =
+  (shared: Shared, item: Article, msg: ArticleShort.Msg) =>
+  (m: Model): [Model, Cmd<Msg>] => {
+    if (m.pagination.items._tag === 'RemoteSuccess') {
+      const articles = m.pagination.items.value
       return pipe(
-        shared.token,
+        articles,
+        A.findIndex((a) => a.slug === item.slug),
         O.fold(
-          () => Cmd.none<Msg>(),
-          (token) =>
-            attemptTE(
-              getArticlesFeed(token, { offset, limit }),
-              (result): Msg => ({
-                _tag: 'GetArticlesResponse',
-                result,
-                shouldScrollToTop,
-              }),
-            ),
+          () => [m, Cmd.none()],
+          (index) => {
+            const [updated, subCmd] = ArticleShort.update(shared)(
+              msg,
+              articles[index],
+            )
+            return [
+              {
+                ...m,
+                pagination: {
+                  ...m.pagination,
+                  items: RD.success(
+                    pipe(
+                      articles,
+                      ArrayExtra.modifyAtIfExist(index, () => updated),
+                    ),
+                  ),
+                },
+              },
+              subCmd.map(
+                (sm): Msg => ({
+                  _tag: 'PaginationMsg',
+                  subMsg: {
+                    _tag: 'ItemMsg',
+                    item: updated,
+                    msg: sm,
+                  },
+                }),
+              ),
+            ]
+          },
         ),
       )
-    case 'TagFeedTab':
-      return attemptTE(
-        getArticles(shared.token, { offset, limit, tag: tab.tag }),
-        (result): Msg => ({
-          _tag: 'GetArticlesResponse',
-          result,
-          shouldScrollToTop,
-        }),
-      )
+    } else {
+      return [m, Cmd.none()]
+    }
   }
-}
-
-const scrollToTopCmd = (): Cmd<Msg> =>
-  cmdSucceed(() =>
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth',
-    }),
-  )
-
-const getOffsetBaseOnPage = (page: number): number =>
-  (page - 1) * GET_ARTICLES_LIMIT
-
-const getPageAmountFromArticlesCount = (articlesCount: number): number =>
-  Math.ceil(articlesCount / GET_ARTICLES_LIMIT)

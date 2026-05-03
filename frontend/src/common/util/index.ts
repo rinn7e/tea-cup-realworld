@@ -1,3 +1,6 @@
+import { cmdSucceed } from '@rinn7e/tea-cup-prelude'
+import { type Cmd } from 'tea-cup-fp'
+
 import { BASE_URL } from '@/common/env'
 
 export * from './memo-strategy'
@@ -11,3 +14,11 @@ export const assetPath = (path: string): string => {
   const cleanPath = path.replace(/^\//, '')
   return base + '/' + cleanPath
 }
+
+export const scrollToTopCmd = (): Cmd<{ _tag: 'NoOp' }> =>
+  cmdSucceed(() =>
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    }),
+  )

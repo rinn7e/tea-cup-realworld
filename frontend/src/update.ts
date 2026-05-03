@@ -431,8 +431,13 @@ export const update = (msg: Msg, model: Model): [Model, Cmd<Msg>] => {
             if (msg.subMsg._tag === 'ChangeTab') {
               return interceptChangeTabFromHomePage(msg.subMsg.tab)(m)
             }
-            if (msg.subMsg._tag === 'ChangePage') {
-              return interceptChangePageFromHomePage(msg.subMsg.page)(m)
+            if (
+              msg.subMsg._tag === 'PaginationMsg' &&
+              msg.subMsg.subMsg._tag === 'ChangePage'
+            ) {
+              return interceptPaginationChangePageFromHomePage(
+                msg.subMsg.subMsg.page,
+              )(m)
             }
             return [m, Cmd.none()]
           }),
@@ -779,7 +784,7 @@ const interceptChangeTabFromHomePage =
     else return changeRouteNoReload({ page: homePage(tab) })(m)
   }
 
-const interceptChangePageFromHomePage =
+const interceptPaginationChangePageFromHomePage =
   (page: number) =>
   (m: Model): [Model, Cmd<Msg>] => {
     if (m.route.page._tag === 'HomePage') {
