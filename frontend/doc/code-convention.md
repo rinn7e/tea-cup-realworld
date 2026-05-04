@@ -225,8 +225,16 @@ Each component should follow a clear, modular structure to promote maintainabili
 - Use the prefix **`list`** or **`array`** to indicate a collection of items.
   - Example: `component/article-list.tsx`
 
-- Component names should be `<SomeComponent>` or `<SomeComponent>View` for the component and `<SomeComponent>Memo` for its memoized version.
-  - Example: `CommentSectionMemo`
+- Component names should be `<ExampleComponent>` for the component and `<ExampleMemo>` for its memoized version.
+  - Example:
+
+```ts
+export const AccountSettingMemo = memo(AccountSettingComponent, mkPropEq().equals) as <
+  pmsg,
+>(
+  props: Props<pmsg>,
+) => JSX.Element
+```
 
 #### Recommended File Breakdown
 
@@ -246,7 +254,7 @@ For any component (or page), split it into the following files:
 **3. `component.tsx`**
 
 - Defines the view components.
-- Only export the memo version (e.g., `export const MyComponentMemo = ...`).
+- Only export the memo version (e.g., `export const ExampleMemo = ...`).
 - Imports `Props` and `PropsEq` from `./type`.
 
 **4. `index.ts`**
