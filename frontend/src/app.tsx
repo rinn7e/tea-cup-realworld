@@ -1,6 +1,6 @@
 import { cn } from '@rinn7e/tea-cup-prelude'
 import React from 'react'
-import type { Dispatcher } from 'tea-cup-fp'
+import { type Dispatcher } from 'tea-cup-fp'
 
 import { SetGlobalMsgContext } from './common/global-context'
 import { DebugPanelComponent } from './component/debug-panel/component'

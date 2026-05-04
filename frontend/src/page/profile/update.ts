@@ -1,9 +1,5 @@
 import * as RD from '@devexperts/remote-data-ts'
-import {
-  ArrayExtra,
-  attemptTE,
-  updateAndCmd,
-} from '@rinn7e/tea-cup-prelude'
+import { ArrayExtra, attemptTE, updateAndCmd } from '@rinn7e/tea-cup-prelude'
 import * as A from 'fp-ts/lib/Array'
 import * as O from 'fp-ts/lib/Option'
 import { pipe } from 'fp-ts/lib/function'

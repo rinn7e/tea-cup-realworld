@@ -229,11 +229,10 @@ Each component should follow a clear, modular structure to promote maintainabili
   - Example:
 
 ```ts
-export const AccountSettingMemo = memo(AccountSettingComponent, mkPropEq().equals) as <
-  pmsg,
->(
-  props: Props<pmsg>,
-) => JSX.Element
+export const AccountSettingMemo = memo(
+  AccountSettingComponent,
+  mkPropEq().equals,
+) as <pmsg>(props: Props<pmsg>) => JSX.Element
 ```
 
 #### Recommended File Breakdown

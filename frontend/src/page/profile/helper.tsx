@@ -6,12 +6,11 @@ import React from 'react'
 import { getArticles } from '@/common/api'
 import { type Article } from '@/common/api/type/article'
 import type { Shared } from '@/common/type/shared'
-import * as ArticleShort from '@/component/article-short'
+import type * as ArticleShort from '@/component/article-short'
 import { ArticleShortComponent } from '@/component/article-short/component'
 import { DotLoading } from '@/component/dot-loading'
 import { ErrorMessages } from '@/component/error-messages'
-import * as Pagination from '@/component/pagination'
-
+import type * as Pagination from '@/component/pagination'
 import { GET_ARTICLES_LIMIT } from '@/page/home/type'
 
 export const mkPaginationConfig = (
