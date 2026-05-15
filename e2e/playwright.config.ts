@@ -18,7 +18,7 @@ export default defineConfig({
           {
             command: `direnv exec . make server`,
             url: 'http://localhost:3000/api/tags',
-            cwd: process.env.BACKEND_PATH || '../../haskell-servant-realworld',
+            cwd: process.env.BACKEND_PATH || '../../haskell-servant-realworld/backend',
             reuseExistingServer: !process.env.CI,
             timeout: 120_000,
           },
