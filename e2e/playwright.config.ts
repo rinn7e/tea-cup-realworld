@@ -9,18 +9,16 @@ export default defineConfig({
   testDir: './test',
   use: {
     ...baseConfig.use,
-    baseURL: process.env.BASE_URL,
+    baseURL: process.env.BASE_URL || 'http://localhost:5173',
     testIdAttribute: 'data-test',
   },
   webServer: [
     ...(!isRemoteApi
       ? [
           {
-            command: `JWT_SECRET=${process.env.JWT_SECRET || 'test-secret'} make run`,
+            command: `direnv exec . make server`,
             url: 'http://localhost:3000/api/tags',
-            cwd:
-              process.env.BACKEND_PATH ||
-              '../../nitro-prisma-zod-realworld-example-app',
+            cwd: process.env.BACKEND_PATH || '../../haskell-servant-realworld',
             reuseExistingServer: !process.env.CI,
             timeout: 120_000,
           },

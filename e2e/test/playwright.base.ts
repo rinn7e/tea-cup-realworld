@@ -27,7 +27,7 @@ export const baseConfig: PlaywrightTestConfig = {
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 1,
   workers: 1,
-  reporter: 'html',
+  reporter: 'list',
 
   timeout: 15_000,
 
