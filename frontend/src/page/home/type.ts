@@ -15,18 +15,18 @@ import { type Article, ArticleEq } from '@/common/api/type/article'
 import { type HomeTab, HomeTabEq } from '@/common/type/route'
 import { type Shared, SharedEq } from '@/common/type/shared'
 import type * as ArticleShort from '@/component/article-short'
-import * as Pagination from '@/component/pagination'
+import * as Pagination from '@rinn7e/tea-cup-pagination'
 
 export const GET_ARTICLES_LIMIT = 10
 
 export type Model = {
-  pagination: Pagination.Model<Article>
+  pagination: Pagination.Model<Article, HttpError<ApiError>>
   tags: RD.RemoteData<HttpError<ApiError>, TagsResponse>
   tab: HomeTab
 }
 
 export const ModelEq = EqClass.struct<Model>({
-  pagination: Pagination.mkModelEq(ArticleEq),
+  pagination: Pagination.mkModelEq(ArticleEq, getHttpErrorEq(ApiErrorEq)),
   tags: RD.getEq(getHttpErrorEq(ApiErrorEq), TagsResponseEq),
   tab: HomeTabEq,
 })
@@ -38,7 +38,7 @@ export type Msg =
     }
   | {
       _tag: 'PaginationMsg'
-      subMsg: Pagination.Msg<Article, ArticleShort.Msg>
+      subMsg: Pagination.Msg<Article, ArticleShort.Msg, HttpError<ApiError>>
     }
   | { _tag: 'ChangeTab'; tab: HomeTab }
   | { _tag: 'NoOp' }

@@ -4,7 +4,7 @@ import { pipe } from 'fp-ts/lib/function'
 import { RotateCw, Settings, UserPlus } from 'lucide-react'
 import React from 'react'
 
-import { type ProfileResponse } from '@/common/api'
+import { type ProfileResponse, ApiErrorEq, getHttpErrorEq } from '@/common/api'
 import { ArticleEq } from '@/common/api/type/article'
 import { API_BASE } from '@/common/env'
 import { type AppRoute } from '@/common/type/route'
@@ -12,7 +12,7 @@ import { assetPath, memoStrategy } from '@/common/util'
 import { ErrorMessages } from '@/component/error-messages'
 import { IndeterminateProgressBar } from '@/component/indeterminate-progress-bar'
 import { Link } from '@/component/link'
-import { PaginationMemo } from '@/component/pagination/component'
+import { PaginationMemo } from '@rinn7e/tea-cup-pagination/lib/component'
 
 import { mkPaginationConfig } from './helper'
 import { type Props, PropsEq } from './type'
@@ -168,6 +168,7 @@ const ProfilePageComponent = ({
 
                 <PaginationMemo
                   itemEq={ArticleEq}
+                  errEq={getHttpErrorEq(ApiErrorEq)}
                   config={paginationConfig}
                   model={model.pagination}
                   dispatch={(subMsg) =>

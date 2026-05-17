@@ -10,7 +10,7 @@ import type { Article } from '@/common/api/type/article'
 import { type HomeTab, HomeTabEq } from '@/common/type/route'
 import type { Shared } from '@/common/type/shared'
 import * as ArticleShort from '@/component/article-short'
-import * as Pagination from '@/component/pagination'
+import * as Pagination from '@rinn7e/tea-cup-pagination'
 
 import { mkPaginationConfig } from './helper'
 import { type Model, type Msg } from './type'

@@ -4,7 +4,7 @@ import * as TE from 'fp-ts/lib/TaskEither'
 import { pipe } from 'fp-ts/lib/function'
 import React from 'react'
 
-import { getArticles, getArticlesFeed } from '@/common/api'
+import { getArticles, getArticlesFeed, type ApiError, type HttpError } from '@/common/api'
 import type { Article } from '@/common/api/type/article'
 import { type HomeTab, homePage } from '@/common/type/route'
 import type { Shared } from '@/common/type/shared'
@@ -13,14 +13,15 @@ import { ArticleShortComponent } from '@/component/article-short/component'
 import { DotLoading } from '@/component/dot-loading'
 import { ErrorMessages } from '@/component/error-messages'
 import { Link } from '@/component/link'
-import type * as Pagination from '@/component/pagination'
+import type * as Pagination from '@rinn7e/tea-cup-pagination'
+import { renderPagination } from '@/component/pagination'
 
 import { GET_ARTICLES_LIMIT } from './type'
 
 export const mkPaginationConfig = (
   shared: Shared,
   tab: HomeTab,
-): Pagination.Config<Article, ArticleShort.Msg> => ({
+): Pagination.Config<Article, ArticleShort.Msg, HttpError<ApiError>> => ({
   limit: GET_ARTICLES_LIMIT,
   handler: (offset, limit) => {
     switch (tab._tag) {
@@ -112,4 +113,5 @@ export const mkPaginationConfig = (
       ),
     )
   },
+  renderPagination,
 })

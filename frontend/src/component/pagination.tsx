@@ -2,31 +2,7 @@ import { cn } from '@rinn7e/tea-cup-prelude'
 import { pipe } from 'fp-ts/lib/function'
 import React from 'react'
 
-import { memoStrategy } from '@/common/util'
-
-import { type Props, mkPropsEq } from './type'
-
-export const PaginationComponent = <Item, ItemMsg>({
-  model,
-  dispatch,
-  config,
-}: Props<Item, ItemMsg>) => {
-  const { page, pageAmount } = model
-
-  return (
-    <div className='flex flex-col'>
-      {config.renderItems(model.items, (item, msg) => {
-        dispatch({ _tag: 'ItemMsg', item, msg })
-      })}
-
-      {renderPagination(page, pageAmount, (p) =>
-        dispatch({ _tag: 'ChangePage', page: p }),
-      )}
-    </div>
-  )
-}
-
-const renderPagination = (
+export const renderPagination = (
   currentPage: number,
   pageAmount: number,
   onPageChange: (page: number) => void,
@@ -100,11 +76,3 @@ const renderPagination = (
     </nav>
   )
 }
-
-export const PaginationMemo = memoStrategy(
-  PaginationComponent,
-  (prev, next) => {
-    const propEq = mkPropsEq(prev.itemEq)
-    return propEq.equals(prev, next)
-  },
-) as <Item, ItemMsg>(props: Props<Item, ItemMsg>) => React.ReactElement

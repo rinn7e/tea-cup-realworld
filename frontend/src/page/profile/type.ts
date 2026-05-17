@@ -16,11 +16,11 @@ import { type Article, ArticleEq } from '@/common/api/type/article'
 import { type AppRoute, AppRouteEq } from '@/common/type/route'
 import { type Shared, SharedEq } from '@/common/type/shared'
 import type * as ArticleShort from '@/component/article-short'
-import * as Pagination from '@/component/pagination'
+import * as Pagination from '@rinn7e/tea-cup-pagination'
 
 export type Model = {
   profile: RD.RemoteData<HttpError<ApiError>, ProfileResponse>
-  pagination: Pagination.Model<Article>
+  pagination: Pagination.Model<Article, HttpError<ApiError>>
   showFavorites: boolean
   followRd: RD.RemoteData<HttpError<ApiError>, ProfileResponse>
   unfollowRd: RD.RemoteData<HttpError<ApiError>, ProfileResponse>
@@ -28,7 +28,7 @@ export type Model = {
 
 export const ModelEq = EqClass.struct<Model>({
   profile: RD.getEq(getHttpErrorEq(ApiErrorEq), ProfileResponseEq),
-  pagination: Pagination.mkModelEq(ArticleEq),
+  pagination: Pagination.mkModelEq(ArticleEq, getHttpErrorEq(ApiErrorEq)),
   showFavorites: B.Eq,
   followRd: RD.getEq(getHttpErrorEq(ApiErrorEq), ProfileResponseEq),
   unfollowRd: RD.getEq(getHttpErrorEq(ApiErrorEq), ProfileResponseEq),
@@ -41,7 +41,7 @@ export type Msg =
     }
   | {
       _tag: 'PaginationMsg'
-      subMsg: Pagination.Msg<Article, ArticleShort.Msg>
+      subMsg: Pagination.Msg<Article, ArticleShort.Msg, HttpError<ApiError>>
     }
   | { _tag: 'ToggleFavorites'; show: boolean }
   | { _tag: 'Follow' }
