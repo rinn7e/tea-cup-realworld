@@ -2,8 +2,6 @@ import { devTools } from '@rinn7e/tea-cup-prelude'
 import { ProgramWithNav } from 'react-tea-cup'
 import { type Dispatcher, Sub } from 'tea-cup-fp'
 
-import '@/asset/index.css'
-
 import { App } from './app'
 import { IS_RUNNING_E2E } from './common/env'
 import type { Model, Msg } from './type'
