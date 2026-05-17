@@ -27,12 +27,12 @@ To run the application with a local API server:
     ```
 3.  Install dependencies:
     ```bash
-    npm install
+    pnpm install
     ```
 4.  Ensure you have a local [RealWorld backend](https://github.com/gothinkster/realworld) running (usually on `http://localhost:3000/api`).
 5.  Run the development server:
     ```bash
-    npm run dev
+    pnpm dev
     ```
 
 ## How to start using official API server
@@ -41,7 +41,7 @@ To run the application using the official RealWorld API server:
 
 ```bash
 cd frontend
-npm run dev -- --mode production
+pnpm dev --mode production
 ```
 
 This will use the base URL: `https://api.realworld.show/api`.
@@ -53,12 +53,12 @@ This will use the base URL: `https://api.realworld.show/api`.
 
 | Command             | Description                          |
 | ------------------- | ------------------------------------ |
-| `npm run dev`       | Start the development server         |
-| `npm run build`     | Build the application for production |
-| `npm run preview`   | Preview the production build locally |
-| `npm run lint`      | Lint the codebase                    |
-| `npm run typecheck` | Run TypeScript type checking         |
-| `npm run check:watch` | Run Type checking in watch mode |
+| `pnpm dev`          | Start the development server         |
+| `pnpm build`        | Build the application for production |
+| `pnpm preview`      | Preview the production build locally |
+| `pnpm lint`         | Lint the codebase                    |
+| `pnpm typecheck`    | Run TypeScript type checking         |
+| `pnpm check:watch`  | Run Type checking in watch mode     |
 
 Check the [e2e/README.md](e2e/README.md) for instructions on how to run the E2E tests locally and [testing-philosophy.md](testing-philosophy.md) for the core principles behind our testing strategy.
 
